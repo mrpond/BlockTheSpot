@@ -13,8 +13,8 @@
 </center>
 
 
-Based on BlockTheSpot v0.51 by @mrpond  
-Author: @rednek46
+Based on BlockTheSpot v0.51 by [@mrpond](https://github.com/mrpond)    
+Author: [@rednek46](https://github.com/rednek46)  
 
 ### Features:
 * Easy Installation 
