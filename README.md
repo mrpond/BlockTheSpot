@@ -3,6 +3,7 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application. With Easy Installation/Uninstallation.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
+    <strong>Version:</strong> 0.51.1
     <strong>Last tested version:</strong> 1.1.28.721.g5b5ee660
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -17,7 +18,8 @@ Based on BlockTheSpot v0.51 by [@mrpond](https://github.com/mrpond)
 Author: [@rednek46](https://github.com/rednek46)  
 
 ### Features:
-* Easy Installation 
+* Applies the patch to the spotify.  
+* Installs latest spotify and applies the patch if installation not found.  
 * Stops Spotify auto update
 * Blocks all banner/video/audio ads within the app
 * Retains friend, vertical video and radio functionality
@@ -25,11 +27,9 @@ Author: [@rednek46](https://github.com/rednek46)
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows, **not the Microsoft Store version**.
 
-#### Prerequisite
-1. Install spotify from the official website https://www.spotify.com/in/download/windows/
-
 #### Installation/Update:
-1. Run the file BlockTheSpot.bat and you are all set.
+1. Remove The Microsoft Store version if you have it or else skip this step.   
+2. Run the file BlockTheSpot.bat and you are all set.
  
 #### Uninstall:
 1. Run uninstall.bat
@@ -59,5 +59,3 @@ Alternatively, the latest definition is available for download here: https://www
 
 Thank you for contacting Microsoft.
 
-#### Future updates
-Including a file to automatically install the latest tested spotify version and apply the patch.
