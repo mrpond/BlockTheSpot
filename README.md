@@ -1,11 +1,9 @@
 <center>
   <h1 align="center">BlockTheSpot</h1>
-  <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
+  <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application. With Easy Installation/Uninstallation.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.51 <br>
-    <strong>Last updated:</strong> 8 March 2020<br>
-    <strong>Last tested version:</strong> 1.1.27.472.gf6574b97
+    <strong>Last tested version:</strong> 1.1.28.721.g5b5ee660
   </p>
   <h4 align="center">Important Notice(s)</h4>
   <p align="center">
@@ -14,24 +12,31 @@
   </p>
 </center>
 
+
+Based on BlockTheSpot v0.51 by @mrpond  
+Author: @rednek46
+
 ### Features:
+* Easy Installation 
+* Stops Spotify auto update
 * Blocks all banner/video/audio ads within the app
 * Retains friend, vertical video and radio functionality
 * Unlocks the skip function for any track
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows, **not the Microsoft Store version**.
 
-#### Installation/Update:
-1. Browse to Spotify installation folder `%APPDATA%/Spotify`
-2. Backup existing `chrome_elf.dll` by renaming it (e.g. chrome_elf.bak)
-3. Download [chrome_elf.zip](chrome_elf.zip)
-4. Extract chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
+#### Prerequisite
+1. Install spotify from the official website https://www.spotify.com/in/download/windows/
 
+#### Installation/Update:
+1. Run the file BlockTheSpot.bat and you are all set.
+ 
 #### Uninstall:
-1. Browse to Spotify installation folder `%APPDATA%/Spotify` 
-2. Simply delete chrome_elf.dll, config.ini from your Spotify installation
-3. Rename your backup dll to chrome_elf.dll
+1. Run uninstall.bat
 * or reinstall spotify
+
+#### Issues
+Please report the issues concerning the adblock at https://github.com/mrpond/BlockTheSpot
 
 #### Note:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'
@@ -53,3 +58,6 @@ We have removed the detection. Please follow the steps below to clear cached det
 Alternatively, the latest definition is available for download here: https://www.microsoft.com/en-us/wdsi/definitions
 
 Thank you for contacting Microsoft.
+
+#### Future updates
+Including a file to automatically install the latest tested spotify version and apply the patch.
