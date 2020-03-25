@@ -3,7 +3,7 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application. With Easy Installation/Uninstallation.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Version:</strong> 0.51.1  
+    <strong>Version:</strong> 0.51.1 <br>  
     <strong>Last tested version:</strong> 1.1.28.721.g5b5ee660
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -30,6 +30,7 @@ Author: [@rednek46](https://github.com/rednek46)
 #### Installation/Update:
 1. Remove The Microsoft Store version if you have it or else skip this step.   
 2. Run the file BlockTheSpot.bat and you are all set.
+3. Need to run this file Everytime spotify is installed or updated.
  
 #### Uninstall:
 1. Run uninstall.bat
