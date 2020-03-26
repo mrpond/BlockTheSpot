@@ -1,4 +1,5 @@
 @echo off
+echo By @rednek46
 setlocal enableextensions
 taskkill /f /im Spotify.exe 2> NUL
 taskkill /f /im spotifywebhelper.exe 2> NUL
@@ -22,9 +23,13 @@ if defined p (
 	mkdir "%localappdata%\Spotify\Update" > NUL 2>&1
 	icacls "%localappdata%\Spotify\Update" /deny "%username%":W > NUL 2>&1
 	echo Patching Spotify
+	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
 	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
 	copy chrome_elf.dll "%APPDATA%\Spotify\" > NUL 2>&1
 	copy config.ini "%APPDATA%\Spotify\" > NUL 2>&1
+	del /s /q "chrome_elf.dll" > NUL 2>&1
+	del /s /q "config.ini" > NUL 2>&1
+	echo Patching Completed
 ) else (
 	echo Spotify installation was not detected. Downloading Latest Spotify full setup. 
 	echo Please wait..
@@ -34,6 +39,19 @@ if defined p (
 	SpotifyFullSetup.exe
 	powershell -ExecutionPolicy Bypass -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%userprofile%\Desktop\Spotify.lnk'); $S.TargetPath = '%appdata%\Spotify\Spotify.exe'; $S.Save()" > NUL 2>&1
 	start "" "%appdata%\Spotify\Spotify.exe"
-	del "SpotifyFullSetup.exe"
+	del /s /q "SpotifyFullSetup.exe"
+	echo Removing auto update for spotify...
+	icacls "%localappdata%\Spotify\Update" /reset /T > NUL 2>&1
+	rd /s /q "%localappdata%\Spotify\Update" > NUL 2>&1
+	mkdir "%localappdata%\Spotify\Update" > NUL 2>&1
+	icacls "%localappdata%\Spotify\Update" /deny "%username%":W > NUL 2>&1
+	echo Patching Spotify
+	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
+	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
+	copy chrome_elf.dll "%APPDATA%\Spotify\" > NUL 2>&1
+	copy config.ini "%APPDATA%\Spotify\" > NUL 2>&1
+	del /s /q "chrome_elf.dll" > NUL 2>&1
+	del /s /q "config.ini" > NUL 2>&1
+	echo Patching Completed
 )
 pause
