@@ -1,5 +1,7 @@
 @echo off
-echo By @rednek46
+echo *****************
+echo Author: @rednek46
+echo *****************
 setlocal enableextensions
 taskkill /f /im Spotify.exe 2> NUL
 taskkill /f /im spotifywebhelper.exe 2> NUL
