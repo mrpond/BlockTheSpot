@@ -17,11 +17,6 @@ for /f delims^=^"^ tokens^=2 %%A in ('reg query HKCR\spotify\shell\open\command'
 	if exist "%%~dpA\Spotify.exe" set p=%%~dpA
 )
 if defined p (
-	echo Removing auto update for spotify...
-	icacls "%localappdata%\Spotify\Update" /reset /T > NUL 2>&1
-	rd /s /q "%localappdata%\Spotify\Update" > NUL 2>&1
-	mkdir "%localappdata%\Spotify\Update" > NUL 2>&1
-	icacls "%localappdata%\Spotify\Update" /deny "%username%":W > NUL 2>&1
 	echo Patching Spotify
 	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
 	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
@@ -40,11 +35,6 @@ if defined p (
 	powershell -ExecutionPolicy Bypass -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%userprofile%\Desktop\Spotify.lnk'); $S.TargetPath = '%appdata%\Spotify\Spotify.exe'; $S.Save()" > NUL 2>&1
 	start "" "%appdata%\Spotify\Spotify.exe"
 	del /s /q "SpotifyFullSetup.exe"
-	echo Removing auto update for spotify...
-	icacls "%localappdata%\Spotify\Update" /reset /T > NUL 2>&1
-	rd /s /q "%localappdata%\Spotify\Update" > NUL 2>&1
-	mkdir "%localappdata%\Spotify\Update" > NUL 2>&1
-	icacls "%localappdata%\Spotify\Update" /deny "%username%":W > NUL 2>&1
 	echo Patching Spotify
 	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
 	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
