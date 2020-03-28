@@ -34,9 +34,7 @@ if defined p (
 	if not exist "%appdata%\Spotify\" mkdir "%appdata%\Spotify" > NUL 2>&1
 	echo Running installation...
 	SpotifyFullSetup.exe
-	powershell -ExecutionPolicy Bypass -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%userprofile%\Desktop\Spotify.lnk'); $S.TargetPath = '%appdata%\Spotify\Spotify.exe'; $S.Save()" > NUL 2>&1
-	start "" "%appdata%\Spotify\Spotify.exe"
-	del /s /q "SpotifyFullSetup.exe"
+	del /s /q "SpotifyFullSetup.exe" > NUL 2>&1
 	echo Patching Spotify
 	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
 	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
@@ -45,5 +43,6 @@ if defined p (
 	del /s /q "chrome_elf.dll" > NUL 2>&1
 	del /s /q "config.ini" > NUL 2>&1
 	echo Patching Completed
+	start "" "%appdata%\Spotify\Spotify.exe"
 )
 pause
