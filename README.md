@@ -3,7 +3,6 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.51 <br>
     <strong>Last updated:</strong> 8 March 2020<br>
     <strong>Last tested version:</strong> 1.1.27.472.gf6574b97
   </p>
@@ -26,7 +25,7 @@
 or
 1. Browse to Spotify installation folder `%APPDATA%/Spotify`
 2. Backup existing `chrome_elf.dll` by renaming it (e.g. chrome_elf.bak)
-3. Download [chrome_elf.zip](chrome_elf.zip)
+3. Download chrome_elf.zip from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 4. Extract chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
 
 #### Uninstall:
