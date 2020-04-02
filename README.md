@@ -25,7 +25,7 @@
 #### Installation/Update:
 * Just run BlockTheSpot.bat
 or
-1. Browse to Spotify installation folder `%APPDATA%/Spotify`
+1. Browse to Spotify installation folder `%APPDATA%\Spotify`
 2. Download chrome_elf.zip from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 3. Replace chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
 
