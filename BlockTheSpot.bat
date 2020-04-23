@@ -112,5 +112,5 @@ Remove-Item -Recurse -LiteralPath $tempDirectory
 Write-Host 'Patching Complete, starting Spotify...'
 Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable
 Write-Host 'Done.'
-pause
+
 exit

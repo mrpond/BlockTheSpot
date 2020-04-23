@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="HookApi.h" />
     <ClInclude Include="hosts.h" />
+    <ClInclude Include="Modify.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -117,6 +118,7 @@
     <ClCompile Include="BlockTheSpot.cpp" />
     <ClCompile Include="HookApi.cpp" />
     <ClCompile Include="hosts.cpp" />
+    <ClCompile Include="Modify.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>

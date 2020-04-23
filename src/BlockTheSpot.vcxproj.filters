@@ -8,6 +8,7 @@
       <Filter>hookapi</Filter>
     </ClCompile>
     <ClCompile Include="hosts.cpp" />
+    <ClCompile Include="Modify.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -17,6 +18,7 @@
     </ClInclude>
     <ClInclude Include="hosts.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Modify.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />
