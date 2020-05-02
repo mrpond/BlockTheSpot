@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+extern std::wofstream logging;
+
 // https://www.unknowncheats.me/forum/1064672-post23.html
 bool DataCompare (BYTE* pData, BYTE* bSig, char* szMask)
 {
@@ -46,6 +48,10 @@ DWORD WINAPI KillBanner (LPVOID)
 			VirtualProtect ((char*)skipPod + 6, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
 			memset ((char*)skipPod + 6, 0xE9, 1);
 			VirtualProtect ((char*)skipPod + 6, 1, oldProtect, &oldProtect);
+			logging << "main process - patch success!" << std::endl;
+		}
+		else {
+			logging << "main process - patch failed!" << std::endl;
 		}
 
 	}

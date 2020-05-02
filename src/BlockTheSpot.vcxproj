@@ -99,14 +99,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HookApi.h" />
+    <ClInclude Include="disasm-lib\cpu.h" />
+    <ClInclude Include="disasm-lib\disasm.h" />
+    <ClInclude Include="disasm-lib\disasm_x86.h" />
+    <ClInclude Include="disasm-lib\disasm_x86_tables.h" />
+    <ClInclude Include="disasm-lib\misc.h" />
     <ClInclude Include="hosts.h" />
+    <ClInclude Include="mhook-lib\mhook.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="disasm-lib\cpu.c" />
+    <ClCompile Include="disasm-lib\disasm.c" />
+    <ClCompile Include="disasm-lib\disasm_x86.c" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -116,8 +124,8 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BlockTheSpot.cpp" />
-    <ClCompile Include="HookApi.cpp" />
     <ClCompile Include="hosts.cpp" />
+    <ClCompile Include="mhook-lib\mhook.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

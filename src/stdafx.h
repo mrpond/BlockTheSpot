@@ -14,13 +14,12 @@
 
 // TODO: reference additional headers your program requires here
 #include <winsock2.h>
-#include <winhttp.h>
 #include <Psapi.h>
 
 #include <fstream>
 #include <future>
 
-#include "HookApi.h"
+#include "mhook-lib/mhook.h"
 #include "hosts.h"
 #include "Modify.h"
 

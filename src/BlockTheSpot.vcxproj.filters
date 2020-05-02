@@ -4,29 +4,56 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="HookApi.cpp">
-      <Filter>hookapi</Filter>
-    </ClCompile>
     <ClCompile Include="hosts.cpp" />
     <ClCompile Include="Modify.cpp" />
+    <ClCompile Include="mhook-lib\mhook.cpp">
+      <Filter>mhook-lib</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm-lib\cpu.c">
+      <Filter>disasm-lib</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm-lib\disasm.c">
+      <Filter>disasm-lib</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm-lib\disasm_x86.c">
+      <Filter>disasm-lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="HookApi.h">
-      <Filter>hookapi</Filter>
-    </ClInclude>
     <ClInclude Include="hosts.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Modify.h" />
+    <ClInclude Include="mhook-lib\mhook.h">
+      <Filter>mhook-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm-lib\cpu.h">
+      <Filter>disasm-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm-lib\disasm.h">
+      <Filter>disasm-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm-lib\disasm_x86.h">
+      <Filter>disasm-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm-lib\disasm_x86_tables.h">
+      <Filter>disasm-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm-lib\misc.h">
+      <Filter>disasm-lib</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />
     <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="hookapi">
-      <UniqueIdentifier>{6dec95b4-4fa2-4d85-9de5-8a6af4d6bb2d}</UniqueIdentifier>
+    <Filter Include="mhook-lib">
+      <UniqueIdentifier>{92a12860-c600-4b3d-8f08-da9947db311a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="disasm-lib">
+      <UniqueIdentifier>{3d1a29a5-e097-4003-a92b-449a010ec2e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

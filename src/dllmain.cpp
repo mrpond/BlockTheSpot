@@ -2,8 +2,8 @@
 #include "stdafx.h"
 
 extern bool g_skip_wpad;
-extern bool g_fix_blackbanner;
 extern std::wofstream logging;
+extern _getaddrinfo getaddrinfo_orig;
 
 static const char* configFile = "./config.ini";
 
@@ -29,14 +29,20 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		case DLL_PROCESS_ATTACH:
 			if (std::string::npos == procname.find ("--type=")) {
 				// block ads request - main process
-				InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
 				CreateThread (NULL, NULL, KillBanner, NULL, 0, NULL);
 				init_log ("main_log.txt");
 			}
 			else if (std::string::npos != procname.find ("--type=utility")) {
 				// block ads banner by hostname - utility process
-				InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 				init_log ("utility_log.txt");
+				getaddrinfo_orig = (_getaddrinfo)GetProcAddress (GetModuleHandle ("ws2_32.dll"), "getaddrinfo");
+				if (getaddrinfo_orig) {
+					Mhook_SetHook ((PVOID*)&getaddrinfo_orig, getaddrinfo_hook);
+					logging << "Mhook_SetHook - getaddrinfo success!" << std::endl;
+				}
+				else {
+					logging << "Mhook_SetHook - getaddrinfo failed!" << std::endl;
+				}
 				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
 					g_skip_wpad = true;
 			}

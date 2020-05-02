@@ -1,33 +1,16 @@
 #pragma once
 
-typedef int (__stdcall* pfngetaddrinfo)(const char* nodename,
-										const char* servname,
-										const struct addrinfo* hints,
-										struct addrinfo** res);
+typedef int (WSAAPI* _getaddrinfo)(
+	_In_opt_	const char* nodename,
+	_In_opt_	const char* servname,
+	_In_opt_	const struct addrinfo* hints,
+	_Out_		struct addrinfo** res
+	);
 
-typedef int (__stdcall* pfnwinhttpopenrequest)(HINTERNET hConnect,
-											   LPCWSTR pwszVerb,
-											   LPCWSTR pwszObjectName,
-											   LPCWSTR pwszVersion,
-											   LPCWSTR pwszReferrer,
-											   LPCWSTR* ppwszAcceptTypes,
-											   DWORD dwFlags);
-
-int WINAPI winhttpopenrequesthook (DWORD RetAddr,
-								   pfnwinhttpopenrequest fnwinhttpopenrequest,
-								   HINTERNET hConnect,
-								   LPCWSTR pwszVerb,
-								   LPCWSTR pwszObjectName,
-								   LPCWSTR pwszVersion,
-								   LPCWSTR pwszReferrer,
-								   LPCWSTR* ppwszAcceptTypes,
-								   DWORD dwFlags);
-
-int WINAPI getaddrinfohook (DWORD RetAddr,
-							pfngetaddrinfo fngetaddrinfo,
-							const char* nodename,
-							const char* servname,
-							const struct addrinfo* hints,
-							struct addrinfo** res);
+int WSAAPI getaddrinfo_hook (
+	_In_opt_	const char* nodename,
+	_In_opt_	const char* servname,
+	_In_opt_	const struct addrinfo* hints,
+	_Out_		struct addrinfo** res);
 
 //#endif /* _HOSTS_H */
