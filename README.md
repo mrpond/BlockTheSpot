@@ -41,5 +41,7 @@ or
 #### Note:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'
 https://en.wikipedia.org/wiki/Web_Proxy_Auto-Discovery_Protocol
-set Skip_wpad in config.ini to 1 may help.
+set Skip_wpad in config.ini to 1 may help.  
+* If BlockTheSpot.bat gives the error `Exception calling "DownloadFile" with "2" argument(s)`,  
+    Then, open the bat file in an editor and add `[Net.ServicePointManager]::SecurityProtocol = "tls12"` after the line "# Ignore errors from Stop-Process" and save, run again.  
 * if automatic install/uninstall .bat not working please contact (https://github.com/rednek46)
