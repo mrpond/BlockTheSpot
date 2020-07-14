@@ -6,7 +6,7 @@
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
     <strong>Last updated:</strong> 3 June 2020<br>
-    <strong>Last tested version:</strong> 1.1.36.734.g8731c306
+    <strong>Last tested version:</strong> 1.1.37.690.g8f3b16fc
   </p>
   <h4 align="center">Important!!</h4>
  * Do Windows Update/Patch<br>
