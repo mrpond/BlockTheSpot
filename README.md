@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/31l6ynm0a1fhr2vs/branch/master?svg=true)](https://ci.appveyor.com/project/mrpond/blockthespot/branch/master)
 
 <center>
-    <h1 align="center">#���Ǫ��Ŵ�͡ #Thailand #ThaiProtest #ThailandProtest #freeYOUTH</h1>
+    <h1 align="center">#àÂÒÇª¹»Å´áÍ¡ #Thailand #ThaiProtest #ThailandProtest #freeYOUTH</h1>
     <h1 align="center">Please retweet these hashtag, help me stop dictator government!</h1>
 </center>
 
@@ -11,7 +11,7 @@
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
         <strong>Last updated:</strong> 18 July 2020<br>
-        <strong>Last tested version:</strong> 1.1.37.690.g8f3b16fc
+        <strong>Last tested version:</strong> 1.1.38.558.g4b100958
     </p> 
 </center>
 
