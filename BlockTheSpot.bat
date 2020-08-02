@@ -8,6 +8,14 @@ $PSDefaultParameterValues['Stop-Process:ErrorAction'] = 'SilentlyContinue'
 
 write-host @'
 ***************** 
+@mrpond message:
+#Thailand #ThaiProtest #ThailandProtest #freeYOUTH
+Please retweet these hashtag, help me stop dictator government!
+***************** 
+'@
+
+write-host @'
+***************** 
 Author: @rednek46
 ***************** 
 '@
@@ -112,5 +120,13 @@ Remove-Item -Recurse -LiteralPath $tempDirectory
 Write-Host 'Patching Complete, starting Spotify...'
 Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable
 Write-Host 'Done.'
+
+write-host @'
+***************** 
+@mrpond message:
+#Thailand #ThaiProtest #ThailandProtest #freeYOUTH
+Please retweet these hashtag, help me stop dictator government!
+***************** 
+'@
 
 exit

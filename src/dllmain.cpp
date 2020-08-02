@@ -38,10 +38,12 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 				getaddrinfo_orig = (_getaddrinfo)GetProcAddress (GetModuleHandle ("ws2_32.dll"), "getaddrinfo");
 				if (getaddrinfo_orig) {
 					Mhook_SetHook ((PVOID*)&getaddrinfo_orig, getaddrinfo_hook);
-					logging << "Mhook_SetHook - getaddrinfo success!" << std::endl;
+					if (logging.is_open ())
+						logging << "Mhook_SetHook - getaddrinfo success!" << std::endl;
 				}
 				else {
-					logging << "Mhook_SetHook - getaddrinfo failed!" << std::endl;
+					if (logging.is_open ())
+						logging << "Mhook_SetHook - getaddrinfo failed!" << std::endl;
 				}
 				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
 					g_skip_wpad = true;

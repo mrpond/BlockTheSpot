@@ -48,10 +48,12 @@ DWORD WINAPI KillBanner (LPVOID)
 			VirtualProtect ((char*)skipPod + 6, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
 			memset ((char*)skipPod + 6, 0xE9, 1);
 			VirtualProtect ((char*)skipPod + 6, 1, oldProtect, &oldProtect);
-			logging << "main process - patch success!" << std::endl;
+			if (logging.is_open ())
+				logging << "main process - patch success!" << std::endl;
 		}
 		else {
-			logging << "main process - patch failed!" << std::endl;
+			if (logging.is_open ())
+				logging << "main process - patch failed!" << std::endl;
 		}
 
 	}
