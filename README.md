@@ -11,7 +11,7 @@
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
         <strong>Last updated:</strong> 17 August 2020<br>
-        <strong>Last tested version:</strong> 1.1.39.612.g1e7e78a4
+        <strong>Last tested version:</strong> 1.1.40.508.gd5bc2931
     </p> 
 </center>
 
