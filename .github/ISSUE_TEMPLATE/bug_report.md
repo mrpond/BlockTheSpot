@@ -8,9 +8,9 @@ assignees: ''
 ---
 
 **Important**
- - Make sure you use [latest spotify](https://www.spotify.com) before report a bug.
- - Make sure you use [latest blockthespot](https://www.github.com/mrpond/BlockTheSpot/releases) before report a bug.
- - Make sure again... blockthespot dll got replace after spotify update, recheck this
+ - Make sure you use [latest spotify](https://www.spotify.com) before reporting a bug.
+ - Make sure you use the [latest blockthespot](https://www.github.com/mrpond/BlockTheSpot/releases) before reporting a bug.
+ - Make sure if blockthespot dll got replaced after spotify update (important).
 
 **Describe the bug**
 A clear and concise description of what the bug is.
