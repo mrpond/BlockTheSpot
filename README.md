@@ -28,7 +28,7 @@
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows, **not the Microsoft Store version**.
 
 #### Installation/Update:
-* Just run BlockTheSpot.bat. Download it [here](https://github.com/rednek46/BlockTheSpot/raw/master/BlockTheSpot.bat).  
+* Just run BlockTheSpot.bat. Download it [here](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/BlockTheSpot.bat).  
 or
 1. Browse to Spotify installation folder `%APPDATA%\Spotify`
 2. Download chrome_elf.zip from [releases](https://github.com/mrpond/BlockTheSpot/releases)
