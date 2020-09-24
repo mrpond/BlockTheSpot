@@ -1,16 +1,15 @@
 #pragma once
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 
-typedef int (WSAAPI* _getaddrinfo)(
-	_In_opt_	const char* nodename,
-	_In_opt_	const char* servname,
-	_In_opt_	const struct addrinfo* hints,
-	_Out_		struct addrinfo** res
-	);
+
+using _getaddrinfo = int(WSAAPI*) (PCSTR, PCSTR, const ADDRINFOA* pHints, PADDRINFOA* ppResult);
 
 int WSAAPI getaddrinfo_hook (
-	_In_opt_	const char* nodename,
-	_In_opt_	const char* servname,
-	_In_opt_	const struct addrinfo* hints,
-	_Out_		struct addrinfo** res);
+	_In_opt_	PCSTR nodename,
+	_In_opt_	PCSTR servname,
+	_In_opt_	const ADDRINFOA* hints,
+	_Out_		PADDRINFOA* res);
 
-//#endif /* _HOSTS_H */
+
+

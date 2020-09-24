@@ -8,9 +8,10 @@ assignees: ''
 ---
 
 **Important**
- - Make sure you use [latest spotify](https://www.spotify.com) before report a bug.
- - Make sure you use [latest blockthespot](https://www.github.com/mrpond/BlockTheSpot/releases) before report a bug.
- - Make sure again... blockthespot dll got replace after spotify update, recheck this
+ - Make sure you use [latest spotify](https://www.spotify.com) before reporting a bug.
+ - Make sure you use the [latest blockthespot](https://www.github.com/mrpond/BlockTheSpot/releases) before reporting a bug.
+ - Make sure if blockthespot DLL got replaced after spotify update (important).
+
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -22,7 +23,7 @@ A clear and concise description of what the bug is.
 
 **Additional context**
 Add any other context about the problem here. 
-If ad blocking is not working, please include a debug Log by
+If ad blocking is not working, please include a debug log by
  1. edit config.ini and set Log = 1 
  2. after ads song play close spotify
  3. zip the main_log.txt, utility_log.txt

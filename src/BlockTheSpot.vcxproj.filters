@@ -43,6 +43,8 @@
       <Filter>disasm-lib</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="Logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />

@@ -1,6 +1,7 @@
-#include "stdafx.h"
+#include "Modify.h"
+#include "Logger.h"
 
-extern std::wofstream logging;
+extern Logger g_Logger;
 
 // https://www.unknowncheats.me/forum/1064672-post23.html
 bool DataCompare (BYTE* pData, BYTE* bSig, char* szMask)
@@ -36,24 +37,18 @@ DWORD WINAPI KillBanner (LPVOID)
 	MODULEINFO mInfo = { 0 };
 	if (GetModuleInformation (GetCurrentProcess (), hModule, &mInfo, sizeof (MODULEINFO))) {
 
-		LPVOID skipPod = FindPattern ((uint8_t*)hModule, mInfo.SizeOfImage, (BYTE*)"\x83\xC4\x08\x84\xC0\x0F\x84\x00\x04\x00\x00", "xxxxxxxxxxx");
+		LPVOID skipPod = FindPattern ((uint8_t*)hModule, mInfo.SizeOfImage, (BYTE*)"\x20\x00\x70\x6F\x64\x00", "xxxxxx");
 		
 		if (skipPod)
 		{
 			DWORD oldProtect;
-			VirtualProtect ((char*)skipPod + 5, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
-			memset ((char*)skipPod + 5, 0x90, 1);
-			VirtualProtect ((char*)skipPod + 5, 1, oldProtect, &oldProtect);
-
-			VirtualProtect ((char*)skipPod + 6, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
-			memset ((char*)skipPod + 6, 0xE9, 1);
-			VirtualProtect ((char*)skipPod + 6, 1, oldProtect, &oldProtect);
-			if (logging.is_open ())
-				logging << "main process - patch success!" << std::endl;
+			VirtualProtect ((char*)skipPod + 3, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+			memset ((char*)skipPod + 3, 0x65, 1);
+			VirtualProtect ((char*)skipPod + 3, 1, oldProtect, &oldProtect);
+			g_Logger.Log ("main process - patch success!");
 		}
 		else {
-			if (logging.is_open ())
-				logging << "main process - patch failed!" << std::endl;
+			g_Logger.Log ("main process - patch failed!");
 		}
 
 	}

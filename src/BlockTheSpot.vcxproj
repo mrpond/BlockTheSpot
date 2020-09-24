@@ -99,12 +99,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="disasm-lib\cpu.h" />
     <ClInclude Include="disasm-lib\disasm.h" />
     <ClInclude Include="disasm-lib\disasm_x86.h" />
     <ClInclude Include="disasm-lib\disasm_x86_tables.h" />
     <ClInclude Include="disasm-lib\misc.h" />
     <ClInclude Include="hosts.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="mhook-lib\mhook.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="resource.h" />

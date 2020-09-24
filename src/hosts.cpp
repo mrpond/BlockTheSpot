@@ -1,48 +1,48 @@
-#include "stdafx.h"
+#include "hosts.h"
+#include "Config.h"
+#include "Logger.h"
 
-// Web Proxy Auto-Discovery (WPAD)
-bool g_skip_wpad = false;
-// Logging system
-std::wofstream logging;
+extern Logger g_Logger;
+extern Config g_Config;
 
 _getaddrinfo getaddrinfo_orig;
 
+const std::vector<std::string> blockList = { "google", "doubleclick", "qualaroo.com"/*, "fbsbx.com"*/ };
+
 // check if ads hostname
-bool is_blockhost (const char* nodename) {
-	std::string nnodename (nodename);
-
-	if (0 == nnodename.compare ("wpad"))
-		return g_skip_wpad ? true : false;
-
-	if (std::string::npos != nnodename.find ("google"))
-		return true;
-	if (std::string::npos != nnodename.find ("doubleclick"))
-		return true;
-	if (std::string::npos != nnodename.find ("qualaroo.com"))
-		return true;
+bool is_blockhost (const std::string& nodename) {
+	static bool wpad = g_Config.getConfig ("Skip_wpad");
+	if (0 == nodename.compare ("wpad"))
+		return wpad ? true : false;
+	for (const auto &i : blockList) {
+		if (std::string::npos != nodename.find (i))
+			return true;
+	}
 	return false;
 }
 
 int WSAAPI getaddrinfo_hook (
-	_In_opt_	const char* nodename,
-	_In_opt_	const char* servname,
-	_In_opt_	const struct addrinfo* hints,
-	_Out_		struct addrinfo** res)
+	_In_opt_	PCSTR nodename,
+	_In_opt_	PCSTR servname,
+	_In_opt_	const ADDRINFOA* hints,
+	_Out_		PADDRINFOA* res)
 {
-	auto isblock = std::async (std::launch::async, is_blockhost, nodename);
+	if (nodename == nullptr)
+		return getaddrinfo_orig (nodename, servname, hints, res);
+
+	std::string nnodename (nodename);
+	auto isblock = std::async (std::launch::async, is_blockhost, nnodename);
 	auto result = getaddrinfo_orig (nodename, servname, hints, res);
 	if (0 == result) {
 		if (isblock.get ()) {
-			for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
-				auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
+			for (auto& ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
+				auto ipv4 = reinterpret_cast<sockaddr_in*>(ptr->ai_addr);
 				ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 			}
-			if (logging.is_open ())
-				logging << "blocked - " << nodename << std::endl;
+			g_Logger.Log ("blocked - " + nnodename);
 		}
 		else {
-			if (logging.is_open ())
-				logging << "allowed - " << nodename << std::endl;
+			g_Logger.Log ("allowed - " + nnodename);
 		}
 	}
 	return result;
