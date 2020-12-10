@@ -20,7 +20,7 @@ A clear and concise description of what the bug is.
 <!--(please complete the following information)-->
  - OS: [e.g. Windows 10]
  - Spotify Version: [e.g. 1.1.47.684.g136419d9]
- - BlockTheSpot Product Version: [e.g. 1.0.0.1] <!--[right click chrome_elf.dll -> Details]-->
+ - BlockTheSpot Product Version: [e.g. 0.51.0.0] <!--[right click chrome_elf.dll -> Details -> Product Version]-->
 
 **Additional context**
 Add any other context about the problem here. 
