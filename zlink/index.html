@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html dir="auto">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spotify</title>
+    <link rel="stylesheet" href="https://local_resource_host/css/glue.css" />
+  <link rel="stylesheet" href="css/zlink.css"></head>
+  <body
+    data-multi-select-disabled
+    data-keyboard-select-disabled
+    tabindex="-1"
+    class="flex-col-container"
+  >
+    <div id="loading">
+      <div class="throbber-initial" id="loading-throbber"><div></div></div>
+    </div>
+    <div id="main" class="flex-col-container flex-1">
+      <div id="main-container" class="flex-row-container flex-1">
+        <div
+          id="menu-wrapper"
+          class="sidebar flex-col-container"
+          data-interaction-context="sidebar"
+        >
+          <div class="sidebar-top-items" data-disable-old-interaction-logging>
+            <div class="sidebar-top-items__drag-area"></div>
+            <div id="accessibility-links"></div>
+          </div>
+
+          <!-- Navigation menu -->
+          <nav
+            role="navigation"
+            id="view-navigation-bar"
+            class="flex-1 sidebar-navbar"
+            tabindex="-1"
+            data-uri="spotify:rootlist"
+            data-disable-old-interaction-logging
+          ></nav>
+
+          <div
+            id="view-resize-nav"
+            class="resizer resizer-right"
+            data-bind="
+              event: {
+                mousedown: onDragStart,
+                touchstart: onDragStart
+              }"
+          ></div>
+          <!-- End navigation menu -->
+
+          <div
+            id="new-playlist-button-mount-point"
+            data-disable-old-interaction-logging
+          ></div>
+
+          <div id="offline-global-progress" class="flex-0-auto">
+            <span></span>
+            <p style="width: 0%"></p>
+          </div>
+
+          <div
+            id="view-offline-indicator"
+            data-ta-id="view-offline-indicator"
+            class="flex-0-auto offline-label-wrapper"
+          >
+            <span data-bind="text: OFFLINE_LABEL"></span>
+          </div>
+
+          <div
+            id="view-now-playing"
+            class="flex-0-auto now-playing-large"
+            data-log-context="player"
+            data-bind="click: $root.onLinkClicked,
+            css: {
+              active: active(),
+              expanded: displayLargeCoverSize,
+              'transitioning': transitioning
+            },
+            attr: {
+              'ad-type': adType(),
+              'data-uri': trackURI
+            }"
+            data-interaction-context="now-playing"
+          >
+            <a
+              id="now-playing-image-large"
+              class="large image"
+              data-ta-id="now-playing-image-large"
+              data-bind="
+                attr: {
+                  'aria-label': nowPlayingA11yLabel(),
+                  href: referrerURI,
+                  'data-uri': isAd() ? adInfo : trackURI
+                }
+              "
+              data-non-active-element
+              data-log-context="cover-large"
+              data-interaction-target="cover-large"
+            >
+              <figure
+                data-bind="
+                  style: {
+                    height: imageHeight()
+                  },
+                  event: {
+                    transitionend: onTransitionEnd
+                  }
+                "
+              >
+                <!-- ko ifnot: imageURI -->
+                <svg
+                  aria-hidden="true"
+                  class="card-placeholder image"
+                  viewBox="0 0 10 10"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <text class="album-placeholder" x="5" y="9.8">&#xf101;</text>
+                </svg>
+                <!-- /ko -->
+
+                <!-- ko if: imageURI -->
+                <div
+                  class="cover-image"
+                  data-bind="
+                    style: {
+                      backgroundImage: imageURICSS,
+                      height: imageHeight()
+                    }
+                  "
+                ></div>
+                <!-- /ko -->
+
+                <div
+                  id="sidebar-video-container"
+                  data-bind="
+                    visible: isVideoContainerVisible,
+                    style: {
+                      height: imageHeight()
+                    }
+                  "
+                ></div>
+
+                <div class="now-playing__corner-buttons">
+                  <div
+                    aria-hidden="true"
+                    class="now-playing__button toggle-cover-size spoticon-chevron-down-16"
+                    data-ta-id="now-playing-image-large-resize-cover"
+                    data-bind="
+                      click: toggleViewMode,
+                      visible: isToggleCoverSizeVisible
+                    "
+                    data-interaction-target="switch-to-small-cover-button"
+                    data-interaction-intent="switch-to-small-cover"
+                  ></div>
+                  <div
+                    id="now-playing-toggle-full-screen"
+                    aria-hidden="true"
+                    class="now-playing__button now-playing__button--toggleFullScreen spoticon-fullscreen-16"
+                    data-bind="
+                      visible: isToggleFullScreenVisible,
+                      attr: {
+                        'data-tooltip': FULL_SCREEN_TOOLTIP,
+                      }
+                    "
+                    data-interaction-target="fullscreen-button"
+                    data-interaction-intent="enter-fullscreen"
+                  ></div>
+                </div>
+              </figure>
+            </a>
+          </div>
+        </div>
+        <div class="main-view-wrapper flex-col-container flex-1">
+          <div id="content-wrapper" class="flex-row-container flex-1">
+            <div class="flex-1 flex-col-container">
+              <div
+                id="view-message-bar"
+                class="alert message-bar"
+                role="alert"
+                data-bind="css: {visible: visible}"
+                data-ta-id="message-bar"
+              >
+                <div class="message-bar-window-controls-spacer"></div>
+                <span
+                  class="message"
+                  data-message-bar-text
+                  data-bind="html: message"
+                >
+                </span>
+                <button
+                  class="button button-icon-only close"
+                  data-ta-id="message-bar-close-button"
+                  data-bind="click: unstack"
+                ></button>
+              </div>
+              <div class="main-view flex-1 flex-col-container">
+                <header
+                  id="header"
+                  class="content-top-bar"
+                  data-interaction-context="zlink-header"
+                >
+                  <div class="content-top-bar__history-navigation">
+                    <div
+                      id="view-browser-navigation-top-bar"
+                      class="browser-navigation browser-navigation-top-bar"
+                      data-ta-id="browser-navigation"
+                    >
+                      <button
+                        type="button"
+                        class="button button-icon-only spoticon-chevron-left-16 back"
+                        data-ta-id="browser-navigation-back"
+                        data-bind="
+                          click: goBack,
+                          attr: {
+                            'data-tooltip': BACK_BUTTON_LABEL,
+                            'aria-label': BACK_BUTTON_LABEL,
+                            'disabled': !canGoBack()
+                          }
+                        "
+                        data-interaction-target="back-button"
+                        data-interaction-intent="go-back"
+                      ></button>
+                      <button
+                        type="button"
+                        class="button button-icon-only spoticon-chevron-right-16 forward"
+                        data-bind="
+                          click: goForward,
+                          attr: {
+                            'data-tooltip': FORWARD_BUTTON_LABEL,
+                            'aria-label': FORWARD_BUTTON_LABEL,
+                            'disabled': !canGoForward()
+                          }
+                        "
+                        data-interaction-target="forward-button"
+                        data-interaction-intent="go-forward"
+                      ></button>
+                    </div>
+                  </div>
+                  <div class="content-top-bar__search-input">
+                    <div class="search-mount-point"></div>
+                  </div>
+                  <div class="content-top-bar__profile" id="top-bar-profile">
+                    <div
+                      id="view-upgrade-button"
+                      class="content-top-bar__profile-upgrade-button"
+                      data-bind="
+                        css: {
+                          'content-top-bar__profile-upgrade-button--is-visible': isOnFreeProduct
+                        }
+                      "
+                    >
+                      <div
+                        class="upgrade-button"
+                        data-bind="visible: isOnFreeProduct"
+                      >
+                        <button
+                          type="button"
+                          data-bind="css: upgradeButtonClass,
+                          click: openProductUpgradePage,
+                          text: UPGRADE_LABEL,
+                          attr: {
+                            'aria-label': UPGRADE_A11Y_LABEL,
+                            'data-tooltip': UPGRADE_TOOLTIP_TEXT
+                          }"
+                          data-interaction-target="upgrade-to-premium-button"
+                          data-interaction-intent="upgrade-to-premium"
+                        ></button>
+                      </div>
+                    </div>
+                    <div
+                      id="view-profile-menu"
+                      class="content-top-bar__profile-area"
+                    >
+                      <div
+                        class="profile content-top-bar__profile-link"
+                        data-ta-id="current-user-link"
+                        data-bind="
+                          click: openProfile,
+                          attr: {'data-tooltip': PROFILE_LABEL},
+                          css: {
+                            'content-top-bar__profile-link--in-private-session': privateSession
+                          }
+                        "
+                        data-interaction-target="profile-link"
+                        data-interaction-intent="open-user-profile"
+                      >
+                        <div class="content-top-bar__profile-link-image">
+                          <div
+                            class="avatar"
+                            data-ta-id="current-user-avatar"
+                            data-bind="
+                              style: {
+                                backgroundImage: avatarImage
+                              },
+                              css: avatarClass,
+                              attr: {
+                                'aria-label': PROFILE_LABEL
+                              }
+                            "
+                          >
+                            <span class="incognito-badge">
+                              <svg
+                                viewBox="0 0 20 20"
+                                preserveAspectRatio="xMidYMid meet"
+                                direction="ltr"
+                              >
+                                <text x="4" y="16">&#xf128;</text>
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          class="content-top-bar__profile-link-text"
+                          id="top-bar-profile-link-text"
+                        >
+                          <span
+                            data-bind="
+                              text: displayUsername,
+                              css: { incognito: privateSession }
+                            "
+                            class="username"
+                            data-ta-id="current-user-name"
+                            dir="auto"
+                          >
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="content-top-bar__profile-menu-button">
+                        <div class="dropdown" data-ta-id="profile-menu-wrapper">
+                          <button
+                            type="button"
+                            id="profile-menu-toggle"
+                            data-ta-id="profile-menu-toggle"
+                            data-bind="
+                              click: toggleMenu,
+                              event: {
+                                keydown: toggleMenuKeypress,
+                              },
+                              attr: {
+                                'data-tooltip': MENU_LABEL,
+                                'aria-label': MENU_LABEL,
+                                'aria-expanded': menuVisible() ? 'true' : 'false'
+                              },
+                              css: updatePreparedClass
+                            "
+                            aria-haspopup="true"
+                            data-interaction-target="toggle-menu-button"
+                            data-interaction-intent="toggle-menu"
+                            class="button button-icon-only spoticon-chevron-down-16"
+                          ></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </header>
+                <div
+                  id="floating-video"
+                  class="floating-video floating-video--is-in-full-header-mode"
+                >
+                  <div class="floating-video__top-bar"></div>
+                  <div
+                    id="floating-video-scroll-offset-node"
+                    class="floating-video__video-scroll-offset-node"
+                  >
+                    <div
+                      id="floating-video-container"
+                      class="floating-video__video-wrapper"
+                      data-ta-id="floating-video-container"
+                    ></div>
+                    <div
+                      id="floating-video-overlay"
+                      class="floating-video__video-overlay"
+                    ></div>
+                  </div>
+                  <div
+                    id="floating-video-scroll-height-node"
+                    class="floating-video__scroll-height"
+                  ></div>
+                </div>
+                <!--
+                  tabindex="-1" is needed here to make the OSX screen-reader
+                  to properly announce the content jumped to in the case of
+                  embedded apps. We have no idea why.
+                  See https://ghe.spotify.net/desktop/client-desktop/pull/3359#discussion_r380995
+                  For discussion and videos explaining this further.
+                -->
+                <main
+                  id="view-content"
+                  tabindex="-1"
+                  class="flex-1"
+                  data-bind="
+                    css: {
+                      disablePointerEvents: disablePointerEvents()
+                    }
+                  "
+                >
+                  <a id="content-anchor" class="anchor" tabindex="-1"></a>
+                  <div id="view-video-ad"></div>
+                </main>
+              </div>
+            </div>
+            <div
+              id="view-buddy-list"
+              class="flex-col-container"
+              role="complementary"
+              data-bind="attr: {
+                'aria-label': buddyListA11yLabel(),
+              }"
+            >
+              <div
+                id="resize-buddy-list"
+                class="resizer resizer-left"
+                data-bind="
+                event: {
+                  mousedown: resize.onDragStart,
+                  touchstart: resize.onDragStart
+                }"
+              ></div>
+              <div class="buddy-list-top-bar-dragger"></div>
+              <iframe
+                id="iframe-buddy-list"
+                class="flex-1 buddy-list-iframe"
+                data-bind="
+                  attr: {
+                    src: isVisible() ? 'spotify:app:buddy-list': 'about:blank'
+                  }
+                "
+              ></iframe>
+            </div>
+          </div>
+          <div id="view-leaderboard-ad"></div>
+        </div>
+        <div id="view-billboard-ad" class="billboard-ad"></div>
+        <div
+          id="view-capping-full-screen-message"
+          class="capping-full-screen-message hidden"
+        >
+          <div class="cfsm-top">
+            <p data-bind="text: cappingTopInformation"></p>
+            <button
+              class="button cfsm-close-btn spoticon-x-24"
+              data-bind="click: hideMessage"
+            ></button>
+          </div>
+          <div class="cfsm-container" data-bind="if: showCappingMessage">
+            <h1 data-bind="text: cappingMessageTitle" class="cfsm-title"></h1>
+            <h4 data-bind="html: cappingMessageText" class="cfsm-text"></h4>
+            <button
+              class="button button-green button-large cfsm-btn"
+              data-bind="
+              click: onClickMainAction,
+              text: cappingButtonLabel"
+            ></button>
+          </div>
+        </div>
+        <div id="full-window-player-container"></div>
+      </div>
+    </div>
+
+    <div id="view-player" data-interaction-context="player">
+      <div id="PopoverMenu-container-in-player"></div>
+      <div id="video-player" class="video-player" data-bind="with: videoPlayer">
+        <div
+          id="full-screen-video-overlay"
+          class="full-screen-video-overlay"
+        ></div>
+        <div class="video-button-wrapper video-button-wrapper--close">
+          <button
+            id="video-close-button"
+            class="button video-button spoticon-x-24"
+            data-bind="
+              click: onCloseClick,
+              attr: {
+                'data-tooltip': CLOSE_LABEL
+              }
+            "
+            data-interaction-target="video-close-button"
+            data-interaction-intent="close-video"
+          ></button>
+        </div>
+      </div>
+
+      <div
+        id="notification-bubble-container"
+        class="notification-bubble-mount-node"
+      ></div>
+
+      <footer
+        id="view-player-footer"
+        class="view-player"
+        data-bind="with: playerUI"
+        data-log-context="player"
+      >
+        <div class="player-bar-wrapper">
+          <div
+            class="now-playing-container"
+            data-interaction-context="now-playing"
+            data-bind="with: nowPlaying,
+                attr: {
+                  'data-context': nowPlaying.referrerURI,
+                  'data-uri': nowPlaying.referrerURI
+                }"
+          >
+            <div
+              class="now-playing cover-size-transition"
+              role="contentinfo"
+              data-bind="css: {
+                  active: active(),
+                  'image-expanded': !isInFullScreenMode() && displayLargeCoverSize,
+                  'transitioning': transitioning
+                },
+                attr: {
+                  'ad-type': adType(),
+                  'data-ta-is-ad': isAd(),
+                  'aria-label': nowPlayingA11yLabel()
+                },
+                click: onLinkClicked
+              "
+            >
+              <div class="caption">
+                <div
+                  class="cover-image-link-wrapper"
+                  data-bind="
+                    event: {
+                      transitionend: onTransitionEnd
+                    }
+                  "
+                >
+                  <a
+                    id="now-playing-image-small"
+                    class="cover-image-link"
+                    data-ta-id="now-playing-image-small"
+                    data-bind="attr: {
+                      'aria-label': nowPlayingA11yLabel(),
+                      href: referrerURI,
+                      'data-uri': isAd() ? adInfo : trackURI,
+                      'data-log-context': displayLargeCoverSize() ? 'cover-large' : 'cover-small'
+                    }"
+                    data-non-active-element
+                    data-interaction-target="cover-small"
+                  >
+                    <figure class="cover-image-container">
+                      <!-- ko ifnot: imageURI -->
+                      <svg
+                        class="card-placeholder"
+                        viewBox="0 0 10 10"
+                        preserveAspectRatio="xMidYMid meet"
+                      >
+                        <text class="album-placeholder" x="5" y="9.8">
+                          &#xf101;
+                        </text>
+                      </svg>
+                      <!-- /ko -->
+
+                      <!-- ko if: imageURI -->
+                      <div
+                        class="cover-image"
+                        data-bind="style: { backgroundImage: imageURICSS }"
+                      ></div>
+                      <!-- /ko -->
+
+                      <div
+                        aria-hidden="true"
+                        class="resize toggle-cover-size spoticon-chevron-up-16"
+                        data-ta-id="now-playing-image-small-resize-cover"
+                        data-bind="
+                          visible: !isInFullScreenMode(),
+                          click: toggleViewMode
+                        "
+                        data-interaction-target="switch-to-large-cover-button"
+                        data-interaction-intent="switch-to-large-cover"
+                      ></div>
+                    </figure>
+                  </a>
+                </div>
+                <div class="now-playing-text-spacer"></div>
+                <div class="text-container">
+                  <div class="text-item-container text-item-container-track">
+                    <div
+                      class="track-text-item text-item preserve-icon-space"
+                      data-button="feedback"
+                      data-bind="
+                      css: {
+                        'two-icons': showFeedback(),
+                        'thumbs-up': trackThumbedUp(),
+                        'thumbs-down': trackThumbedDown(),
+                        'feedback-enabled': showFeedback()
+                      },
+                      attr: {
+                        'data-uri': trackURI
+                      }
+                    "
+                    >
+                      <div class="scroll-text-container">
+                        <!--
+                          The dir="auto" needs to be here rather than on the
+                          <a> child that actually contains the text. The reason
+                          is that having the dir attribute here, will make
+                          the chilren boxes layout properly within RTL or LTR
+                          contexts respectively. That way we prevent
+                          english/arabic text from cutting off at the start/end
+                          when the client is in RTL/LTR mode. If the dir="auto"
+                          is only set on a children of this element, the element
+                          box itself will not layout according to the document
+                          direction.
+                        -->
+                        <p
+                          id="nowplaying-track-link-container"
+                          class="track"
+                          dir="auto"
+                          data-log-context="track"
+                          data-bind="css: { scroll: trackScrollable },
+                          event: {
+                            mouseover: onTextMouseOver,
+                            mouseout: onTextMouseOut
+                          }"
+                        >
+                          <span>
+                            <span class="inner-text-span">
+                              <a
+                                data-bind="attr: {
+                                href: relinkedTrackURI() || trackURI(),
+                                'data-uri': isAd() ? adInfo : trackURI
+                              }, text: name"
+                                id="nowplaying-track-link"
+                                data-interaction-target="track"
+                              ></a>
+                            </span>
+                          </span>
+                          <span
+                            class="double"
+                            data-interaction-context="double"
+                          >
+                            <a
+                              data-bind="attr: {
+                              href: relinkedTrackURI() || trackURI(),
+                              'data-uri': isAd() ? adInfo : trackURI
+                            }, text: name"
+                              dir="auto"
+                              data-interaction-target="track"
+                            ></a>
+                          </span>
+                        </p>
+                      </div>
+                      <button
+                        class="nowplaying-add-button button button-icon-only button-add"
+                        data-ta-id="nowplaying-add-button"
+                        data-bind="visible: showAddButton(),
+                        click: logAddButton,
+                        attr: {
+                          disabled: thumbUpDisabled,
+                          'data-uri': trackURI() || '',
+                          'data-tooltip': addLabel,
+                          'data-tooltip-container': tooltipContainerSelector(),
+                          'data-tooltip-add': ADD_TO_YOUR_LIKED_SONGS,
+                          'data-tooltip-remove': REMOVE_FROM_YOUR_LIKED_SONGS,
+                          'aria-label': addLabel,
+                          'data-ta-visible': showAddButton()
+                        }"
+                        data-button="add"
+                        data-interaction-target="save-remove-button"
+                        data-interaction-intent="save"
+                      ></button>
+                      <button
+                        class="nowplaying-ban-button button button-icon-only button-ban spoticon-ban-16"
+                        data-ta-id="nowplaying-ban-button"
+                        data-bind="visible: showBanMenu,
+                        click: showBanOptions,
+                        attr: {
+                          disabled: thumbDownDisabled,
+                          'data-button': showBanMenu() ? 'contextmenu' : '',
+                          'data-uri': banUri,
+                          'data-tooltip': banLabel,
+                          'data-tooltip-container': tooltipContainerSelector(),
+                          'data-tooltip-ban': BAN_LABEL,
+                          'data-tooltip-undo': UNDO_BAN_LABEL,
+                          'aria-label': banLabel,
+                          'data-ta-visible': showBanMenu
+                        }"
+                        data-interaction-target="ban-button"
+                        data-interaction-intent="show-ban-options"
+                      ></button>
+                    </div>
+                  </div>
+                  <div
+                    class="text-item-container text-item-container-artists"
+                    data-interaction-context="artists"
+                  >
+                    <div class="text-item">
+                      <div class="scroll-text-container">
+                        <!--
+                          The dir="auto" needs to be here rather than on the
+                          <a> child that actually contains the text. The reason
+                          is that having the dir attribute here, will make
+                          the chilren boxes layout properly within RTL or LTR
+                          contexts respectively. That way we prevent
+                          english/arabic text from cutting off at the start/end
+                          when the client is in RTL/LTR mode. If the dir="auto"
+                          is only set on a children of this element, the element
+                          box itself will not layout according to the document
+                          direction.
+                        -->
+                        <p
+                          class="artist"
+                          dir="auto"
+                          data-bind="css: { scroll: artistScrollable },
+                          event: {
+                            mouseover: onTextMouseOver,
+                            mouseout: onTextMouseOut,
+                            click: onAdClicked
+                          }"
+                        >
+                          <span>
+                            <span
+                              class="inner-text-span"
+                              data-bind="foreach: artists"
+                              data-interaction-list
+                              ><!-- ko if: $index() > 0 --><span
+                                data-bind="text: $parent.artistsSeparator"
+                              ></span
+                              ><!-- /ko --><a
+                                data-bind="attr: {
+                              href: uri,
+                              'data-uri': $parent.isAd() ? '' : uri,
+                            }, text: name"
+                                data-interaction-target="artist"
+                              ></a
+                            ></span>
+                          </span>
+                          <span
+                            class="double"
+                            data-interaction-context="double"
+                          >
+                            <span
+                              data-bind="foreach: artists"
+                              data-interaction-list
+                              ><!-- ko if: $index() > 0 --><span
+                                data-bind="text: $parent.artistsSeparator"
+                              ></span
+                              ><!-- /ko --><a
+                                data-bind="attr: {
+                              href: uri,
+                              'data-uri': $parent.isAd() ? '' : uri
+                            }, text: name"
+                                data-interaction-target="artist"
+                              ></a
+                            ></span>
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- end text-item-container -->
+                </div>
+              </div>
+              <!-- end now-playing -->
+            </div>
+          </div>
+          <!-- end now-playing-container -->
+          <div class="player-bar-spacer"></div>
+          <div
+            role="complementary"
+            dir="ltr"
+            data-bind="attr: {'aria-label': PLAYER_LABEL}"
+            class="player-controls-container"
+          >
+            <div class="controls">
+              <a id="player-anchor" class="anchor" tabindex="-1"></a>
+              <button
+                type="button"
+                id="player-button-shuffle"
+                name="shuffle"
+                data-non-active-element
+                class="button-shuffle button spoticon-shuffle-16"
+                data-ta-id="player-button-shuffle"
+                role="button"
+                data-bind="
+                  css: {
+                    active: shuffle,
+                    hidden: showSkipBack() || isSkippableAdBreak()
+                  },
+                  click: toggleShuffle,
+                  attr: {
+                    disabled: !shuffleEnabled(),
+                    value: shuffle,
+                    'data-tooltip': shuffleLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': shuffleLabel,
+                  }"
+                data-interaction-target="shuffle-button"
+                data-interaction-intent="shuffle"
+              ></button>
+              <button
+                type="button"
+                data-non-active-element
+                class="button button-icon-only spoticon-skipback15-16"
+                data-bind="
+                  css: {
+                    hidden: !showSkipBack() || isSkippableAdBreak()
+                  },
+                  click: skipBack,
+                  attr: {
+                    disabled: skipBackDisabled,
+                    'data-tooltip': skipBackLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': skipBackLabel
+                  }"
+                data-interaction-target="skip-back-button"
+                data-interaction-intent="skip-back"
+              ></button>
+              <button
+                type="button"
+                data-non-active-element
+                id="player-button-previous"
+                data-ta-id="player-button-previous"
+                class="previous button spoticon-skip-back-16"
+                data-bind="
+                click: skipToPrevious,
+                attr: {
+                  disabled: !previousEnabled(),
+                  'data-tooltip': previousLabel,
+                  'data-tooltip-container': tooltipContainerSelector(),
+                  'aria-label': previousLabel
+                }"
+                data-interaction-target="skip-to-previous-button"
+                data-interaction-intent="skip-to-previous"
+              ></button>
+              <button
+                type="button"
+                data-non-active-element
+                id="player-button-play"
+                data-ta-id="player-button-play"
+                class="button-play button"
+                role="button"
+                data-bind="css: {
+                    playing: playing
+                  },
+                  click: togglePlay,
+                  attr: {
+                    disabled: !playEnabled(),
+                    'data-tooltip': playLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': playLabel,
+                    'data-interaction-intent': playing() ? 'pause' : 'play',
+                    'data-ta-is-playing': playing() ? '' : null
+                  }"
+                data-interaction-target="play-pause-button"
+              ></button>
+              <div class="skip-button-container">
+                <button
+                  type="button"
+                  data-non-active-element
+                  id="player-button-next"
+                  data-ta-id="player-button-next"
+                  class="next button spoticon-skip-forward-16"
+                  data-bind="attr: {
+                      disabled: !nextEnabled(),
+                      'data-tooltip': nextLabel,
+                      'data-tooltip-container': tooltipContainerSelector(),
+                      'aria-label': nextLabel
+                    },
+                    css: {
+                      invisible: (skipCountdownRemainingSecs() > 0),
+                      'skip-countdown-transition': isSkippableAdBreak()
+                    },
+                    click: skipToNext"
+                  data-interaction-target="skip-to-next-button"
+                  data-interaction-intent="skip-to-next"
+                ></button>
+                <div
+                  id="skip-countdown"
+                  class="skip-countdown"
+                  data-bind="html: skipCountdownText,
+                    css: { invisible: (skipCountdownRemainingSecs() == 0) }"
+                ></div>
+                <div id="skippable-ad-indicator"></div>
+              </div>
+              <button
+                type="button"
+                data-non-active-element
+                class="button button-icon-only spoticon-skipforward15-16"
+                data-bind="
+                  css: {
+                    hidden: !showSkipForward() || isSkippableAdBreak()
+                  },
+                  click: skipForward,
+                  attr: {
+                    disabled: skipForwardDisabled,
+                    'data-tooltip': skipForwardLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': skipForwardLabel
+                  }"
+                data-interaction-target="skip-forward-button"
+                data-interaction-intent="skip-forward"
+              ></button>
+              <button
+                type="button"
+                id="player-button-repeat"
+                name="repeat"
+                data-non-active-element
+                class="button-repeat button"
+                data-ta-id="player-button-repeat"
+                data-bind="
+                  css: repeatIcon() + ((showSkipForward() || isSkippableAdBreak()) ? ' hidden' : ''),
+                  click: toggleRepeat,
+                  attr: {
+                    disabled: !repeatEnabled(),
+                    value: repeat,
+                    'data-tooltip': repeatLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': repeatLabel,
+                  }"
+                data-interaction-target="toggle-repeat-button"
+                data-interaction-intent="toggle-repeat"
+              ></button>
+            </div>
+            <!-- Ends .controls -->
+            <div
+              id="christmas-2018-overlay"
+              class="christmas-2018-overlay"
+            ></div>
+            <div
+              id="player-live-container"
+              data-bind="
+              css: {
+                hidden: !showLive()
+              },
+            "
+              class="live-container"
+            >
+              <span class="live-circle"></span>
+              <span
+                id="player-text-live"
+                class="live-text"
+                data-bind="text: liveLabel"
+              ></span>
+            </div>
+            <div
+              class="progress-container"
+              data-bind="
+                css: {
+                  'dragging-progress-bar': isDraggingProgressBar,
+                  'progress-bar-enabled': progressbarEnabled,
+                   hidden: showLive()
+                }
+              "
+            >
+              <span
+                id="player-text-elapsed"
+                class="elapsed"
+                data-bind="text: elapsed"
+                data-ta-id="player-text-elapsed"
+              ></span>
+              <div
+                class="saber-hilt"
+                data-bind="
+                css: {
+                  activated: swEnabled()
+                },
+                attr: {
+                  'data-saber-hilt': swEnabled() && swSaberHilt()
+                },
+                click: swToggleHilt
+                "
+              ></div>
+              <div
+                class="progressbar flex-1"
+                id="player-progressbar"
+                data-ta-id="player-progressbar"
+                data-interaction-target="progress-bar"
+                data-interaction-intent="seek"
+                data-bind="
+                attr: {
+                  'data-saber-color': swEnabled() && swSaberColor(),
+                  'data-candy-cane': candyCaneEnabled()
+                }
+                "
+              ></div>
+              <span
+                id="player-text-remaining"
+                data-ta-id="player-text-remaining"
+                class="remaining"
+                data-interaction-target="remaining-time"
+                data-interaction-intent="toggle-remaining-time-format"
+                data-bind="
+                  text: remaining,
+                  event: {
+                    click: toggleRemainingTimeFormat
+                  }
+                "
+              ></span>
+            </div>
+          </div>
+          <div class="player-bar-spacer"></div>
+          <div class="extra-controls-container">
+            <div id="subtitles-picker-container"></div>
+
+            <button
+              type="button"
+              name="lyrics"
+              class="lyrics-button button button-lyrics spoticon-lyrics-16"
+              data-bind="
+                css: {
+                  hidden: !(lyricsEnabled() && trackHasLyrics())
+                },
+                attr: {
+                  'data-tooltip': LYRICS_LABEL,
+                  'aria-label': LYRICS_LABEL,
+                  'aria-pressed': lyricsOpen() ? 'true' : 'false'
+                },
+                click: openLyrics"
+              data-interaction-target="open-lyrics-button"
+              data-interaction-intent="open-lyrics"
+            ></button>
+
+            <div
+              id="playback-speed-controls-root"
+              data-disable-old-interaction-logging
+            ></div>
+
+            <button
+              type="button"
+              id="player-button-darkmode"
+              name="darkmode"
+              class="darkmode-button button button-devices spoticon-device-tv-16"
+              data-ta-id="player-button-darkmode"
+              data-bind="
+                visible: enableDarkMode,
+                click: switchToDarkmode
+              "
+              data-interaction-target="open-darkmode-button"
+              data-interaction-intent="open-darkmode"
+            ></button>
+
+            <button
+              type="button"
+              id="player-button-queue"
+              name="queue"
+              class="queue-button button button-queue spoticon-queue-16"
+              data-ta-id="player-button-queue"
+              data-bind="
+                attr: {
+                  'data-drop-target': queueDropMimetypesUI,
+                  'data-drop-target-include-text': '',
+                  'data-tooltip': queueLabel,
+                  'data-tooltip-container': tooltipContainerSelector(),
+                  'aria-label': queueLabel,
+                  'aria-pressed': queueOpen() ? 'true' : 'false'
+                },
+                click: openQueue"
+              data-interaction-target="open-queue-button"
+              data-interaction-intent="open-queue"
+            ></button>
+
+            <div class="ConnectDevicePicker" id="connect-device-picker">
+              <button
+                type="button"
+                name="connect"
+                id="player-button-devices"
+                class="ConnectDevicePicker__button button button-devices spoticon-connect-to-devices-16"
+                data-ta-id="player-button-devices"
+                data-bind="
+                  click: onClickAtConnectButton,
+                  attr: {
+                    'data-tooltip': connectButtonLabel,
+                    'data-tooltip-container': tooltipContainerSelector(),
+                    'aria-label': connectButtonText
+                  },
+                  css: connectIcon()"
+                data-interaction-target="connect-button"
+                data-interaction-intent="open-devices"
+              ></button>
+              <div
+                id="connect-picker"
+                data-bind="
+                  with: connectPopup,
+                  css: {
+                    visible: connectPopup.visible
+                  }
+                "
+                class="ConnectPopup"
+                data-interaction-context="connect-devices"
+                role="dialog"
+                aria-labelledby="connect-title"
+              >
+                <div
+                  class="ConnectPopup__header"
+                  data-interaction-context="title"
+                >
+                  <h3
+                    id="connect-title"
+                    class="ConnectPopup__header-title"
+                    tabindex="-1"
+                  >
+                    <span data-bind="text: connectTitleText"></span>
+                    <span
+                      class="glue-hidden-visually"
+                      data-bind="
+                        visible: devicesAvailable,
+                        text: availableDevicesA11yText
+                      "
+                    ></span>
+                  </h3>
+                  <a
+                    href="#"
+                    class="spoticon-helpcircle-16 ConnectPopup__header-help"
+                    data-bind="
+                      click: showHelp,
+                      attr: {
+                        'data-tooltip': helpHintText,
+                        'aria-label': helpHintText
+                      }
+                    "
+                    data-interaction-target="help-button"
+                    data-interaction-intent="open-connect-devices-help"
+                  ></a>
+                </div>
+                <div class="ConnectPopup__content">
+                  <img
+                    src="images/connect_devices.svg"
+                    class="ConnectPopup__devices-image"
+                    alt=""
+                    role="presentation"
+                  />
+
+                  <div
+                    class="ConnectPopup__info"
+                    data-bind="visible: infoVisible"
+                    data-interaction-context="connect-help"
+                  >
+                    <p data-bind="text: helpText1"></p>
+                    <p data-bind="text: helpText2"></p>
+                  </div>
+
+                  <div
+                    class="ConnectPopup__info"
+                    data-bind="visible: offlineVisible"
+                  >
+                    <p data-bind="text: helpText1"></p>
+                    <p data-bind="text: offlineText"></p>
+                  </div>
+
+                  <h4
+                    id="available-devices-title"
+                    class="glue-hidden-visually"
+                    data-bind="
+                      visible: devicesAvailable,
+                      text: availableDevicesText
+                    "
+                  ></h4>
+                  <ul
+                    data-bind="
+                      visible: devicesAvailable,
+                      foreach: devices
+                    "
+                    aria-labelledby="available-devices-title"
+                    data-interaction-context="device-list"
+                    data-interaction-list
+                  >
+                    <li>
+                      <button
+                        class="ConnectPopup__device"
+                        data-ta-id="connect-device"
+                        data-bind="
+                          css: deviceState($parent),
+                          event: {
+                            click: $parent.selectDevice
+                          },
+                          attr: {
+                            'disabled': isDeviceUnavailable(),
+                            'data-tooltip': tooltip(),
+                            'aria-pressed': isDeviceActive() ? 'true' : 'false'
+                          }
+                        "
+                        data-interaction-target="device"
+                        data-interaction-intent="connect-device"
+                      >
+                        <span
+                          class="ConnectPopup__device-image"
+                          data-bind="css: image()"
+                          aria-hidden="true"
+                        ></span>
+                        <div class="ConnectPopup__device-body">
+                          <div aria-hidden="true">
+                            <p
+                              class="ConnectPopup__device-title"
+                              dir="auto"
+                              data-bind="text: title()"
+                            ></p>
+                            <p class="ConnectPopup__device-info">
+                              <span
+                                class="device-icon"
+                                data-bind="css: icon()"
+                                aria-hidden="true"
+                              ></span>
+                              <span
+                                dir="auto"
+                                class="device-subtitle"
+                                data-bind="text: subtitle()"
+                              ></span>
+                            </p>
+                          </div>
+                          <span
+                            class="glue-hidden-visually"
+                            data-bind="text: deviceName()"
+                          ></span>
+                        </div>
+                      </button>
+                    </li>
+                  </ul>
+
+                  <div id="ConnectPopup__social-listening-card-ab-test"></div>
+
+                  <div class="ConnectPopup__button">
+                    <button
+                      class="button button-blue"
+                      data-bind="click: showHelp"
+                      data-interaction-target="help-button"
+                      data-interaction-intent="open-connect-devices-help"
+                    >
+                      <span
+                        aria-hidden="true"
+                        data-bind="text: learnMoreText"
+                      ></span>
+                      <span
+                        class="glue-hidden-visually"
+                        data-bind="text: learnMoreA11yText"
+                      ></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="volumebar-container">
+              <div class="volume-button-wrapper">
+                <button
+                  class="button button-icon-only"
+                  data-bind="
+                    css: volumeIcon(),
+                    event: {
+                      click: toggleMute
+                    },
+                    attr: {
+                      'data-tooltip': muteTooltip(),
+                      'data-tooltip-container': tooltipContainerSelector(),
+                      'disabled': !volumeEnabled(),
+                      'aria-label': muteLabel,
+                      'aria-pressed': mute() ? 'true' : 'false'
+                    }
+                  "
+                  data-interaction-target="mute-button"
+                  data-interaction-intent="toggle-mute"
+                ></button>
+              </div>
+              <div class="volumebar-slider">
+                <div
+                  id="player-volumebar"
+                  data-ta-id="player-volumebar"
+                  class="volumebar"
+                  data-interaction-target="volume-bar"
+                  data-interaction-intent="change-volume"
+                >
+                  <div
+                    class="progress-bar-wrapper"
+                    data-bind="
+                      css: {
+                        active: volumebar.isDragging
+                      }"
+                  >
+                    <div
+                      class="progress-bar"
+                      data-bind="
+                      css: {
+                        disabled: !volumeEnabled()
+                      }
+                    "
+                    >
+                      <div class="inner">
+                        <div class="handle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              id="video-fullscreen-button"
+              class="button button-icon-only button-fullscreen"
+              data-bind="
+                visible: fullScreenFeatureEnabled,
+                css: {
+                  'spoticon-fullscreen-16': fullScreenIconFullScreen(),
+                  'spoticon-minimise-16': fullScreenIconMinimise(),
+                },
+                attr: {
+                  'data-tooltip': fullScreenTooltipLabel(),
+                  'data-tooltip-container': tooltipContainerSelector(),
+                  'disabled': !fullScreenButtonEnabled(),
+                  'data-interaction-intent': fullScreenIconFullScreen() ? 'exit-fullscreen' : 'enter-fullscreen',
+                  'aria-label': fullScreenLabel,
+                  'aria-pressed': fullScreenOpen() ? 'true' : 'false'
+                }
+                "
+              data-interaction-target="fullscreen-button"
+            ></button>
+          </div>
+        </div>
+        <div
+          id="remote-playback-bar"
+          class="remote-playback-bar"
+          data-bind="
+            with: remotePlaybackBar,
+            css: {
+              visible: remotePlaybackBar.showBar
+            }
+          "
+        >
+          <div
+            class="arrow"
+            data-bind="style: {
+            'transform': barArrowTransform
+          }"
+          ></div>
+          <p>
+            <span
+              data-bind="
+                html: activeDeviceIcon,
+                click: onClickBarMessage
+              "
+            ></span>
+            <span
+              data-bind="
+                html: barMessage,
+                click: onClickBarMessage
+              "
+            ></span>
+          </p>
+        </div>
+      </footer>
+      <div class="billboard-video-overlay"></div>
+    </div>
+
+    <div id="view-modal" data-bind="click: stopPropagation">
+      <div
+        class="modal-backdrop"
+        data-bind="css: backdropClasses, click: onClickBackdrop"
+      ></div>
+      <div class="modal-draggable-top-bar"></div>
+      <div
+        class="popover modal"
+        data-bind="css: modalClasses"
+        data-interaction-context="modal-dialog"
+      >
+        <h3 class="popover-title" data-bind="text: title, visible: title"></h3>
+        <div
+          class="popover-content"
+          id="modal-content"
+          tabindex="-1"
+          data-bind="style: modalContentStyle"
+        ></div>
+        <div
+          class="popover-footer"
+          data-bind="visible: footerVisible"
+          tabindex="-1"
+        >
+          <button
+            type="button"
+            class="button button-with-stroke"
+            data-ta="button-cancel"
+            data-bind="
+              click: onCancel,
+              visible: cancelVisible
+            "
+            data-interaction-target="cancel-button"
+            data-interaction-intent="cancel"
+          >
+            <span data-bind="text: cancelButtonLabel"></span>
+          </button>
+          <button
+            type="button"
+            class="button button-green"
+            data-ta="button-ok"
+            data-bind="
+              click: onOk,
+              visible: okVisible,
+              hasFocus: okFocused
+            "
+            data-interaction-target="ok-button"
+            data-interaction-intent="confirm"
+          >
+            <span data-bind="text: okButtonLabel"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="delete-playlist"
+      data-bind="click: clickContainer"
+      data-interaction-context="delete-playlist"
+    >
+      <div class="dropdown-menu arrow-left" tabindex="-1">
+        <p data-bind="text: confirmText"></p>
+        <p>
+          <button
+            type="button"
+            class="button button-with-stroke"
+            data-bind="
+              text: cancelBtn,
+              click: hide
+            "
+            data-interaction-target="cancel-button"
+            data-interaction-intent="cancel"
+          >
+            <span></span>
+          </button>
+          <button
+            type="button"
+            class="button button-red"
+            data-bind="
+              text: confirmBtn,
+              click: confirm
+            "
+            data-interaction-target="confirm-button"
+            data-interaction-intent="confirm"
+          >
+            <span></span>
+          </button>
+        </p>
+      </div>
+    </div>
+
+    <div id="playlist-annotation-modal"></div>
+
+    <div id="resize-overlay"></div>
+    <div id="profile-menu-container"></div>
+
+    <div id="view-navbar-overflow" data-interaction-context="navbar-overflow">
+      <div class="modal-backdrop" data-bind="click: onClickBackdrop"></div>
+      <ul
+        class="dropdown-menu dropdown-interior-menu arrow-top arrow-position-right navbar-overflow"
+        data-menu="navbar-overflow"
+        role="menu"
+        tabindex="-1"
+        data-interaction-list
+        data-interaction-context="navbar-overflow"
+      ></ul>
+    </div>
+
+    <div id="tooltip-container"></div>
+    <div id="popover-container"></div>
+    <div id="PopoverMenu-container"></div>
+
+    <div id="view-load-timer-debugging-box">
+      <div>
+        <b>View Load Timer debugging</b>
+      </div>
+      <div>
+        Timestamp for last <i>ViewLoadTimer</i> start event (box turns
+        colorful):
+        <span id="view-load-timer-last-view-load-start-timestamp">...</span>
+      </div>
+      <div>
+        Timestamp for last <i>ViewLoadTimer</i> finished event (box turns
+        black):
+        <span id="view-load-timer-last-view-load-finish-timestamp">...</span>
+      </div>
+      <div>
+        The last view load took:
+        <span id="view-load-timer-last-view-load-time">...</span> ms
+      </div>
+      <div>
+        If you have questions about this box - contact #perf-squad or
+        performance-squad@
+      </div>
+      <button
+        type="button"
+        class="button button-green"
+        onclick="document.getElementById('view-load-timer-debugging-box').style.display = 'none'"
+      >
+        Dismiss
+      </button>
+    </div>
+
+    <!-- "init.js" is served by the desktop client and provides the "window.__spotify" object. -->
+    <script src="init.js"></script>
+  <script src="zlink.bundle.js"></script></body>
+</html>
