@@ -105,9 +105,23 @@ Expand-Archive -Force -LiteralPath "$PWD\xpui.zip" -DestinationPath $PWD
 Remove-Item -LiteralPath "$PWD\xpui.zip"
 #>
 $spotifyInstalled = (Test-Path -LiteralPath $SpotifyExecutable)
-if (-not $spotifyInstalled) {
+$update = $false
+if ($spotifyInstalled) {
+  $ch = Read-Host -Prompt "Optional - Update Spotify to the latest version. (Might already be updated). (Y/N) "
+  if ($ch -eq 'y') {
+	$update = $true
+  } else {
+    Write-Host @'
+Won't try to update Spotify.
+'@
+  }
+} else {
   Write-Host @'
 Spotify installation was not detected.
+'@
+}
+if (-not $spotifyInstalled -or $update) {
+  Write-Host @'
 Downloading Latest Spotify full setup, please wait...
 '@
   try {
