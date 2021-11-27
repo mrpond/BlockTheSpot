@@ -1,3 +1,4 @@
+Import-Module BitsTransfer
 # Ignore errors from `Stop-Process`
 $PSDefaultParameterValues['Stop-Process:ErrorAction'] = 'SilentlyContinue'
 
@@ -42,7 +43,7 @@ Uninstalling Spotify.
      Write-Host @'
 Exiting...
 '@`n
-     Pause 
+     Pause
      exit
     }
 }
@@ -60,37 +61,38 @@ try {
 }
 
 Write-Host 'Downloading latest patch (chrome_elf.zip)...'`n
-$webClient = New-Object -TypeName System.Net.WebClient
+
+# Remote file URL
+$url = "https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip"
+# Local file path
+$outFile = "$PWD\chrome_elf.zip"
+
 try {
-  $webClient.DownloadFile(
-    # Remote file URL
-    'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip',
-    # Local file path
-    "$PWD\chrome_elf.zip"
-  )
+  Start-BitsTransfer -Source $url -Destination $outFile  
 } catch {
   Write-Output $_
-  Sleep
+  Pause
 }
 <#
+# Remote file URL
+$url = 'https://github.com/mrpond/BlockTheSpot/files/5969916/zlink.zip',
+# Local file path
+$outFile = "$PWD\zlink.zip"
+
 try {
-  $webClient.DownloadFile(
-    # Remote file URL
-    'https://github.com/mrpond/BlockTheSpot/files/5969916/zlink.zip',
-    # Local file path
-    "$PWD\zlink.zip"
-  )
+  Start-BitsTransfer -Source $url -Destination $outFile
 } catch {
   Write-Output $_
   Sleep
 }
+
+# Remote file URL
+$url = 'https://github.com/mrpond/BlockTheSpot/files/6234124/xpui.zip',
+# Local file path
+$outFile = "$PWD\xpui.zip"
+
 try {
-  $webClient.DownloadFile(
-    # Remote file URL
-    'https://github.com/mrpond/BlockTheSpot/files/6234124/xpui.zip',
-    # Local file path
-    "$PWD\xpui.zip"
-  )
+  Start-BitsTransfer -Source $url -Destination $outFile
 } catch {
   Write-Output $_
   Sleep
@@ -124,13 +126,12 @@ if (-not $spotifyInstalled -or $update) {
   Write-Host @'
 Downloading Latest Spotify full setup, please wait...
 '@
+  # Remote file URL
+  $url = 'https://download.scdn.co/SpotifyFullSetup.exe'
+  # Local file path
+  $outFile = "$PWD\SpotifyFullSetup.exe"
   try {
-    $webClient.DownloadFile(
-      # Remote file URL
-      'https://download.scdn.co/SpotifyFullSetup.exe',
-      # Local file path
-      "$PWD\SpotifyFullSetup.exe"
-    )
+    Start-BitsTransfer -Source $url -Destination $outFile
   } catch {
     Write-Output $_
     Pause
@@ -140,7 +141,7 @@ Downloading Latest Spotify full setup, please wait...
   Write-Host 'Running installation...'
   Start-Process -FilePath "$PWD\SpotifyFullSetup.exe"
   Write-Host 'Stopping Spotify...Again'
-  while ((Get-Process -name Spotify -ErrorAction SilentlyContinue) -eq $null){
+  while ($null -eq (Get-Process -name Spotify -ErrorAction SilentlyContinue)){
      #waiting until installation complete
      }
   Stop-Process -Name Spotify >$null 2>&1
@@ -149,7 +150,7 @@ Downloading Latest Spotify full setup, please wait...
 }
 
 if (!(test-path $SpotifyDirectory/chrome_elf_bak.dll)){
-	move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf_bak.dll >$null 2>&1
+	Move-Item -LiteralPath $SpotifyDirectory\chrome_elf.dll -Destination $SpotifyDirectory\chrome_elf_bak.dll >$null 2>&1
 }
 
 Write-Host 'Patching Spotify...'
