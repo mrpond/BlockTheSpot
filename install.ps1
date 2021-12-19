@@ -146,6 +146,16 @@ Downloading Latest Spotify full setup, please wait...
   Stop-Process -Name Spotify >$null 2>&1
   Stop-Process -Name SpotifyWebHelper >$null 2>&1
   Stop-Process -Name SpotifyFullSetup >$null 2>&1
+
+  # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop 
+  # (allows the program to be launched from search and desktop)
+  $WshShell = New-Object -comObject WScript.Shellw
+  $DesktopShortcut = $WshShell.CreateShortcut("$Home\Desktop\Spotify.lnk")
+  $StartMenuShortcut = $WshShell.CreateShortcut("%APPDATA%\Microsoft\Windows\Start Menu\Programs\Spotify.lnk")
+  $DesktopShortcut.TargetPath = "%APPDATA%\Spotify\Spotify.exe"
+  $StartMenuShortcut.TargetPath = "%APPDATA%\Spotify\Spotify.exe"
+  $DesktopShortcut.Save()
+  $StartMenuShortcut.Save()
 }
 
 if (!(test-path $SpotifyDirectory/chrome_elf_bak.dll)){
