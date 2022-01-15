@@ -212,6 +212,17 @@ if (-not $spotifyInstalled -or $update)
     # Waiting until installation complete
     Start-Sleep -Milliseconds 100
   }
+
+  # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop 
+  # (allows the program to be launched from search and desktop)
+  $wshShell = New-Object -comObject WScript.Shellw
+  $desktopShortcut = $wshShell.CreateShortcut("$Home\Desktop\Spotify.lnk")
+  $startMenuShortcut = $wshShell.CreateShortcut("%APPDATA%\Microsoft\Windows\Start Menu\Programs\Spotify.lnk")
+  $desktopShortcut.TargetPath = "%APPDATA%\Spotify\Spotify.exe"
+  $startMenuShortcut.TargetPath = "%APPDATA%\Spotify\Spotify.exe"
+  $desktopShortcut.Save()
+  $startMenuShortcut.Save()
+
   Write-Host 'Stopping Spotify...Again'
 
   Stop-Process -Name Spotify
