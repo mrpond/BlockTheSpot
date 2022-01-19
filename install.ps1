@@ -29,7 +29,7 @@ function Get-File
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    $useBitTransfer = $null -ne (Get-Module -Name BitsTransfer -ListAvailable) -and ($PSVersionTable.PSVersion.Major -le 5)
+    $useBitTransfer = $null -ne (Get-Module -Name BitsTransfer -ListAvailable) -and ($PSVersionTable.PSVersion.Major -le 5) -and ((Get-Service -Name BITS).StartType -ne [System.ServiceProcess.ServiceStartMode]::Disabled)
 
     if ($useBitTransfer)
     {
@@ -213,7 +213,7 @@ if (-not $spotifyInstalled -or $update)
     Start-Sleep -Milliseconds 100
   }
 
-  # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop 
+  # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop
   # (allows the program to be launched from search and desktop)
   $wshShell = New-Object -comObject WScript.Shell
   $desktopShortcut = $wshShell.CreateShortcut("$Home\Desktop\Spotify.lnk")
