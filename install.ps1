@@ -283,8 +283,8 @@ if ($ch -eq 'y')
     # With ".ads.leaderboard.isEnabled&&false" + separator
     $xpuiContents = $xpuiContents -replace '(\.ads\.leaderboard\.isEnabled)(}|\))', '$1&&false$2'
 
-    # Delete ".createElement(XX,{onClick:X,className:XX.X.UpgradeButton}),X()"
-    $xpuiContents = $xpuiContents -replace '\.createElement\([^.,{]+,{onClick:[^.,]+,className:[^.]+\.[^.]+\.UpgradeButton}\),[^.(]+\(\)', ''
+    # Delete ".createElement(XX,{(spec:X),?onClick:X,className:XX.X.UpgradeButton}),X()"
+    $xpuiContents = $xpuiContents -replace '\.createElement\([^.,{]+,{(?:spec:[^.,]+,)?onClick:[^.,]+,className:[^.]+\.[^.]+\.UpgradeButton}\),[^.(]+\(\)', ''
 
     if ($fromZip)
     {
