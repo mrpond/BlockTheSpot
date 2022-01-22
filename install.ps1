@@ -216,12 +216,23 @@ if (-not $spotifyInstalled -or $update)
   # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop
   # (allows the program to be launched from search and desktop)
   $wshShell = New-Object -ComObject WScript.Shell
-  $desktopShortcut = $wshShell.CreateShortcut("$Home\Desktop\Spotify.lnk")
-  $startMenuShortcut = $wshShell.CreateShortcut("$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Spotify.lnk")
-  $desktopShortcut.TargetPath = "$env:APPDATA\Spotify\Spotify.exe"
-  $startMenuShortcut.TargetPath = "$env:APPDATA\Spotify\Spotify.exe"
-  $desktopShortcut.Save()
-  $startMenuShortcut.Save()
+  
+  $desktopShortcutPath = "$env:USERPROFILE\Desktop\Spotify.lnk"
+  if ((Test-Path $desktopShortcutPath) -eq $false)
+  {
+    $desktopShortcut = $wshShell.CreateShortcut($desktopShortcutPath)
+    $desktopShortcut.TargetPath = "$env:APPDATA\Spotify\Spotify.exe"
+    $desktopShortcut.Save()
+  }
+
+  $startMenuShortcutPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Spotify.lnk"
+  if ((Test-Path $startMenuShortcutPath) -eq $false)
+  {
+    $startMenuShortcut = $wshShell.CreateShortcut($startMenuShortcutPath)
+    $startMenuShortcut.TargetPath = "$env:APPDATA\Spotify\Spotify.exe"
+    $startMenuShortcut.Save()
+  }
+  
 
   Write-Host 'Stopping Spotify...Again'
 
