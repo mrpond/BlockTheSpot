@@ -158,7 +158,7 @@ if ($spotifyInstalled)
   }
   else
   {
-    Write-Host 'Won''t try to update Spotify.'
+    Write-Host 'Won't try to update Spotify.'
   }
 }
 else
