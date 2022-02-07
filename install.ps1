@@ -344,5 +344,3 @@ Write-Host @'
 Please retweet these hashtag, help me stop dictator government!
 *****************
 '@
-
-exit
