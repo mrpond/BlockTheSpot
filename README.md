@@ -29,7 +29,7 @@
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows only and **not the Microsoft Store version**.
 
-### Installation/Update:
+### User assisted Installation/Update:
 * Just download and run [BlockTheSpot.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpot.bat)  
 
 or
@@ -45,6 +45,24 @@ or
 2. Rename `chrome_elf.dll` to `chrome_elf_bak.dll`
 2. Download `chrome_elf.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 3. Unzip `chrome_elf.dll` and `config.ini` 
+
+### Fully automated installation
+
+* Download and run [BlockTheSpotAutoInstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpotAutoInstall.bat)
+
+* Automated installation via PowerShell
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/kutlime/BlockTheSpot/automatization/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify -RemoveAdPlaceholder"
+```
+
+To override automatically provided values to false, use ```:`$false``` syntax, see this example
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/kutlime/BlockTheSpot/automatization/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify:`$False -RemoveAdPlaceholder"
+```
 
 ### Uninstall:
 * Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/uninstall.bat)
