@@ -1,3 +1,15 @@
+param (
+  [Parameter()]
+  [switch]
+  $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
+  [Parameter()]
+  [switch]
+  $UpdateSpotify = (Read-Host -Prompt 'Optional - Update Spotify to the latest version. (Might already be updated). (Y/N)') -eq 'y',
+  [Parameter()]
+  [switch]
+  $RemoveAdPlaceholder = (Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)') -eq 'y'
+)
+
 # Ignore errors from `Stop-Process`
 $PSDefaultParameterValues['Stop-Process:ErrorAction'] = [System.Management.Automation.ActionPreference]::SilentlyContinue
 function Get-File
@@ -103,8 +115,7 @@ if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic)
 {
   Write-Host "The Microsoft Store version of Spotify has been detected which is not supported.`n"
 
-  $ch = Read-Host -Prompt 'Uninstall Spotify Windows Store edition (Y/N)'
-  if ($ch -eq 'y')
+  if ($UninstallSpotifyStoreEdition)
   {
     Write-Host "Uninstalling Spotify.`n"
     Get-AppxPackage -Name SpotifyAB.SpotifyMusic | Remove-AppxPackage
@@ -151,8 +162,7 @@ $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
 $update = $false
 if ($spotifyInstalled)
 {
-  $ch = Read-Host -Prompt 'Optional - Update Spotify to the latest version. (Might already be updated). (Y/N)'
-  if ($ch -eq 'y')
+  if ($UpdateSpotify)
   {
     $update = $true
   }
@@ -216,7 +226,7 @@ if (-not $spotifyInstalled -or $update)
   # Create a Shortcut to Spotify in %APPDATA%\Microsoft\Windows\Start Menu\Programs and Desktop
   # (allows the program to be launched from search and desktop)
   $wshShell = New-Object -ComObject WScript.Shell
-  
+
   $desktopShortcutPath = "$env:USERPROFILE\Desktop\Spotify.lnk"
   if ((Test-Path $desktopShortcutPath) -eq $false)
   {
@@ -232,7 +242,7 @@ if (-not $spotifyInstalled -or $update)
     $startMenuShortcut.TargetPath = "$env:APPDATA\Spotify\Spotify.exe"
     $startMenuShortcut.Save()
   }
-  
+
 
   Write-Host 'Stopping Spotify...Again'
 
@@ -252,8 +262,7 @@ $patchFiles = (Join-Path -Path $PWD -ChildPath 'chrome_elf.dll'), (Join-Path -Pa
 
 Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
 
-$ch = Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)'
-if ($ch -eq 'y')
+if ($RemoveAdPlaceholder)
 {
   $xpuiBundlePath = Join-Path -Path $spotifyApps -ChildPath 'xpui.spa'
   $xpuiUnpackedPath = Join-Path -Path (Join-Path -Path $spotifyApps -ChildPath 'xpui') -ChildPath 'xpui.js'
