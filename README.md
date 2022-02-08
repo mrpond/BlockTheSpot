@@ -41,15 +41,6 @@ or
 
 or
 
-1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
-2. Rename `chrome_elf.dll` to `chrome_elf_bak.dll`
-2. Download `chrome_elf.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
-3. Unzip `chrome_elf.dll` and `config.ini` 
-
-### Fully automated installation
-
-* Download and run [BlockTheSpotAutoInstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpotAutoInstall.bat)
-
 * Automated installation via PowerShell
 
 ```powershell
@@ -57,12 +48,12 @@ or
 Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/kutlime/BlockTheSpot/automatization/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify -RemoveAdPlaceholder"
 ```
 
-To override automatically provided values to false, use ```:`$false``` syntax, see this example
+or
 
-```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/kutlime/BlockTheSpot/automatization/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify:`$False -RemoveAdPlaceholder"
-```
+1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
+2. Rename `chrome_elf.dll` to `chrome_elf_bak.dll`
+3. Download `chrome_elf.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
+4. Unzip `chrome_elf.dll` and `config.ini` 
 
 ### Uninstall:
 * Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/uninstall.bat)
