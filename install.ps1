@@ -88,17 +88,17 @@ function Get-File
 function Test-SpotifyVersion
 {
   param (
-      [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-      [ValidateNotNullOrEmpty()]
-      [System.Version]
-      $MinimalSupportedVersion,
-      [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-      [ValidateNotNullOrEmpty()]
-      [System.Version]
-      $MaximalSupportedVersion,
-      [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-      [System.Version]
-      $TestedVersion
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+    [ValidateNotNullOrEmpty()]
+    [System.Version]
+    $MinimalSupportedVersion,
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+    [ValidateNotNullOrEmpty()]
+    [System.Version]
+    $MaximalSupportedVersion,
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [System.Version]
+    $TestedVersion
   )
 
   process
@@ -185,6 +185,14 @@ Remove-Item -LiteralPath "$elfPath" -Force
 
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
 $UpdateSpotify = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
+
+if ($UpdateSpotify)
+{
+  if ((Read-Host -Prompt 'In order to install Block the Spot, your Spotify client must be updated. Do you want to continue? (Y/N)') -ne 'y')
+  {
+    exit
+  }
+}
 
 if (-not $spotifyInstalled -or $UpdateSpotify)
 {
