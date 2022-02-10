@@ -4,9 +4,6 @@ param (
   $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
   [Parameter()]
   [switch]
-  $UpdateSpotify = (Read-Host -Prompt 'Optional - Update Spotify to the latest version. (Might already be updated). (Y/N)') -eq 'y',
-  [Parameter()]
-  [switch]
   $RemoveAdPlaceholder = (Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)') -eq 'y'
 )
 
@@ -187,23 +184,9 @@ Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $PWD
 Remove-Item -LiteralPath "$elfPath" -Force
 
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
-$update = $false
-if ($spotifyInstalled)
-{
-  if ($UpdateSpotify)
-  {
-    $update = $true
-  }
-  else
-  {
-    Write-Host 'Won''t try to update Spotify.'
-  }
-}
-else
-{
-  Write-Host 'Spotify installation was not detected.'
-}
-if (-not $spotifyInstalled -or $update)
+$UpdateSpotify = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
+
+if (-not $spotifyInstalled -or $UpdateSpotify)
 {
   Write-Host 'Downloading the latest Spotify full setup, please wait...'
   $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetup.exe'
