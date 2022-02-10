@@ -88,6 +88,28 @@ function Get-File
   }
 }
 
+function Test-SpotifyVersion
+{
+  param (
+      [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+      [ValidateNotNullOrEmpty()]
+      [System.Version]
+      $MinimalSupportedVersion,
+      [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+      [ValidateNotNullOrEmpty()]
+      [System.Version]
+      $MaximalSupportedVersion,
+      [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+      [System.Version]
+      $TestedVersion
+  )
+
+  process
+  {
+    return ($MinimalSupportedVersion.CompareTo($TestedVersion) -le 0) -and ($MaximalSupportedVersion.CompareTo($TestedVersion) -ge 0)
+  }
+}
+
 Write-Host @'
 *****************
 @mrpond message:
