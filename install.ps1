@@ -1,6 +1,9 @@
 param (
   [Parameter()]
   [switch]
+  $skipUnsupportedCheck = (Read-Host -Prompt 'Skip Unsupported Version Check? (Y/N)' -eq 'y'),
+  [Parameter()]
+  [switch]
   $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
   [Parameter()]
   [switch]
@@ -12,6 +15,8 @@ param (
 
 # Ignore errors from `Stop-Process`
 $PSDefaultParameterValues['Stop-Process:ErrorAction'] = [System.Management.Automation.ActionPreference]::SilentlyContinue
+$FileParam=$args[0]
+
 
 [System.Version] $minimalSupportedSpotifyVersion = '1.1.73.517'
 [System.Version] $maximalSupportedSpotifyVersion = '1.1.79.763'
@@ -189,7 +194,12 @@ Remove-Item -LiteralPath "$elfPath" -Force
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
 $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
 
-if (-not $UpdateSpotify -and $unsupportedClientVersion)
+if ($skipUnsupportedCheck)
+{
+  $unsupportedClientVersion = $false
+}
+
+if (-not $UpdateSpotify -and $unsupportedClientVersion )
 {
   if ((Read-Host -Prompt 'In order to install Block the Spot, your Spotify client must be updated. Do you want to continue? (Y/N)') -ne 'y')
   {
