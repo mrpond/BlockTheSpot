@@ -1,7 +1,7 @@
 param (
   [Parameter()]
   [switch]
-  $skipUnsupportedCheck = (Read-Host -Prompt 'Skip Unsupported Version Check? (Y/N)' -eq 'y'),
+  $skipUnsupportedCheck = (Read-Host -Prompt 'Skip Unsupported Version Check? (Y/N)') -eq 'y',
   [Parameter()]
   [switch]
   $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
@@ -190,11 +190,8 @@ Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $PWD
 Remove-Item -LiteralPath "$elfPath" -Force
 
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
-$unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
-
-if ($skipUnsupportedCheck)
-{
-  $unsupportedClientVersion = $false
+if ($skipUnsupportedCheck -eq $false) {
+    $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
 }
 
 if (-not $UpdateSpotify -and $unsupportedClientVersion )
