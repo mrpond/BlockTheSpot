@@ -7,7 +7,10 @@ param (
   $UpdateSpotify,
   [Parameter()]
   [switch]
-  $RemoveAdPlaceholder = (Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)') -eq 'y'
+  $RemoveAdPlaceholder = (Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)') -eq 'y',
+  [Parameter()]
+  [switch]
+  $skipUnsupportedCheck = (Read-Host -Prompt 'Optional - Skip Unsupported Version Check (Useful if BTS Prompts you to Reinstall Spotify) (Y/N)') -eq 'y'
 )
 
 # Ignore errors from `Stop-Process`
@@ -187,7 +190,9 @@ Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $PWD
 Remove-Item -LiteralPath "$elfPath" -Force
 
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
-$unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
+if ($skipUnsupportedCheck -eq $false) {
+    $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
+}
 
 if (-not $UpdateSpotify -and $unsupportedClientVersion)
 {
