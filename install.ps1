@@ -14,7 +14,6 @@ param (
 $PSDefaultParameterValues['Stop-Process:ErrorAction'] = [System.Management.Automation.ActionPreference]::SilentlyContinue
 
 [System.Version] $minimalSupportedSpotifyVersion = '1.1.73.517'
-[System.Version] $maximalSupportedSpotifyVersion = '1.1.80.699'
 
 function Get-File
 {
@@ -95,10 +94,6 @@ function Test-SpotifyVersion
     [ValidateNotNullOrEmpty()]
     [System.Version]
     $MinimalSupportedVersion,
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-    [ValidateNotNullOrEmpty()]
-    [System.Version]
-    $MaximalSupportedVersion,
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [System.Version]
     $TestedVersion
@@ -106,7 +101,7 @@ function Test-SpotifyVersion
 
   process
   {
-    return ($MinimalSupportedVersion.CompareTo($TestedVersion) -le 0) -and ($MaximalSupportedVersion.CompareTo($TestedVersion) -ge 0)
+    return ($MinimalSupportedVersion.CompareTo($TestedVersion) -le 0)
   }
 }
 
@@ -187,7 +182,7 @@ Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $PWD
 Remove-Item -LiteralPath "$elfPath" -Force
 
 $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
-$unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion -MaximalSupportedVersion $maximalSupportedSpotifyVersion) -eq $false
+$unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion) -eq $false
 
 if (-not $UpdateSpotify -and $unsupportedClientVersion)
 {
