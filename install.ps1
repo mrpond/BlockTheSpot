@@ -131,7 +131,7 @@ Stop-Process -Name SpotifyWebHelper
 
 if ($PSVersionTable.PSVersion.Major -ge 7)
 {
-  Import-Module Appx -UseWindowsPowerShell
+  Import-Module Appx -UseWindowsPowerShell -SkipEditionCheck
 }
 
 if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic)
