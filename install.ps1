@@ -324,7 +324,7 @@ if ($RemoveAdPlaceholder)
     $xpuiContents = $xpuiContents -replace '\.createElement\([^.,{]+,{(?:spec:[^.,]+,)?onClick:[^.,]+,className:[^.]+\.[^.]+\.UpgradeButton}\),[^.(]+\(\)', ''
 
     # Disable Premium NavLink button
-    $xpuiContents = $xpuiContents -replace '(const|var) .=.\?(`.*?`|"".concat\(.\).concat\(.\)):.;return .\(\)\.createElement\(".",.\(\)\(\{\},.,\{ref:.,href:.,target:"_blank",rel:"noopener nofollow"\}\),.\)', ''
+    $xpuiContents = $xpuiContents -replace 'return (.\(\).createElement\("a".+?"noopener nofollow")', '$1'
 
     if ($fromZip)
     {
