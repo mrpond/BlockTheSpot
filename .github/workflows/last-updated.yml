@@ -1,0 +1,26 @@
+# This workflow automatically update 'Last updated' in README.md when src is modified
+
+name: Update 'Last updated' in README.md
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [src/**]
+
+jobs:
+  update-last-updated:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: update 'Last updated' in README.md
+        run: sed -i "/<strong>Last updated:<\/strong> /s|> .*<br>|> $(date +"%d %B %Y")<br>|" README.md
+
+      - name: Commit and Push README.md
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add README.md
+          git commit -m "[skip ci] [github-actions] update README.md"
+          git push
