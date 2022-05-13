@@ -320,11 +320,11 @@ if ($RemoveAdPlaceholder)
     # With ".ads.leaderboard.isEnabled&&false" + separator
     $xpuiContents = $xpuiContents -replace '(\.ads\.leaderboard\.isEnabled)(}|\))', '$1&&false$2'
 
-    # Delete ".createElement(XX,{(spec:X),?onClick:X,className:XX.X.UpgradeButton}),X()"
-    $xpuiContents = $xpuiContents -replace '\.createElement\([^.,{]+,{(?:spec:[^.,]+,)?onClick:[^.,]+,className:[^.]+\.[^.]+\.UpgradeButton}\),[^.(]+\(\)', ''
+    # Disable Upgrade button
+    $xpuiContents = $xpuiContents -replace '.\>\=1024', ' 1!=1 '
 
     # Disable Premium NavLink button
-    $xpuiContents = $xpuiContents -replace 'return (.\(\).createElement\("a".+?"noopener nofollow")', '$1'
+    $xpuiContents = $xpuiContents -replace '((?:"a"))\S+noopener nofollow.+?,.\)', '$1)'
 
     if ($fromZip)
     {
