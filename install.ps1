@@ -316,9 +316,8 @@ if ($RemoveAdPlaceholder)
 
   if ($xpuiContents)
   {
-    # Replace ".ads.leaderboard.isEnabled" + separator - '}' or ')'
-    # With ".ads.leaderboard.isEnabled&&false" + separator
-    $xpuiContents = $xpuiContents -replace '(\.ads\.leaderboard\.isEnabled)(}|\))', '$1&&false$2'
+    # Disable empty ad block
+    $xpuiContents = $xpuiContents -replace 'adsEnabled:!0', 'adsEnabled:!1'
 
     # Disable Upgrade button
     $xpuiContents = $xpuiContents -replace '.\>\=1024', ' 1!=1 '
