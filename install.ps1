@@ -1,12 +1,12 @@
 param (
   [Parameter()]
-  [switch]
+  [bool]
   $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
   [Parameter()]
-  [switch]
+  [bool]
   $UpdateSpotify,
   [Parameter()]
-  [switch]
+  [bool]
   $RemoveAdPlaceholder = (Read-Host -Prompt 'Optional - Remove ad placeholder and upgrade button. (Y/N)') -eq 'y'
 )
 
