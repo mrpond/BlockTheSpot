@@ -63,5 +63,5 @@ or
 
 - "chrome_elf.dll" gets replaced by the Spotify installer each time it updates, hence why you'll probably need to apply the patch again when it happens
 - [Spicetify](https://github.com/khanhas/spicetify-cli) users will need to reapply BlockTheSpot after applying a Spicetify themes/patches.
-- If the automatic install/uninstall scripts do not work, please contact [SpotX](https://github.com/amd64fox/SpotX) or [Nuzair46](https://github.com/Nuzair46).
+- If the automatic install/uninstall scripts do not work, open issue at [SpotX](https://github.com/amd64fox/SpotX) or contact [Amd64Fox](https://github.com/amd64fox) or [Nuzair46](https://github.com/Nuzair46).
 - For more support and discussions, join our [Discord server](https://discord.gg/p43cusgUPm).
