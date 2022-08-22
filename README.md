@@ -57,7 +57,7 @@ or
 
 ### Uninstall:
 
-- Just run [uninstall.bat](https://github.com/mrpond/BlockTheSpot/master/Uninstall.bat)
+- Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/Uninstall.bat)
   or
 - Reinstall Spotify
 
