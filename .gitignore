@@ -20,3 +20,9 @@
 /src/Debug
 *.aps
 *.zip
+*.log
+*.obj
+*.tlog
+*.user
+*.vcxproj
+*.json
