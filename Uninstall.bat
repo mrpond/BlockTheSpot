@@ -1,4 +1,4 @@
-@echo off
+@echo Patch successfully removed
 SETLOCAL ENABLEDELAYEDEXPANSION
 echo *****************
 echo Author: @amd64fox

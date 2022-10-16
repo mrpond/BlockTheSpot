@@ -7,8 +7,9 @@
 /.vs/ProjectSettings.json
 /.vs/slnx.sqlite
 /.vs/BlockTheSpot
-/src/.vs/BlockTheSpot/v16
+/src/.vs/BlockTheSpot
 /src/Release
+/src/x64/Release
 *.sln
 /Debug
 /Release
@@ -20,9 +21,3 @@
 /src/Debug
 *.aps
 *.zip
-*.log
-*.obj
-*.tlog
-*.user
-*.vcxproj
-*.json
