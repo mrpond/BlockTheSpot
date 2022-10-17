@@ -5,7 +5,6 @@
 BOOL APIENTRY DllMain (HMODULE hModule,
 					   DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-	DisableThreadLibraryCalls (hModule);
 	std::string_view procname = GetCommandLine ();
 	// only Spotify process - this help avoid false positive
 	if (std::string_view::npos != procname.find ("Spotify.exe")) {
