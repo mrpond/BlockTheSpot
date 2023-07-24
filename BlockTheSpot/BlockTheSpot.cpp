@@ -1,27 +1,33 @@
-// BlockTheSpot.cpp : Defines the exported functions for the DLL application.
-//
+#include "pch.h"
 
-#include "stdafx.h"
-#include <map>
-
-void __stdcall LoadAPI (LPVOID* destination, const char* apiName)
+void __stdcall LoadAPI(LPVOID* destination, const char* apiName)
 {
-	if (*destination)
-		return;
+    if (*destination)
+        return;
 
-	static constexpr auto path{ L"dpapi.dll" };
-	static std::map<std::string, FARPROC> function_map;
-	static HMODULE hModule = GetModuleHandle (path);
-	if (!hModule)
-		hModule = LoadLibrary(path);
-	if (!hModule)
-		return;
-	if (function_map[apiName] == nullptr) {
-		function_map[apiName] = GetProcAddress (hModule, apiName);
-	}
-	*destination = function_map[apiName];
+    static std::wstring_view path{ L"dpapi.dll" };
+    static HMODULE hModule = GetModuleHandleW(path.data());
+    static std::map<std::string, FARPROC> function_map;
+    if (!hModule && !(hModule = LoadLibraryW(path.data())))
+        return;
+    if (function_map[apiName] == nullptr) {
+        function_map[apiName] = GetProcAddress(hModule, apiName);
+    }
+	*destination = reinterpret_cast<LPVOID>(function_map[apiName]);
 }
 
+#ifdef _WIN64
+typedef void(__stdcall* FunctionType)();
+
+#define API_EXPORT_ORIG(N) \
+    static LPVOID _##N = nullptr;    \
+    extern "C" __declspec(dllexport) void N() \
+    { \
+        LoadAPI(&_##N, #N); \
+        FunctionType func = reinterpret_cast<FunctionType>(_##N); \
+        func(); \
+    }
+#else
 #define API_EXPORT_ORIG(N) \
 	static LPVOID _##N = NULL;	\
 	char S_##N[] = "" # N; \
@@ -33,7 +39,8 @@ void __stdcall LoadAPI (LPVOID* destination, const char* apiName)
 		__asm call LoadAPI \
 		__asm popad \
 		__asm jmp [_##N] \
-	} \
+	}
+#endif
 
 API_EXPORT_ORIG(CryptProtectData)
 API_EXPORT_ORIG(CryptProtectMemory)
@@ -69,7 +76,6 @@ API_EXPORT_ORIG(CryptUpdateProtectedState)
 
 #define API_COPY(M, N) \
 	_##N = GetProcAddress(M, #N);
-
 
 /*
 //bool AddDllToBlacklist (const wchar_t* dll_name) { return true; }

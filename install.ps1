@@ -238,7 +238,7 @@ if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion)
 }
 
 Write-Host 'Patching Spotify...'
-$patchFiles = (Join-Path -Path $PWD -ChildPath 'dpapi.dll'), (Join-Path -Path $PWD -ChildPath 'config.ini')
+$patchFiles = (Join-Path -Path $PWD -ChildPath 'dpapi.dll')
 
 Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
 

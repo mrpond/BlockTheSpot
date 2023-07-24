@@ -2,16 +2,13 @@
 
 <center>
     <h1 align="center">BlockTheSpot</h1>
-    <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (32 bit)</strong> </h4>
+    <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (64 bit)</strong> </h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
-        <strong>Last updated:</strong> 17 July 2023<br>
-        <strong>Last tested version:</strong>1.2.15.828.g79f41970
+        <strong>Last updated:</strong> 24 July 2023<br>
+        <strong>Last tested version:</strong>1.2.16.947.gcfbaa410  
     </p> 
 </center>
-### ***
-See https://github.com/mrpond/BlockTheSpot/issues/461 if you got ads back.
-I will make 64 bit version when I had time.
 
 ### Features:
 * Unlocks all premium features except downloads.
