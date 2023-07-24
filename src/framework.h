@@ -11,13 +11,11 @@
 #include <include/capi/cef_urlrequest_capi.h>
 #endif
 
-#pragma comment(lib, "BasicUtils.lib")
-
-#include <Utils.h>
-#include <Logger.h>
-#include <PatternScanner.h>
-#include <Memory.h>
-#include <Hooking.h>
-#include <Console.h>
+#include "BasicUtils/Utils.h"
+#include "BasicUtils/Logger.h"
+#include "BasicUtils/PatternScanner.h"
+#include "BasicUtils/Memory.h"
+#include "BasicUtils/Hooking.h"
+#include "BasicUtils/Console.h"
 
 using namespace Console;

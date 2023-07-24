@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="BasicUtils">
+      <UniqueIdentifier>{425b6aec-2197-4fab-b550-dc107e983f17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Modify.h">
@@ -27,14 +30,26 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BasicUtils\Console.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\Hooking.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\Logger.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\Memory.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\PatternScanner.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\Utils.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AdBlocker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,6 +57,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Modify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Console.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Hooking.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Logger.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\PatternScanner.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Utils.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockTheSpot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

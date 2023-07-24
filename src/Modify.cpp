@@ -95,6 +95,7 @@ void WINAPI get_file_name()
 {
 	try {
 		file_name = *reinterpret_cast<wchar_t**>(file_name_rcx);
+		//MessageBoxW(0,file_name.c_str(), 0, 0);
 		//Print(L"{}", zip_file_name);
 		//system("pause");
 	}
@@ -371,7 +372,7 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 		else {
 			Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
 		}
-		
+
 		const auto SourceCode = PatternScanner::ScanFirst(L"48 63 C8 48 03 F1 49 3B F4 73 25 41 F6 C6 04");
 		ret_addr_file_source = SourceCode + 6;
 		if (SourceCode.hook((PVOID)hook_zip_buffer)) {
