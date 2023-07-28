@@ -184,10 +184,10 @@ if (-not $UpdateSpotify -and $unsupportedClientVersion)
 if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion)
 {
   Write-Host 'Downloading the latest Spotify full setup, please wait...'
-  $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetup.exe'
+  $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetupX64.exe'
   try
   {
-    $uri = 'https://download.scdn.co/SpotifyFullSetup.exe'
+    $uri = 'https://download.scdn.co/SpotifyFullSetupX64.exe'
     Get-File -Uri $uri -TargetFile "$spotifySetupFilePath"
   }
   catch
