@@ -2,8 +2,9 @@
 ; External declarations
 EXTERN get_file_name : PROC
 EXTERN modify_source : PROC
+
 EXTERN ZipScan : QWORD
-EXTERN file_name_rcx : QWORD
+EXTERN file_name_pointer : QWORD
 EXTERN ret_addr_file_name : QWORD
 EXTERN ret_addr_file_source : QWORD
 
@@ -99,7 +100,7 @@ ENDM
 
 hook_file_name PROC 
 	test rcx, rcx 
-	mov file_name_rcx, rcx 
+	mov file_name_pointer, rcx 
 	PUSH_ALL_REGISTERS 
 	call get_file_name 
 	POP_ALL_REGISTERS 

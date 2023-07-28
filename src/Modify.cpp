@@ -18,15 +18,20 @@ static _cef_string_userfree_utf16_free cef_string_userfree_utf16_free_orig;
 
 static constexpr std::array<std::wstring_view, 3> block_list = { L"/ads/", L"/ad-logic/", L"/gabo-receiver-service/" };
 
-//static DWORD ret_addr = 0;
-PatternScanner::ModuleInfo ZipScan;
-
 #ifdef _WIN64
 static std::wstring file_name;
-std::uint64_t file_name_rcx = 0;
-std::uint64_t ret_addr_file_name = 0;
-std::uint64_t ret_addr_file_source = 0;
+std::uintptr_t file_name_pointer;
+std::uintptr_t ret_addr_file_name;
+std::uintptr_t ret_addr_file_source;
+PatternScanner::ModuleInfo ZipScan;
 #else
+//static bool xpui_found = false;
+static std::wstring file_name;
+static std::uintptr_t file_name_pointer;
+static std::uintptr_t ret_addr_file_name;
+static std::uintptr_t ret_addr_file_source;
+static PatternScanner::ModuleInfo ZipScan;
+
 DWORD WINAPI get_url(DWORD pRequest)
 {
 	DWORD retval = 0;
@@ -68,9 +73,9 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 #else
 
 #ifdef _WIN64
-	auto get_url = *(std::uint64_t(__fastcall**)(std::uint64_t))((std::uint64_t)request + 48);
-	auto url_utf16 = get_url((std::uint64_t)request);
-	std::wstring url(reinterpret_cast<wchar_t*>(*reinterpret_cast<wchar_t**>(url_utf16)));
+	auto get_url = *(std::uintptr_t(__fastcall**)(void*))((std::uintptr_t)request + 48);
+	auto url_utf16 = get_url(request);
+	std::wstring url(*reinterpret_cast<wchar_t**>(url_utf16));
 #else
 	auto url_utf16 = get_url(reinterpret_cast<DWORD>(request));
 	std::wstring url(reinterpret_cast<wchar_t*>(get_str(url_utf16)));
@@ -94,10 +99,9 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 void WINAPI get_file_name()
 {
 	try {
-		file_name = *reinterpret_cast<wchar_t**>(file_name_rcx);
-		//MessageBoxW(0,file_name.c_str(), 0, 0);
-		//Print(L"{}", zip_file_name);
-		//system("pause");
+		file_name = *reinterpret_cast<wchar_t**>(file_name_pointer);
+		//Print(L"{}", file_name);
+		//_wsystem(L"pause");
 	}
 	catch (const std::exception& e) {
 		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
@@ -232,7 +236,7 @@ void WINAPI modify_source()
 			const auto premium_free = PatternScanner::ScanFirst(ZipScan.base_address, ZipScan.image_size, L"\"free\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),");
 			if (premium_free.is_found()) {
 				//Print(L"{}", premium_free.read<const char*>());
-				//system("pause");
+				//_wsystem(L"pause");
 				if (Memory::Write<const char*>(premium_free.data(), "\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase(),")) {
 					Logger::Log(L"premium patched!", Logger::LogLevel::Info);
 				}
@@ -256,11 +260,23 @@ extern "C" void hook_file_name();
 extern "C" void hook_zip_buffer();
 
 #else
-// 8B45 EC | mov eax,dword ptr ss:[ebp-14]	| 
-// 03C7    | add eax,edi					| [+3]
-// 50      | push eax						| 
-// FFD2    | call edx						| 
-// 03F8    | add edi,eax					| [+5]
+__declspec(naked) void hook_file_name()
+{
+	__asm
+	{
+		mov dword ptr ss : [ebp - 0x18] , ebx
+		mov byte ptr ss : [ebp - 0x14] , bl
+		push eax
+
+		mov file_name_pointer, eax
+
+		pushad
+		call get_file_name
+		popad
+		push ret_addr_file_name
+		retn
+	}
+}
 
 __declspec(naked) void hook_zip_buffer()
 {
@@ -271,22 +287,22 @@ __declspec(naked) void hook_zip_buffer()
 		push eax
 		call edx
 		mov ZipScan.image_size, eax
-		cmp xpui_found, 0
-		jne skip
+		//cmp xpui_found, 0
+		//jne skip
 
 		//------------ preparation --------------------
 		pushad
 
 		//------------ function call ------------------
-		call modify_buffer
+		call modify_source
 
 		//------------ end call ------------------
 		popad
 
 		//------------ finish -------------------------
-	skip:
-		push ret_addr
-		retn
+	//skip:
+	push ret_addr_file_source
+	retn
 	}
 }
 #endif
@@ -382,6 +398,16 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 			Logger::Log(L"SourceCode - patch failed!", Logger::LogLevel::Error);
 		}
 #else
+		const auto FileName = PatternScanner::ScanFirst(L"8B 48 24 85 C9 74 4A 50 FF D1 C7 45 ?? ?? ?? ?? ?? 89 5D E8 88 5D EC 50").offset(0x11);
+		ret_addr_file_name = FileName + 7;
+
+		if (FileName.hook((PVOID)hook_file_name)) {
+			Logger::Log(L"FileName - patch success!", Logger::LogLevel::Info);
+		}
+		else {
+			Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
+		}
+
 		const auto SourceCode = PatternScanner::ScanFirst(L"8B 45 EC 03 C7 50 FF D2 03 F8").offset(3);
 		ret_addr_file_source = SourceCode + 5;
 		if (SourceCode.hook(hook_zip_buffer)) {
