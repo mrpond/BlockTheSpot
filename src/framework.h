@@ -8,14 +8,12 @@
 #include <string_view>
 
 #ifndef NDEBUG
-#include <include/capi/cef_urlrequest_capi.h>
+#ifdef _WIN64
+#pragma comment(lib, "libcef_x64.lib")
+#else
+#pragma comment(lib, "libcef_x86.lib")
 #endif
 
-#include "BasicUtils/Utils.h"
-#include "BasicUtils/Logger.h"
-#include "BasicUtils/PatternScanner.h"
-#include "BasicUtils/Memory.h"
-#include "BasicUtils/Hooking.h"
-#include "BasicUtils/Console.h"
-
-using namespace Console;
+#include <include/capi/cef_urlrequest_capi.h>
+#include <include/capi/cef_zip_reader_capi.h>
+#endif

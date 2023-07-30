@@ -4,54 +4,111 @@
 
 #include <intrin.h>
 
-//void print_test() {
-//    // Example colors vector
-//    std::vector<Color> colors = { Color::Red, Color::Green, Color::Blue };
+//typedef void (__stdcall* _cef_string_utf16_clear)(cef_string_utf16_t* str);
+//_cef_string_utf16_clear cef_string_utf16_clear_orig = nullptr;
 //
-//    // Example 6: Uppercase hexadecimal formatting
-//    int hex_value = 255;
-//    Print(colors, L"The uppercase hexadecimal value is {:X}.", hex_value);
-//    // Output: The uppercase hexadecimal value is FF.
+//void __stdcall cef_string_utf16_clear_hook(cef_string_utf16_t* str) {
+//    try {
+//        if (str->str) {
+//            std::wstring wstr(*reinterpret_cast<wchar_t**>(str));
+//            if (Utils::Contains(wstr, L"Spotify Free")) {
+//                //reinterpret_cast<wchar_t*>(str) == L"Spotify";
+//                //cef_string_utf16_set(L"Spotify", wcslen(L"Spotify"), str, 1);
 //
-//    // Example 7: Hexadecimal formatting with "0x" prefix
-//    int hex_value_with_prefix = 123;
-//    Print(colors, L"The hexadecimal value with prefix is {:#x}.", hex_value_with_prefix);
-//    // Output: The hexadecimal value with prefix is 0x7b.
 //
-//    // Example 8: Multiple arguments with different format specifiers
-//    double temperature = 23.5;
-//    int year = 2023;
-//    std::wstring location = L"New York";
-//    Print(colors, L"Date: {}, Temperature: {:.1f} °C, Year: {:d}, Location: {}.", L"July 22", temperature, year, location);
-//    // Output: Date: July 22, Temperature: 23.5 °C, Year: 2023, Location: New York.
+//               // const wchar_t* newValue = L"Spotify";
+//               // size_t newValueLength = wcslen(newValue);
+//               // str->length = newValueLength;
+//               // str->str = reinterpret_cast<wchar_t*>(realloc(str->str, (newValueLength + 1) * sizeof(wchar_t)));
+//               // wmemcpy(str->str, newValue, newValueLength + 1);
 //
-//    // Example 9: Handling missing arguments
-//    Print(colors, L"{} + {} = {}.", 2, 3);
-//    // Output: 2 + 3 = {}.
-//
-//    // Example 10: Using the same argument multiple times
-//    int value = 7;
-//    Print(colors, L"{} * {} = {} and {} + {} = {}.", value, 3, value * 3, value, 5, value + 5);
-//    // Output: 7 * 3 = 21 and 7 + 5 = 12.
-//
-//    // Example 11: Using non-default colors
-//    std::vector<Color> custom_colors = { Color::Yellow, Color::Magenta };
-//    Print(custom_colors, L"Custom colors: {} and {}.", L"Yellow", L"Magenta");
-//    // Output: Custom colors: Yellow and Magenta.
-//}
-
-//typedef void(__stdcall* cef_string_utf16_clear_t)(void*);
-//cef_string_utf16_clear_t cef_string_utf16_clear_orig = nullptr;
-//
-//void __stdcall hook_cef_string_utf16_clear(void* str) {
-//    std::wstring wstr(*reinterpret_cast<wchar_t**>(str));
-//    if (wstr == L"xpui.js") {
-//        Print({ Color::Yellow }, L"[{}]: {:#x} | {}", L"cef_string_utf16_clear", _ReturnAddress(), wstr);
-//        _wsystem(L"pause");
+//                Print({ Color::Yellow }, L"[{}]: {:#x} | {}", L"cef_string_utf16_clear", _ReturnAddress(), wstr);
+//                //_wsystem(L"pause");
+//            }
+//        }
+//    }
+//    catch (const std::exception& e) {
+//        Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
 //    }
 //
-//    return cef_string_utf16_clear_orig(str);
+//    cef_string_utf16_clear_orig(str);
 //}
+
+
+//typedef cef_zip_reader_t* (__stdcall* _cef_zip_reader_create)(cef_stream_reader_t* stream);
+//_cef_zip_reader_create cef_zip_reader_create_orig = nullptr;
+//
+//typedef size_t(__stdcall* _cef_stream_reader_read)(cef_stream_reader_t* self, void* ptr, size_t size, size_t n);
+//_cef_stream_reader_read cef_stream_reader_read_orig = nullptr;
+
+//#ifndef NDEBUG
+//using _cef_zip_reader_create = cef_zip_reader_t * (__stdcall*)(cef_stream_reader_t* stream);
+//_cef_zip_reader_create cef_zip_reader_create_orig = nullptr;
+//
+//using _cef_stream_reader_read = size_t(__stdcall*)(cef_stream_reader_t* self, void* ptr, size_t size, size_t n);
+//_cef_stream_reader_read cef_stream_reader_read_orig = nullptr;
+//#else
+//using _cef_zip_reader_create = void * (__stdcall*)(void* stream);
+//_cef_zip_reader_create cef_zip_reader_create_orig = nullptr;
+//
+//using _cef_stream_reader_read = size_t(__stdcall*)(void* self, void* ptr, size_t size, size_t n);
+//_cef_stream_reader_read cef_stream_reader_read_orig = nullptr;
+//
+//#endif
+//
+//
+//std::map<cef_stream_reader_t*, std::wstring> streamReaderToFileMap;
+//size_t __stdcall cef_stream_reader_read_hook(cef_stream_reader_t* self, void* ptr, size_t size, size_t n)
+//{
+//    size_t bytesRead = cef_stream_reader_read_orig(self, ptr, size, n);
+//
+//    if (bytesRead > 0) {
+//        std::wstring wstrFileName = streamReaderToFileMap[self];
+//        if (wstrFileName == L"index.html" || Utils::Contains(wstrFileName, L"download")) {
+//            Print(L"{} {} {} {}", wstrFileName, size, n, (char*)ptr);
+//        }
+//    }
+//
+//    return bytesRead;
+//}
+//
+//
+//#ifndef NDEBUG
+//cef_zip_reader_t* __stdcall cef_zip_reader_create_hook(cef_stream_reader_t* stream)
+//{
+//    cef_stream_reader_read_orig = stream->read;
+//#else
+//void* __stdcall cef_zip_reader_create_hook(void * stream)
+//{
+//    cef_stream_reader_read_orig = *(_cef_stream_reader_read*)((std::uintptr_t)stream + 40);
+//#endif
+//
+//    Hooking::HookFunction(&(PVOID&)cef_stream_reader_read_orig, cef_stream_reader_read_hook);
+//
+//#ifndef NDEBUG
+//    cef_zip_reader_t* zip_reader = cef_zip_reader_create_orig(stream);
+//    while (zip_reader->move_to_next_file(zip_reader)) {
+//        cef_string_userfree_t file_name = zip_reader->get_file_name(zip_reader);
+//        std::wstring wstrFileName = file_name->str;
+//#else
+//    auto zip_reader = cef_zip_reader_create_orig(stream);
+//    auto move_to_next_file = (*(unsigned int(__fastcall**)(void*))((std::uintptr_t)zip_reader + 48)); // orig = zip_reader
+//    auto get_file_name = (*(void*(__fastcall**)(void*))((std::uintptr_t)zip_reader + 72));
+//
+//    while (move_to_next_file(zip_reader)) {
+//        auto file_name = get_file_name(zip_reader);
+//        std::wstring wstrFileName = (const wchar_t*)((__int64(__fastcall*)(void*))file_name)(zip_reader);
+//        Print(L"{}", wstrFileName);
+//#endif
+//    //    
+//    //    streamReaderToFileMap[stream] = wstrFileName;
+//    //    cef_string_userfree_utf16_free(file_name);
+//    }
+//
+//    return zip_reader;
+//}
+
+
 
 DWORD WINAPI Debug(LPVOID lpParam)
 {
@@ -61,9 +118,13 @@ DWORD WINAPI Debug(LPVOID lpParam)
             //Utils::PrintSymbols(L"chrome_elf.dll");
             //print_test();
 
-            //const auto cef_string_utf16_clear_func = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_utf16_clear");
-            //cef_string_utf16_clear_orig = (cef_string_utf16_clear_t)cef_string_utf16_clear_func.data();
-            //cef_string_utf16_clear_func.hook((PVOID)hook_cef_string_utf16_clear);
+            //const auto cef_string_utf16_clear_ptr = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_utf16_clear");
+            //cef_string_utf16_clear_orig = (_cef_string_utf16_clear)cef_string_utf16_clear_ptr.data();
+            //Hooking::HookFunction(&(PVOID&)cef_string_utf16_clear_orig, cef_string_utf16_clear_hook);
+
+            //const auto cef_zip_reader_create_ptr = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create");
+            //cef_zip_reader_create_orig = (_cef_zip_reader_create)cef_zip_reader_create_ptr.data();
+            //Hooking::HookFunction(&(PVOID&)cef_zip_reader_create_orig, cef_zip_reader_create_hook);
 
             }, L"DEBUG");
     }

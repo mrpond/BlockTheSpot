@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
-#include "Console.h"
-using namespace Console;
 
 namespace Memory {
     template<typename T>

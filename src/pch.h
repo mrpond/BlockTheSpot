@@ -9,6 +9,16 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+
+#include "BasicUtils/Utils.h"
+#include "BasicUtils/Logger.h"
+#include "BasicUtils/PatternScanner.h"
+#include "BasicUtils/Memory.h"
+#include "BasicUtils/Hooking.h"
+#include "BasicUtils/Console.h"
+
+using namespace Console;
+
 #include "Debug.h"
 #include "Modify.h"
 

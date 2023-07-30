@@ -1,12 +1,12 @@
 .DATA
 ; External declarations
-EXTERN get_file_name : PROC
-EXTERN modify_source : PROC
-
-EXTERN ZipScan : QWORD
-EXTERN file_name_pointer : QWORD
-EXTERN ret_addr_file_name : QWORD
-EXTERN ret_addr_file_source : QWORD
+;EXTERN get_file_name : PROC
+;EXTERN modify_source : PROC
+;
+;EXTERN ZipScan : QWORD
+;EXTERN file_name_pointer : QWORD
+;EXTERN ret_addr_file_name : QWORD
+;EXTERN ret_addr_file_source : QWORD
 
 .CODE
 
@@ -60,65 +60,65 @@ EXTERN ret_addr_file_source : QWORD
 ; ENDM
 
 ; Macro to push all registers onto the stack
-PUSH_ALL_REGISTERS MACRO
-    push rax
-    push rbx
-    push rcx
-    push rdx
-    push rsi
-    push rdi
-    push rbp
-    push r8
-    push r9
-    push r10
-    push r11
-    push r12
-    push r13
-    push r14
-    push r15
-ENDM
+;PUSH_ALL_REGISTERS MACRO
+;    push rax
+;    push rbx
+;    push rcx
+;    push rdx
+;    push rsi
+;    push rdi
+;    push rbp
+;    push r8
+;    push r9
+;    push r10
+;    push r11
+;    push r12
+;    push r13
+;    push r14
+;    push r15
+;ENDM
 ; Macro to pop all registers from the stack
-POP_ALL_REGISTERS MACRO
-    pop r15
-    pop r14
-    pop r13
-    pop r12
-    pop r11
-    pop r10
-    pop r9
-    pop r8
-    pop rbp
-    pop rdi
-    pop rsi
-    pop rdx
-    pop rcx
-    pop rbx
-    pop rax
-ENDM
+;POP_ALL_REGISTERS MACRO
+;    pop r15
+;    pop r14
+;    pop r13
+;    pop r12
+;    pop r11
+;    pop r10
+;    pop r9
+;    pop r8
+;    pop rbp
+;    pop rdi
+;    pop rsi
+;    pop rdx
+;    pop rcx
+;    pop rbx
+;    pop rax
+;ENDM
 
 ; Procedure to hook file name
 
-hook_file_name PROC 
-	test rcx, rcx 
-	mov file_name_pointer, rcx 
-	PUSH_ALL_REGISTERS 
-	call get_file_name 
-	POP_ALL_REGISTERS 
-	push ret_addr_file_name 
-	ret 
-hook_file_name ENDP 
+;hook_file_name PROC 
+;	test rcx, rcx 
+;	mov file_name_pointer, rcx 
+;	PUSH_ALL_REGISTERS 
+;	call get_file_name 
+;	POP_ALL_REGISTERS 
+;	push ret_addr_file_name 
+;	ret 
+;hook_file_name ENDP 
 
 ; Procedure to hook zip buffer
 
-hook_zip_buffer PROC 
-	movsxd rcx, eax 
-	mov ZipScan, r15 
-	mov ZipScan+8, rcx 
-	; PUSH_ALL_REGISTERS 
-	call modify_source 
-	; POP_ALL_REGISTERS 
-	push ret_addr_file_source
-	ret 
-hook_zip_buffer ENDP 
+;hook_zip_buffer PROC 
+;	movsxd rcx, eax 
+;	mov ZipScan, r15 
+;	mov ZipScan+8, rcx 
+;	; PUSH_ALL_REGISTERS 
+;	call modify_source 
+;	; POP_ALL_REGISTERS 
+;	push ret_addr_file_source
+;	ret 
+;hook_zip_buffer ENDP 
 
 END

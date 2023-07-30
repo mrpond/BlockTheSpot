@@ -99,6 +99,12 @@ namespace Utils
         return converter.from_bytes(narrow_string.data(), narrow_string.data() + narrow_string.size());
     }
 
+    std::wstring ToString(std::u16string_view utf16_string)
+    {
+        std::wstring_convert<std::codecvt_utf16<wchar_t, 0x10ffff, std::little_endian>> converter;
+        return converter.from_bytes(reinterpret_cast<const char*>(utf16_string.data()), reinterpret_cast<const char*>(utf16_string.data() + utf16_string.size()));
+    }
+
     bool Contains(std::string_view str1, std::string_view str2, bool case_sensitive)
     {
         auto it = std::search(
