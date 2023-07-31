@@ -79,11 +79,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="assembly_code.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="chrome_elf.def">
       <Filter>Source Files</Filter>
     </None>

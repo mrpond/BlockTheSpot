@@ -18,6 +18,7 @@ namespace Utils
 
     std::string ToString(std::wstring_view wide_string);
     std::wstring ToString(std::string_view narrow_string);
+    std::wstring ToString(std::u16string_view utf16_string);
 
     bool Contains(std::string_view str1, std::string_view str2, bool case_sensitive = false);
     bool Contains(std::wstring_view str1, std::wstring_view str2, bool case_sensitive = false);
