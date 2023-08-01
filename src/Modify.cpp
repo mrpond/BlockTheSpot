@@ -259,14 +259,6 @@ void* cef_zip_reader_create_hook(void* stream)
 	return zip_reader;
 }
 
-static auto set_window_text_w_orig = &SetWindowTextW;
-BOOL WINAPI set_window_text_w_hook(HWND hWnd, LPCWSTR lpString) {
-	if (Utils::Equals(lpString, L"Spotify Free")) {
-		lpString = L"Spotify";
-	}
-	return set_window_text_w_orig(hWnd, lpString);
-}
-
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
 	try
@@ -345,26 +337,6 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 			}
 			else {
 				Logger::Log(L"BlockBanner - patch failed!", Logger::LogLevel::Error);
-			}
-		}
-	}
-	catch (const std::exception& e)
-	{
-		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
-	}
-	return 0;
-}
-
-DWORD WINAPI ChangeWindowText(LPVOID lpParam)
-{
-	try
-	{
-		if (set_window_text_w_orig) {
-			if (Hooking::HookFunction(&(PVOID&)set_window_text_w_orig, set_window_text_w_hook)) {
-				Logger::Log(L"ChangeWindowText - patch success!", Logger::LogLevel::Info);
-			}
-			else {
-				Logger::Log(L"ChangeWindowText - patch failed!", Logger::LogLevel::Error);
 			}
 		}
 	}

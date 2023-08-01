@@ -34,7 +34,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 								{L"Block_Ads", true},
 								{L"Block_Banner", true},
 								{L"Enable_Developer", true},
-								{L"Change_WindowText", true},
 								{L"Enable_Log", false},
 							}
 						}
@@ -58,13 +57,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 					if (data[L"Config"][L"Block_Banner"]) {
 						hThread = CreateThread(NULL, 0, BlockBanner, NULL, 0, NULL);
-						if (hThread != nullptr) {
-							CloseHandle(hThread);
-						}
-					}
-
-					if (data[L"Config"][L"Change_WindowText"]) {
-						hThread = CreateThread(NULL, 0, ChangeWindowText, NULL, 0, NULL);
 						if (hThread != nullptr) {
 							CloseHandle(hThread);
 						}
