@@ -23,6 +23,7 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 #ifndef NDEBUG
 	cef_string_utf16_t* url_utf16 = request->get_url (request);
 	std::wstring url(Utils::ToString(url_utf16->str));
+	//Print({ Color::Yellow }, L"[{}] {}", L"request_get_url", Memory::GetMemberFunctionOffset(&_cef_request_t::get_url));
 #else
 
 #ifdef _WIN64
@@ -58,6 +59,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 	try {
 #ifndef NDEBUG
 		std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
+		//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&_cef_zip_reader_t::get_file_name));
 #else
 #ifdef _WIN64
 		auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 72));
@@ -223,34 +225,18 @@ void* cef_zip_reader_create_hook(void* stream)
 #ifndef NDEBUG
 	cef_zip_reader_t* zip_reader = (cef_zip_reader_t*)cef_zip_reader_create_orig(stream);
 	cef_zip_reader_read_file_orig = (_cef_zip_reader_read_file)zip_reader->read_file;
+	//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&cef_zip_reader_t::read_file));
 
-//	while (zip_reader->move_to_next_file(zip_reader)) {
-//		cef_string_userfree_t file_name = zip_reader->get_file_name(zip_reader);
-//		std::int64_t file_size = zip_reader->get_file_size(zip_reader);
-//		std::wstring wstr_file_name = file_name->str;
-//
-//		//zip_reader->read_file()
 #else
 	auto zip_reader = cef_zip_reader_create_orig(stream);
+
 #ifdef _WIN64
 	cef_zip_reader_read_file_orig = *(_cef_zip_reader_read_file*)((std::uintptr_t)zip_reader + 112);
-	//	auto move_to_next_file = (*(int(__stdcall**)(void*))((std::uintptr_t)zip_reader + 48));
-	//	auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)zip_reader + 72));
-	//	auto get_file_size = (*(std::int64_t(__stdcall**)(void*))((std::uintptr_t)zip_reader + 80));
-	//
-	//	while (move_to_next_file(zip_reader)) {
-	//		auto file_name = get_file_name(zip_reader);
-	//		auto file_size = get_file_size(zip_reader);
-	//		auto wstr_file_name(*reinterpret_cast<wchar_t**>(file_name));
 #else
 	cef_zip_reader_read_file_orig = *(_cef_zip_reader_read_file*)((std::uintptr_t)zip_reader + 56);
 #endif
 
 #endif
-//		ReaderToFileMap[file_size] = wstr_file_name;
-//		//Print(L"{} : {}", wstr_file_name, file_size);
-//		cef_string_userfree_utf16_free_orig(file_name);
-//	}
 
 	if (cef_zip_reader_read_file_orig) {
 		Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, cef_zip_reader_read_file_hook);
@@ -302,11 +288,8 @@ DWORD WINAPI BlockAds(LPVOID lpParam)
 {
 	try
 	{
-		const auto cef_urlrequest_create_ptr = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create");
-		cef_urlrequest_create_orig = (_cef_urlrequest_create)cef_urlrequest_create_ptr.data();
-
-		const auto cef_string_userfree_utf16_free_ptr = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free");
-		cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)cef_string_userfree_utf16_free_ptr.data();
+		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").data();
+		cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
 
 		if (cef_urlrequest_create_orig && cef_string_userfree_utf16_free_orig) {
 			if (Hooking::HookFunction(&(PVOID&)cef_urlrequest_create_orig, (PVOID)cef_urlrequest_create_hook)) {
@@ -328,8 +311,7 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 {
 	try
 	{
-		const auto cef_zip_reader_create_ptr = PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create");
-		cef_zip_reader_create_orig = (_cef_zip_reader_create)cef_zip_reader_create_ptr.data();
+		cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").data();
 
 		if (cef_zip_reader_create_orig) {
 			if (Hooking::HookFunction(&(PVOID&)cef_zip_reader_create_orig, cef_zip_reader_create_hook)) {

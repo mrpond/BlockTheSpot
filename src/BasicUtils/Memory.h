@@ -5,29 +5,27 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
-#include "Console.h"
-using namespace Console;
 
 namespace Memory {
-    template<typename T>
-    bool Read(LPVOID address, T& buffer, std::size_t bufferSize = -1)
-    {
-        if (address == nullptr)
-            throw std::runtime_error("Invalid address");
+    //template<typename T>
+    //bool Read(LPVOID address, T& buffer, std::size_t bufferSize = -1)
+    //{
+    //    if (address == nullptr)
+    //        throw std::runtime_error("Invalid address");
 
-        if (bufferSize == static_cast<std::size_t>(-1))
-            bufferSize = sizeof(buffer); // error
+    //    if (bufferSize == static_cast<std::size_t>(-1))
+    //        bufferSize = sizeof(buffer); // error
 
-        DWORD oldProtect = 0;
-        if (!VirtualProtect(address, bufferSize, PAGE_EXECUTE_READWRITE, &oldProtect))
-            throw std::runtime_error("Failed to set memory protection for reading");
+    //    DWORD oldProtect = 0;
+    //    if (!VirtualProtect(address, bufferSize, PAGE_EXECUTE_READWRITE, &oldProtect))
+    //        throw std::runtime_error("Failed to set memory protection for reading");
 
-        std::memcpy(static_cast<void*>(&buffer), address, bufferSize);
-        
-        if (!VirtualProtect(address, bufferSize, oldProtect, &oldProtect))
-            throw std::runtime_error("Failed to restore memory protection after reading");
-        return true;
-    }
+    //    std::memcpy(static_cast<void*>(&buffer), address, bufferSize);
+    //    
+    //    if (!VirtualProtect(address, bufferSize, oldProtect, &oldProtect))
+    //        throw std::runtime_error("Failed to restore memory protection after reading");
+    //    return true;
+    //}
     
     template <typename T>
     bool Write(LPVOID address, const T& buffer, std::size_t bufferSize = -1)
@@ -79,6 +77,11 @@ namespace Memory {
             throw std::runtime_error("Failed to restore memory protection after writing");
 
         return true;
+    }
+
+    template <typename T, typename U>
+    std::size_t GetMemberFunctionOffset(U T::* member_ptr) {
+        return reinterpret_cast<std::size_t>(&(((T*)nullptr)->*member_ptr));
     }
 }
 
