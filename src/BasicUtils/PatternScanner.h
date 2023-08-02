@@ -6,6 +6,7 @@
 #include <vector>
 #include <format>
 #include <span>
+#include "Memory.h"
 
 enum class AssemblyCode {
     PUSH_VALUE = 0x68,
@@ -31,6 +32,7 @@ enum class ValueType {
     Float,
     Double,
     String,
+    WString,
 };
 
 class Scan {
@@ -50,6 +52,8 @@ public:
     bool hook(PVOID p_detours) const;
     bool unhook() const;
 
+    Scan scan_first(std::wstring_view value, ScanType scan_type = ScanType::Unknown, bool forward = true) const;
+
     std::vector<Scan> get_all_matching_codes(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
     Scan get_first_matching_code(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
 
@@ -64,11 +68,8 @@ public:
     }
 
     template <typename T>
-    bool write(const T& value) const {
-        if constexpr (std::is_pointer_v<T> || std::is_same_v<T, std::wstring> || std::is_same_v<T, std::wstring_view>)
-            return ::WriteProcessMemory(::GetCurrentProcess(), reinterpret_cast<LPVOID>(m_address), value, (std::char_traits<wchar_t>::length(reinterpret_cast<const wchar_t*>(value)) + 1) * sizeof(wchar_t), nullptr) != 0;
-        else
-            return ::WriteProcessMemory(::GetCurrentProcess(), reinterpret_cast<LPVOID>(m_address), std::addressof(value), sizeof(value), nullptr) != 0;
+    bool write(const T& buffer, std::size_t bufferSize = -1) const {
+        return is_found() ? Memory::Write(reinterpret_cast<LPVOID>(m_address), buffer, bufferSize) : false;
     }
 
 private:

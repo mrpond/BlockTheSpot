@@ -115,11 +115,12 @@ bool PatternScanner::ScanMatch(const void* value, ScanTargets targets, ValueType
         std::string_view val(reinterpret_cast<const char*>(value));
         std::string_view first(reinterpret_cast<const char*>(targets.first.data()), targets.first.size());
         std::string_view second(targets.second.empty() ? "" : reinterpret_cast<const char*>(targets.second.data()), targets.second.size());
-
-        //std::wstring_view val(reinterpret_cast<const wchar_t*>(value));
-        //std::wstring_view first(reinterpret_cast<const wchar_t*>(targets.first.data()), targets.first.size());
-        //std::wstring_view second(targets.second.empty() ? L"" : reinterpret_cast<const wchar_t*>(targets.second.data()), targets.second.size());
-
+        return ScanMatchNumeric(val, first, second, scan_type);
+    }
+    case ValueType::WString: {
+        std::wstring_view val(reinterpret_cast<const wchar_t*>(value));
+        std::wstring_view first(reinterpret_cast<const wchar_t*>(targets.first.data()), targets.first.size());
+        std::wstring_view second(targets.second.empty() ? L"" : reinterpret_cast<const wchar_t*>(targets.second.data()), targets.second.size());
         return ScanMatchNumeric(val, first, second, scan_type);
     }
     default:
@@ -200,13 +201,13 @@ std::vector<std::uint8_t> PatternScanner::SignatureToByteArray(std::wstring_view
 std::vector<Scan> PatternScanner::ScanAll(std::size_t base_address, std::size_t image_size, ScanTargets byte_pattern, ValueType value_type, ScanType scan_type, bool forward)
 {
     if (!base_address)
-        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     if (!image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     const auto pattern_size = byte_pattern.first.size();
     const auto end_address = base_address + image_size - pattern_size;
@@ -246,7 +247,7 @@ std::vector<Scan> PatternScanner::ScanAll(std::size_t base_address, std::size_t 
 
 std::vector<Scan> PatternScanner::ScanAll(std::size_t base_address, std::size_t image_size, std::wstring_view value, ScanType scan_type, bool forward)
 {
-    return ScanAll(base_address, image_size, { SignatureToByteArray(value) }, ValueType::String, scan_type, forward);
+    return ScanAll(base_address, image_size, { SignatureToByteArray(value) }, ValueType::WString, scan_type, forward);
 }
 
 std::vector<Scan> PatternScanner::ScanAll(std::wstring_view value, std::wstring_view module_name, ScanType scan_type, bool forward)
@@ -258,13 +259,13 @@ std::vector<Scan> PatternScanner::ScanAll(std::wstring_view value, std::wstring_
 Scan PatternScanner::ScanFirst(std::size_t base_address, std::size_t image_size, ScanTargets byte_pattern, ValueType value_type, ScanType scan_type, bool forward)
 {
     if (!base_address)
-        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     if (!image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
 
     const auto pattern_size = byte_pattern.first.size();
     const auto end_address = base_address + image_size - pattern_size;
@@ -301,7 +302,7 @@ Scan PatternScanner::ScanFirst(std::size_t base_address, std::size_t image_size,
 
 Scan PatternScanner::ScanFirst(std::size_t base_address, std::size_t image_size, std::wstring_view value, ScanType scan_type, bool forward)
 {
-    return ScanFirst(base_address, image_size, { SignatureToByteArray(value) }, ValueType::String, scan_type, forward);
+    return ScanFirst(base_address, image_size, { SignatureToByteArray(value) }, ValueType::WString, scan_type, forward);
 }
 
 Scan PatternScanner::ScanFirst(std::wstring_view value, std::wstring_view module_name, ScanType scan_type, bool forward)
@@ -417,6 +418,11 @@ bool Scan::hook(PVOID pDetours) const
 bool Scan::unhook() const
 {
     return is_found() ? Hooking::UnhookFunction(&(PVOID&)m_address) : false;
+}
+
+Scan Scan::scan_first(std::wstring_view value, ScanType scan_type, bool forward) const
+{
+    return is_found() ? PatternScanner::ScanFirst(m_address, m_module_info.second, { PatternScanner::SignatureToByteArray(value) }, ValueType::WString, scan_type, forward) : Scan(NULL, m_module_info);
 }
 
 std::vector<Scan> Scan::get_all_matching_codes(AssemblyCode code, std::size_t base_address, std::size_t image_size) const

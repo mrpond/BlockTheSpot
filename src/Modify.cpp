@@ -28,14 +28,11 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 
 #ifdef _WIN64
 	auto request_get_url = *(void* (__stdcall**)(void*))((std::uintptr_t)request + 48);
-	auto url_utf16 = request_get_url(request);
-	std::wstring url(*reinterpret_cast<wchar_t**>(url_utf16));
 #else
 	auto request_get_url = *(void* (__stdcall**)(void*))((std::uintptr_t)request + 24);
+#endif
 	auto url_utf16 = request_get_url(request);
 	std::wstring url(*reinterpret_cast<wchar_t**>(url_utf16));
-#endif
-	
 #endif
 	for (const auto& blockurl : block_list) {
 		if (std::wstring_view::npos != url.find (blockurl)) {
@@ -60,6 +57,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 #ifndef NDEBUG
 		std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
 		//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&_cef_zip_reader_t::get_file_name));
+		//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
 #else
 #ifdef _WIN64
 		auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 72));
@@ -69,14 +67,10 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 		std::wstring file_name(*reinterpret_cast<wchar_t**>(get_file_name(self)));
 #endif
 
-		//Logger::Log(Utils::FormatString(L"{} {} {:X}", file_name, bufferSize, reinterpret_cast<std::size_t>(buffer)), Logger::LogLevel::Info);
-		if (file_name == L"home-hpto.css")
-		{
-			//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
-			//_wsystem(L"pause");
+		if (file_name == L"home-hpto.css") {
 			const auto hpto = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:flex;");
 			if (hpto.is_found()) {
-				if (Memory::Write<const char*>(hpto.data(), ".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:none;")) {
+				if (hpto.write<const char*>(".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:none;")) {
 					Logger::Log(L"hptocss patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -88,13 +82,11 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 			}
 		}
 
-		if (file_name == L"xpui-routes-profile.js")
-		{
-			//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
+		if (file_name == L"xpui-routes-profile.js") {
 			const auto isModalOpen = PatternScanner::ScanAll(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isModalOpen:!0");
 			if (isModalOpen[0].is_found()) {
 				for (const auto& it : isModalOpen) {
-					if (Memory::Write<const char>(it.offset(13).data(), '1')) {
+					if (it.offset(13).write<const char>('1')) {
 						Logger::Log(L"isModalOpen patched!", Logger::LogLevel::Info);
 					}
 					else {
@@ -107,12 +99,10 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 			}
 		}
 
-		if (file_name == L"xpui.js")
-		{
-			//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
+		if (file_name == L"xpui.js") {
 			const auto skipads = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"adsEnabled:!0");
 			if (skipads.is_found()) {
-				if (Memory::Write<const char>(skipads.offset(12).data(), '1')) {
+				if (skipads.offset(12).write<const char>('1')) {
 					Logger::Log(L"adsEnabled patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -124,12 +114,12 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 			}
 
 			const auto sponsorship = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".set(\"allSponsorships\",t.sponsorships)}}(e,t);");
-			if (sponsorship.is_found())
-			{
+			if (sponsorship.is_found()) {
 				memset((char*)sponsorship.data() + 6, 0x22, 1);
 				memset((char*)sponsorship.data() + 7, 0x20, 15);
 				Logger::Log(L"sponsorship patched!", Logger::LogLevel::Info);
-				//if (Memory::Write<char>(sponsorship.offset(6).data(), ' ', 15)) {
+				
+				//if (sponsorship.offset(6).write<char>(' ', 15)) {
 				//	Logger::Log(L"sponsorship patched!", Logger::LogLevel::Info);
 				//}
 				//else {
@@ -142,7 +132,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 
 			const auto skipsentry = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sentry.io");
 			if (skipsentry.is_found()) {
-				if (Memory::Write<const char*>(skipsentry.data(), "localhost")) {
+				if (skipsentry.write<const char*>("localhost")) {
 					Logger::Log(L"sentry.io -> localhost patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -156,7 +146,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 			const auto ishptoenable = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"hptoEnabled:!0");
 			if (ishptoenable.is_found())
 			{
-				if (Memory::Write<const char>(ishptoenable.offset(13).data(), '1')) {
+				if (ishptoenable.offset(13).write<const char>('1')) {
 					Logger::Log(L"hptoEnabled patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -169,7 +159,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 
 			const auto ishptohidden = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isHptoHidden:!0");
 			if (ishptohidden.is_found()) {
-				if (Memory::Write<const char>(ishptohidden.offset(14).data(), '1')) {
+				if (ishptohidden.offset(14).write<const char>('1')) {
 					Logger::Log(L"isHptoHidden patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -182,7 +172,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 
 			const auto sp_localhost = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sp://ads/v1/ads/");
 			if (sp_localhost.is_found()) {
-				if (Memory::Write<const char*>(sp_localhost.data(), "sp://localhost//")) {
+				if (sp_localhost.write<const char*>("sp://localhost//")) {
 					Logger::Log(L"sp://ads/v1/ads/ patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -192,12 +182,11 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 			else {
 				Logger::Log(L"sp://ads/v1/ads/ - failed not found!", Logger::LogLevel::Error);
 			}
-
+			
 			const auto premium_free = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"\"free\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),");
 			if (premium_free.is_found()) {
 				//Print(L"{}", premium_free.read<const char*>());
-				//system("pause");
-				if (Memory::Write<const char*>(premium_free.data(), "\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase(),")) {
+				if (premium_free.write<const char*>("\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase(),")) {
 					Logger::Log(L"premium patched!", Logger::LogLevel::Info);
 				}
 				else {
@@ -252,7 +241,7 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 #ifdef _WIN64
 		const auto developer = PatternScanner::ScanFirst(L"41 22 DE 48 8B 95 40 05 00 00");
 		if (developer.is_found()) {
-			if (Memory::Write<std::vector<std::uint8_t>>(developer.data(), { 0xB3, 0x03, 0x90 })) {
+			if (developer.write<std::vector<std::uint8_t>>({ 0xB3, 0x03, 0x90 })) {
 				Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 			}
 			else {
@@ -265,7 +254,7 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 #else
 		const auto developer = PatternScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
 		if (developer.is_found()) {
-			if (Memory::Write<std::vector<std::uint8_t>>(developer.data(), { 0xB8, 0x03, 0x00 })) {
+			if (developer.write<std::vector<std::uint8_t>>({ 0xB8, 0x03, 0x00 })) {
 				Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 			}
 			else {
