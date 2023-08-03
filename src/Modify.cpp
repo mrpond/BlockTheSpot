@@ -199,7 +199,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 		}
 	}
 	catch (const std::exception& e) {
-		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
+		PrintError(Utils::ToString(e.what()));
 	}
 
 	return _retval;
@@ -228,7 +228,7 @@ void* cef_zip_reader_create_hook(void* stream)
 #endif
 
 	if (cef_zip_reader_read_file_orig) {
-		Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, cef_zip_reader_read_file_hook);
+		Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, (PVOID)cef_zip_reader_read_file_hook);
 	}
 
 	return zip_reader;
@@ -236,8 +236,7 @@ void* cef_zip_reader_create_hook(void* stream)
 
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
-	try
-	{
+	try {
 #ifdef _WIN64
 		const auto developer = PatternScanner::ScanFirst(L"41 22 DE 48 8B 95 40 05 00 00");
 		if (developer.is_found()) {
@@ -266,17 +265,15 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 		}
 #endif
 	}
-	catch (const std::exception& e)
-	{
-		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
+	catch (const std::exception& e) {
+		PrintError(Utils::ToString(e.what()));
 	}
 	return 0;
 }
 
 DWORD WINAPI BlockAds(LPVOID lpParam)
 {
-	try
-	{
+	try {
 		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").data();
 		cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
 
@@ -289,21 +286,19 @@ DWORD WINAPI BlockAds(LPVOID lpParam)
 			}
 		}
 	}
-	catch (const std::exception& e)
-	{
-		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
+	catch (const std::exception& e) {
+		PrintError(Utils::ToString(e.what()));
 	}
 	return 0;
 }
 
 DWORD WINAPI BlockBanner(LPVOID lpParam)
 {
-	try
-	{
+	try {
 		cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").data();
 
 		if (cef_zip_reader_create_orig) {
-			if (Hooking::HookFunction(&(PVOID&)cef_zip_reader_create_orig, cef_zip_reader_create_hook)) {
+			if (Hooking::HookFunction(&(PVOID&)cef_zip_reader_create_orig, (PVOID)cef_zip_reader_create_hook)) {
 				Logger::Log(L"BlockBanner - patch success!", Logger::LogLevel::Info);
 			}
 			else {
@@ -311,9 +306,8 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 			}
 		}
 	}
-	catch (const std::exception& e)
-	{
-		Print({ Color::Red }, L"[{}] {}", L"ERROR", e.what());
+	catch (const std::exception& e) {
+		PrintError(Utils::ToString(e.what()));
 	}
 	return 0;
 }

@@ -7,11 +7,11 @@
 
 class Hooking {
 public:
-    static bool HookFunction(std::vector<PVOID*> ppPointers, std::vector<PVOID> pDetours);
+    using HookData = std::map<PVOID*, PVOID>;
+    static bool HookFunction(HookData data);
     static bool HookFunction(PVOID* ppPointers, PVOID pDetours);
-    static bool UnhookFunction(std::vector<PVOID*> ppPointers, std::vector<PVOID> pDetours = {});
+    static bool UnhookFunction(HookData data);
     static bool UnhookFunction(PVOID* ppPointers, PVOID pDetours = nullptr);
-
 
 private:
     static bool Begin();
@@ -19,7 +19,7 @@ private:
     static void InsertHookFunction(PVOID* ppPointers, PVOID pDetours);
     static void EraseHookFunction(PVOID* ppPointers);
     static PVOID FindHookFunction(PVOID* ppPointers);
-    static std::map<PVOID*, PVOID> HookFunctionList;
+    static HookData HookFunctionList;
 };
 
 #endif //_HOOKING_H

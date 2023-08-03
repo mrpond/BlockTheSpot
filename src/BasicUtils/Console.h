@@ -130,10 +130,15 @@ namespace Console {
 			std::wcout << fmt.substr(start) << std::endl;
 		}
 		catch (const std::exception& e) {
-			throw std::runtime_error("Failed to format string: " + std::string(e.what()));
+			std::wcerr << L"Failed to format string: " << e.what() << std::endl;
 		}
 #endif
 	}
+
+	void PrintError(std::wstring fmt, const auto&... args) {
+		Print({ Color::Red }, L"[{}] " + fmt, L"ERROR", args...);
+	}
+
 //	void Print(const std::vector<Color>& colors, std::wstring fmt, const auto&... args)
 //	{
 //#if defined(_DEBUG) || defined(_CONSOLE)

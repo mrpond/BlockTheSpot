@@ -15,15 +15,13 @@ PatternScanner::ModuleInfo PatternScanner::GetModuleInfo(std::wstring_view modul
 {
     const HMODULE module_handle = GetModuleHandleW(module_name.empty() ? nullptr : module_name.data());
     if (!module_handle) {
-        const auto error_code = GetLastError();
         throw std::runtime_error(Utils::ToString(Utils::FormatString(L"Could not get module handle for {}. Error code: {}",
-            module_name.empty() ? L"main module" : module_name, error_code)).c_str());
+            module_name.empty() ? L"main module" : module_name, GetLastError())).c_str());
     }
     MODULEINFO module_info;
     if (!GetModuleInformation(GetCurrentProcess(), module_handle, &module_info, sizeof(module_info))) {
-        const auto error_code = GetLastError();
         throw std::runtime_error(Utils::ToString(Utils::FormatString(L"Could not get module information for {}. Error code: {}",
-            module_name.empty() ? L"main module" : module_name, error_code)).c_str());
+            module_name.empty() ? L"main module" : module_name, GetLastError())).c_str());
     }
 
     return { reinterpret_cast<std::size_t>(module_info.lpBaseOfDll), static_cast<std::size_t>(module_info.SizeOfImage) };

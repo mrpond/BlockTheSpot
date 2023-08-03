@@ -27,6 +27,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					}
 					//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 #endif
+
 					Utils::SetLocaleToUTF8();
 					Utils::IniData data = {
 						{
@@ -63,7 +64,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					}
 				}
 				catch (const std::exception& e) {
-					Print({ Color::Red }, L"[{}] {}", L"ERROR", Utils::ToString(e.what()));
+					PrintError(Utils::ToString(e.what()));
 				}
 			}
 			break;
