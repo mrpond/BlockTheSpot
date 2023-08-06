@@ -3,8 +3,11 @@
 #include <mutex>
 #include <detours.h>
 
+std::mutex mtx;
+
 bool Hooking::HookFunction(HookData data) 
 {
+    std::scoped_lock lock(mtx);
     if (Begin()) {
         for (auto& [ppPointer, pDetour] : data) {
             if (FindHookFunction(ppPointer) != nullptr) {
@@ -30,6 +33,7 @@ bool Hooking::HookFunction(PVOID* ppPointers, PVOID pDetours)
 
 bool Hooking::UnhookFunction(HookData data) 
 {
+    std::scoped_lock lock(mtx);
     if (Begin()) {
         for (auto& [ppPointer, pDetour] : data) {
             if (pDetour == nullptr) {
@@ -56,10 +60,8 @@ bool Hooking::UnhookFunction(PVOID* ppPointers, PVOID pDetours)
     return UnhookFunction(data);
 }
 
-std::mutex mtx;
 bool Hooking::Begin()
 {
-    std::scoped_lock lock(mtx);
     if (DetourIsHelperProcess()) {
         throw std::runtime_error("DetourIsHelperProcess failed");
     }

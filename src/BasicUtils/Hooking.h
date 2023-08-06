@@ -13,6 +13,7 @@ public:
     static bool UnhookFunction(HookData data);
     static bool UnhookFunction(PVOID* ppPointers, PVOID pDetours = nullptr);
 
+
 private:
     static bool Begin();
     static bool Commit();
