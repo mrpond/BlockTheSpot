@@ -210,7 +210,6 @@ namespace Utils
             existingData = ReadIniFile(fileName);
         }
 
-        // Remove any key-value pairs from existingData that are not present in data
         for (auto& [sectionName, sectionData] : existingData) {
             for (auto it = sectionData.begin(); it != sectionData.end();) {
                 const auto& [key, value] = *it;

@@ -17,12 +17,3 @@
 #include <include/capi/cef_urlrequest_capi.h>
 #include <include/capi/cef_zip_reader_capi.h>
 #endif
-
-#include "BasicUtils/Utils.h"
-#include "BasicUtils/Logger.h"
-#include "BasicUtils/PatternScanner.h"
-#include "BasicUtils/Memory.h"
-#include "BasicUtils/Hooking.h"
-#include "BasicUtils/Console.h"
-
-using namespace Console;
