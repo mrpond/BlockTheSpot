@@ -159,19 +159,6 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 		}
 
 		if (file_name == L"xpui.js") {
-			const auto VeryHighQuality = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"bt:return!1"); // gt.IL.VeryHigh & test
-			if (VeryHighQuality.is_found()) {
-				if (VeryHighQuality.offset(10).write<const char*>("0")) {
-					Logger::Log(L"VeryHighQuality patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"VeryHighQuality - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"VeryHighQuality - failed not found!", Logger::LogLevel::Error);
-			}
-
 			const auto skipads = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"adsEnabled:!0");
 			if (skipads.is_found()) {
 				if (skipads.offset(12).write<const char>('1')) {
