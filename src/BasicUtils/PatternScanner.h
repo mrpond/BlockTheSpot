@@ -1,9 +1,11 @@
 ﻿#ifndef _PATTERNSCANNER_H
 #define _PATTERNSCANNER_H
 
-#include <iostream>
 #include <Windows.h>
+#pragma warning(disable: 4530)
+#include <iostream>
 #include <vector>
+#pragma warning(default: 4530)
 #include <format>
 #include <span>
 #include "Memory.h"
@@ -37,7 +39,7 @@ enum class ValueType {
 
 class Scan {
 public:
-    Scan() = default;
+    Scan() : m_address(0), m_module_info(0, 0) {}
     explicit Scan(std::uintptr_t address, std::pair<std::size_t, std::size_t> module_info);
     operator std::uintptr_t() const;
 
@@ -49,7 +51,7 @@ public:
     Scan offset(std::size_t value) const;
     Scan disassemble() const;
 
-    bool hook(PVOID p_detours) const;
+    PVOID* hook(PVOID pHookFunction) const;
     bool unhook() const;
 
     Scan scan_first(std::wstring_view value, ScanType scan_type = ScanType::Unknown, bool forward = true) const;

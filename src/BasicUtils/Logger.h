@@ -1,7 +1,9 @@
 #ifndef _LOGGER_H
 #define _LOGGER_H
 
+#pragma warning(disable: 4530)
 #include <string_view>
+#pragma warning(default: 4530)
 
 namespace Logger
 {

@@ -77,7 +77,7 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 {
 #ifndef NDEBUG
 	cef_string_utf16_t* url_utf16 = request->get_url (request);
-	std::wstring url(Utils::ToString(url_utf16->str));
+	std::wstring url = Utils::ToString(url_utf16->str);
 	//Print({ Color::Yellow }, L"[{}] {}", L"request_get_url", Memory::GetMemberFunctionOffset(&_cef_request_t::get_url));
 #else
 
@@ -88,7 +88,7 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 #endif
 
 	auto url_utf16 = request_get_url(request);
-	std::wstring url(*reinterpret_cast<wchar_t**>(url_utf16));
+	std::wstring url = *reinterpret_cast<wchar_t**>(url_utf16);
 #endif
 	for (const auto& blockurl : block_list) {
 		if (std::wstring_view::npos != url.find (blockurl)) {
@@ -112,7 +112,6 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 #endif
 {
 	int _retval = cef_zip_reader_read_file_orig(self, buffer, bufferSize);
-	try {
 #ifndef NDEBUG
 		std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
 		//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&_cef_zip_reader_t::get_file_name));
@@ -123,7 +122,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 #else
 		auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 36));
 #endif
-		std::wstring file_name(*reinterpret_cast<wchar_t**>(get_file_name(self)));
+		std::wstring file_name = *reinterpret_cast<wchar_t**>(get_file_name(self));
 #endif
 
 		if (file_name == L"home-hpto.css") {
@@ -252,11 +251,6 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 				Logger::Log(L"premium - failed not found!", Logger::LogLevel::Error);
 			}
 		}
-	}
-	catch (const std::exception& e) {
-		PrintError(Utils::ToString(e.what()));
-	}
-
 	return _retval;
 }
 
@@ -282,8 +276,8 @@ void* cef_zip_reader_create_hook(void* stream)
 
 #endif
 
-	if (cef_zip_reader_read_file_orig) {
-		Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, (PVOID)cef_zip_reader_read_file_hook);
+	if (!Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, (PVOID)cef_zip_reader_read_file_hook)) {
+		Logger::Log(L"zip_reader_read_file_hook - patch failed!", Logger::LogLevel::Error);
 	}
 
 	return zip_reader;
@@ -503,11 +497,9 @@ __declspec(naked) void hook_zip_buffer()
 
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
-	try
-	{
 #ifdef _WIN64
-		const auto developer = PatternScanner::ScanFirst(L"41 22 DE 48 8B 95 40 05 00 00");
-		if (Memory::Write<std::vector<uint8_t>>(developer.data(), { 0xB3, 0x03, 0x90 })) {
+		const auto developer = PatternScanner::ScanFirst(L"48 8B 95 C0 05 00 00");
+		if (developer.offset(-3).write<std::vector<std::uint8_t>>({ 0xB3, 0x01, 0x90 })) {
 			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 		}
 		else {
@@ -515,69 +507,41 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 		}
 #else
 		const auto developer = PatternScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
-		if (Memory::Write<std::vector<uint8_t>>(developer.data(), { 0xB8, 0x03, 0x00 })) {
+		if (developer.write<std::vector<std::uint8_t>>({ 0xB8, 0x03, 0x00 })) {
 			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 		}
 		else {
 			Logger::Log(L"Developer - patch failed!", Logger::LogLevel::Error);
 		}
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		PrintError(Utils::ToString(e.what()));
-	}
 	return 0;
 }
 
 DWORD WINAPI BlockAds(LPVOID lpParam)
 {
-	try
-	{
 #if 0
 		const auto pod = PatternScanner::ScanFirst(L"80 7C 24 70 07 0F 85 ?? ?? ?? ?? 48 8D").offset(5);
-		if (Memory::Write<std::vector<uint8_t>>(pod.data(), { 0x90, 0xE9 })) {
+		if (pod.write<std::vector<std::uint8_t>>({ 0x90, 0xE9 })) {
 			Logger::Log(L"Block Audio Ads - patch success!", Logger::LogLevel::Info);
 		}
 		else {
 			Logger::Log(L"Block Audio Ads - patch failed!", Logger::LogLevel::Error);
 		}
 #else
-		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").data();
-		cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
-
-		if (cef_urlrequest_create_orig && cef_string_userfree_utf16_free_orig) {
-			if (Hooking::HookFunction(&(PVOID&)cef_urlrequest_create_orig, (PVOID)cef_urlrequest_create_hook)) {
-				Logger::Log(L"BlockAds - patch success!", Logger::LogLevel::Info);
-			}
-			else {
-				Logger::Log(L"BlockAds - patch failed!", Logger::LogLevel::Error);
-			}
-		}
+	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
+	if (cef_string_userfree_utf16_free_orig) {
+		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").hook((PVOID)cef_urlrequest_create_hook);
+		cef_urlrequest_create_orig ? Logger::Log(L"BlockAds - patch success!", Logger::LogLevel::Info) : Logger::Log(L"BlockAds - patch failed!", Logger::LogLevel::Error);
+	}
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		PrintError(Utils::ToString(e.what()));
-	}
 	return 0;
 }
 
 DWORD WINAPI BlockBanner(LPVOID lpParam)
 {
-	try
-	{
 #ifdef NEW_HOOK_SYSTEM
-		cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").data();
-
-		if (cef_zip_reader_create_orig) {
-			if (Hooking::HookFunction(&(PVOID&)cef_zip_reader_create_orig, (PVOID)cef_zip_reader_create_hook)) {
-				Logger::Log(L"BlockBanner - patch success!", Logger::LogLevel::Info);
-			}
-			else {
-				Logger::Log(L"BlockBanner - patch failed!", Logger::LogLevel::Error);
-		}
-	}
+	cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").hook((PVOID)cef_zip_reader_create_hook);
+	cef_zip_reader_create_orig ? Logger::Log(L"BlockBanner - patch success!", Logger::LogLevel::Info) : Logger::Log(L"BlockBanner - patch failed!", Logger::LogLevel::Error);
 #else
 #ifdef _WIN64
 		const auto FileName = PatternScanner::ScanFirst(L"48 85 C9 74 23 38 5C 24 48 74 14 E8 ?? ?? ?? ?? BA 18 00 00 00 48 8B 4C 24 40 E8 ?? ?? ?? ?? 48 89 5C 24 40 88 5C 24 48 48 8D 5E 08");
@@ -618,10 +582,5 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 		}
 #endif
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		PrintError(Utils::ToString(e.what()));
-	}
 	return 0;
 }

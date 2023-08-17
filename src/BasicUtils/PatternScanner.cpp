@@ -4,24 +4,24 @@
 #include "Hooking.h"
 #include "Utils.h"
 #include <Psapi.h>
+#pragma warning(disable: 4530)
 #include <sstream>
-#include <map>
+#pragma warning(default: 4530)
 #include <iomanip>
 #include <regex>
-
-using namespace Console;
 
 PatternScanner::ModuleInfo PatternScanner::GetModuleInfo(std::wstring_view module_name)
 {
     const HMODULE module_handle = GetModuleHandleW(module_name.empty() ? nullptr : module_name.data());
     if (!module_handle) {
-        throw std::runtime_error(Utils::ToString(Utils::FormatString(L"Could not get module handle for {}. Error code: {}",
-            module_name.empty() ? L"main module" : module_name, GetLastError())).c_str());
+        PrintError(L"GetModuleInfo: Could not get module handle for {}. Error code: {}", module_name.empty() ? L"main module" : module_name, GetLastError());
+        return ModuleInfo();
     }
+
     MODULEINFO module_info;
     if (!GetModuleInformation(GetCurrentProcess(), module_handle, &module_info, sizeof(module_info))) {
-        throw std::runtime_error(Utils::ToString(Utils::FormatString(L"Could not get module information for {}. Error code: {}",
-            module_name.empty() ? L"main module" : module_name, GetLastError())).c_str());
+        PrintError(L"GetModuleInfo: Could not get module information for {}. Error code: {}", module_name.empty() ? L"main module" : module_name, GetLastError());
+        return ModuleInfo();
     }
 
     return { reinterpret_cast<std::size_t>(module_info.lpBaseOfDll), static_cast<std::size_t>(module_info.SizeOfImage) };
@@ -33,18 +33,21 @@ Scan PatternScanner::GetFunctionAddress(std::wstring_view module_name, std::wstr
     if (!module_handle) {
         module_handle = LoadLibraryW(module_name.data());
         if (!module_handle) {
-            throw std::runtime_error("Failed to load module");
+            PrintError(L"GetFunctionAddress: Failed to load module");
+            return Scan();
         }
     }
 
     FARPROC function_address = GetProcAddress(module_handle, Utils::ToString(function_name).c_str());
     if (!function_address) {
-        throw std::runtime_error("Failed to get function address");
+        PrintError(L"GetFunctionAddress: Failed to get function address");
+        return Scan();
     }
 
     MODULEINFO module_info;
     if (!GetModuleInformation(GetCurrentProcess(), module_handle, &module_info, sizeof(module_info))) {
-        throw std::runtime_error("Failed to get module information");
+        PrintError(L"GetFunctionAddress: Failed to get module information");
+        return Scan();
     }
 
     return Scan(reinterpret_cast<std::uintptr_t>(function_address), { reinterpret_cast<size_t>(module_info.lpBaseOfDll), static_cast<size_t>(module_info.SizeOfImage) });
@@ -139,20 +142,22 @@ std::vector<std::uint8_t> PatternScanner::SignatureToByteArray(std::wstring_view
         else if (word.size() == 2 && std::isxdigit(word[0]) && std::isxdigit(word[1])) {
             unsigned long value = std::stoul(word, nullptr, 16);
             if (value <= 255) {
-                uint8_t byte = static_cast<uint8_t>(value);
+                std::uint8_t byte = static_cast<std::uint8_t>(value);
                 signature_bytes.push_back(byte);
             }
             else {
-                throw std::invalid_argument("Value out of range");
+                PrintError(L"SignatureToByteArray: Value out of range");
+                return {};
             }
         }
         else {
             for (wchar_t c : word) {
                 if (c >= 0 && c <= 255) {
-                    signature_bytes.push_back(static_cast<uint8_t>(c));
+                    signature_bytes.push_back(static_cast<std::uint8_t>(c));
                 }
                 else {
-                    throw std::runtime_error("Value out of range");
+                    PrintError(L"SignatureToByteArray: Value out of range");
+                    return {};
                 }
             }
         }
@@ -178,7 +183,8 @@ std::vector<std::uint8_t> PatternScanner::SignatureToByteArray(std::wstring_view
 //                signature_bytes.push_back(byte);
 //            }
 //            else {
-//                throw std::invalid_argument("Value out of range");
+//                PrintError(L"SignatureToByteArray: Value out of range");
+//                return {};
 //            }
 //        }
 //        else {
@@ -187,7 +193,8 @@ std::vector<std::uint8_t> PatternScanner::SignatureToByteArray(std::wstring_view
 //                    signature_bytes.push_back(static_cast<uint16_t>(c));
 //                }
 //                else {
-//                    throw std::runtime_error("Value out of range");
+//                    PrintError(L"SignatureToByteArray: Value out of range");
+//                    return {};
 //                }
 //            }
 //        }
@@ -198,14 +205,20 @@ std::vector<std::uint8_t> PatternScanner::SignatureToByteArray(std::wstring_view
 
 std::vector<Scan> PatternScanner::ScanAll(std::size_t base_address, std::size_t image_size, ScanTargets byte_pattern, ValueType value_type, ScanType scan_type, bool forward)
 {
-    if (!base_address)
-        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+    if (!base_address) {
+        PrintError(L"ScanAll: Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return {};
+    }
 
-    if (!image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+    if (!image_size) {
+        PrintError(L"ScanAll: Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return {};
+    }
 
-    if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+    if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size) {
+        PrintError(L"ScanAll: Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return {};
+    }
 
     const auto pattern_size = byte_pattern.first.size();
     const auto end_address = base_address + image_size - pattern_size;
@@ -256,15 +269,20 @@ std::vector<Scan> PatternScanner::ScanAll(std::wstring_view value, std::wstring_
 
 Scan PatternScanner::ScanFirst(std::size_t base_address, std::size_t image_size, ScanTargets byte_pattern, ValueType value_type, ScanType scan_type, bool forward)
 {
-    if (!base_address)
-        throw std::invalid_argument(Utils::FormatString("Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+    if (!base_address) {
+        PrintError(L"ScanFirst: Invalid base address ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return Scan();
+    }
 
-    if (!image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
+    if (!image_size) {
+        PrintError(L"ScanFirst: Invalid image size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return Scan();
+    }
 
-    if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size)
-        throw std::invalid_argument(Utils::FormatString("Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size())));
-
+    if (byte_pattern.first.empty() || byte_pattern.first.size() > image_size) {
+        PrintError(L"ScanFirst: Invalid pattern size ({})", value_type == ValueType::String || value_type == ValueType::WString ? std::string(byte_pattern.first.begin(), byte_pattern.first.end()) : Utils::ToHexString(byte_pattern.first.data(), byte_pattern.first.size()));
+        return Scan();
+    }
     const auto pattern_size = byte_pattern.first.size();
     const auto end_address = base_address + image_size - pattern_size;
     const auto first_byte = byte_pattern.first[0];
@@ -401,16 +419,17 @@ Scan Scan::disassemble() const
     case 0x81:
         _Instruction = { L"ADD", (uint32_t)(m_address + 2) }; break;
     default:
-        throw std::runtime_error(Utils::FormatString("Unknown opcode encountered: {:X}", opcode));
+        PrintError(L"Disassemble: Unknown opcode encountered: {:X}", opcode);
+        return Scan();
     }
 
     //Print(L"{:X} | {} {:X}", m_address, _Instruction.mnemonic, _Instruction.operand_value);
     return Scan(_Instruction.operand_value, m_module_info);
 }
 
-bool Scan::hook(PVOID pDetours) const
+PVOID* Scan::hook(PVOID pHookFunction) const
 {
-    return is_found() ? Hooking::HookFunction(&(PVOID&)m_address, pDetours) : false;
+    return (is_found() && Hooking::HookFunction(&(PVOID&)m_address, pHookFunction)) ? reinterpret_cast<PVOID*>(m_address) : NULL;
 }
 
 bool Scan::unhook() const

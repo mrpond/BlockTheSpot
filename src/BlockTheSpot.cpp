@@ -1,6 +1,6 @@
 #include "pch.h"
 
-void __stdcall LoadAPI(LPVOID* destination, const char* apiName)
+void LoadAPI(LPVOID* destination, const char* apiName)
 {
     if (*destination)
         return;
@@ -16,30 +16,28 @@ void __stdcall LoadAPI(LPVOID* destination, const char* apiName)
 	*destination = reinterpret_cast<LPVOID>(function_map[apiName]);
 }
 
-#ifdef _WIN64
-typedef void(__stdcall* FunctionType)();
-
+#if 1
 #define API_EXPORT_ORIG(N) \
-    static LPVOID _##N = nullptr;    \
+    static LPVOID _##N = nullptr; \
     extern "C" __declspec(dllexport) void N() \
     { \
         LoadAPI(&_##N, #N); \
-        FunctionType func = reinterpret_cast<FunctionType>(_##N); \
+        auto func = reinterpret_cast<void(*)()>(_##N); \
         func(); \
     }
 #else
 #define API_EXPORT_ORIG(N) \
-	static LPVOID _##N = NULL;	\
-	char S_##N[] = "" # N; \
-	extern "C" __declspec(dllexport) __declspec(naked) void N ## () \
-	{ \
-		__asm pushad \
-		__asm push offset S_##N \
-		__asm push offset _##N \
-		__asm call LoadAPI \
-		__asm popad \
-		__asm jmp [_##N] \
-	}
+    static LPVOID _##N = nullptr;    \
+    static const char S_##N[] = #N; \
+    extern "C" __declspec(dllexport) __declspec(naked) void N() \
+    { \
+        __asm pushad \
+        __asm push offset S_##N \
+        __asm push offset _##N \
+        __asm call LoadAPI \
+        __asm popad \
+        __asm jmp [_##N] \
+    }
 #endif
 
 API_EXPORT_ORIG(CryptProtectData)

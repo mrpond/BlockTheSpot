@@ -6,12 +6,11 @@
 
 #include "Utils.h"
 #include "Console.h"
-#include <Windows.h>
+#pragma warning(disable: 4530)
 #include <chrono>
+#pragma warning(default: 4530)
 #include <codecvt>
 #include <fstream>
-
-using namespace Console;
 
 namespace Utils
 {
@@ -57,8 +56,10 @@ namespace Utils
 
     std::string ToHexString(const uint8_t* data, size_t size, const bool insert_spaces)
     {
-        if (data == nullptr)
-            throw std::invalid_argument("The data pointer is null.");
+        if (data == nullptr) {
+            PrintError(L"ToHexString: The data pointer is null.");
+            return std::string();
+        }
 
         if (size == 0)
             size = std::strlen(reinterpret_cast<const char*>(data));
@@ -68,8 +69,10 @@ namespace Utils
 
     std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces)
     {
-        if (data == nullptr)
-            throw std::invalid_argument("The data pointer is null.");
+        if (data == nullptr) {
+            PrintError(L"ToHexWideString: The data pointer is null.");
+            return std::wstring();
+        }
 
         if (size == 0)
             size = std::wcslen(reinterpret_cast<const wchar_t*>(data));
@@ -168,7 +171,8 @@ namespace Utils
         std::wifstream file(fileName);
 
         if (!file) {
-            throw std::runtime_error("Failed to open ini file.");
+            PrintError(L"ReadIniFile: Failed to open ini file.");
+            return {};
         }
 
         for (std::wstring line; getline(file, line);) {
@@ -210,6 +214,7 @@ namespace Utils
             existingData = ReadIniFile(fileName);
         }
 
+        // Remove any key-value pairs from existingData that are not present in data
         for (auto& [sectionName, sectionData] : existingData) {
             for (auto it = sectionData.begin(); it != sectionData.end();) {
                 const auto& [key, value] = *it;
@@ -225,7 +230,8 @@ namespace Utils
         std::wofstream file(fileName);
     
         if (!file.is_open()) {
-            throw std::runtime_error("Failed to open ini file.");
+            PrintError(L"AppendIniFile: Failed to open ini file.");
+            return;
         }
     
         for (const auto& [sectionName, sectionData] : existingData) {
@@ -254,8 +260,10 @@ namespace Utils
     void PrintSymbols(std::wstring_view module_name)
     {
         HMODULE hModule = GetModuleHandleW(module_name.data());
-        if (!hModule && !(hModule = LoadLibraryW(module_name.data())))
-            throw std::runtime_error("Failed to load module.");
+        if (!hModule && !(hModule = LoadLibraryW(module_name.data()))) {
+            PrintError(L"PrintSymbols: Failed to load module.");
+            return;
+        }
 
         PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
         PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)dosHeader + dosHeader->e_lfanew);

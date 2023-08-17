@@ -17,8 +17,6 @@
 #include "BasicUtils/Hooking.h"
 #include "BasicUtils/Console.h"
 
-using namespace Console;
-
 #include "Debug.h"
 #include "Modify.h"
 

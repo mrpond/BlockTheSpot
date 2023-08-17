@@ -4,15 +4,16 @@
 #include "Logger.h"
 #include "Console.h"
 #include <fstream>
+#pragma warning(disable: 4530)
 #include <chrono>
-
+#pragma warning(default: 4530)
+#include <mutex>
 #include <locale>
 #include <codecvt>
 
-using namespace Console;
-
 namespace Logger
 {
+    std::mutex mtx;
     std::wofstream file;
     std::wstringstream buffer;
 
@@ -62,6 +63,8 @@ namespace Logger
 
     void Log(std::wstring_view message, LogLevel level)
     {
+        std::lock_guard<std::mutex> lock(mtx);
+
         auto level_str = GetLevelInfo(level);
 
 #ifndef NDEBUG

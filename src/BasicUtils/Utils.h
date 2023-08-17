@@ -1,9 +1,14 @@
 ﻿#ifndef _UTILS_H
 #define _UTILS_H
 
+#pragma warning(disable: 4530)
+#include <iostream>
+#include <map>
+#pragma warning(default: 4530)
+#include <string_view>
 #include <functional>
 #include <format>
-#include <map>
+#include "Console.h"
 
 namespace Utils
 {
@@ -53,30 +58,33 @@ namespace Utils
             return { bytes.begin(), bytes.end() };
         }
         else {
-            throw std::runtime_error("Invalid type for ToBytes function");
+            PrintError(L"Invalid type for ToBytes function");
+            return {};
         }
     }
 
     template<typename... Args>
     std::wstring FormatString(std::wstring_view fmt, const Args&... args)
     {
-        try {
+        //try {
             return std::vformat(fmt, std::make_wformat_args(args...));
-        }
-        catch (const std::exception& e) {
-            throw std::runtime_error("Failed to format string: " + std::string(e.what()));
-        }
+        //}
+        //catch (const std::exception& e) {
+        //    PrintError(L"Failed to format string: {}", e.what());
+        //    return std::wstring();
+        //}
     }
 
     template<typename... Args>
     std::string FormatString(std::string_view fmt, const Args&... args)
     {
-        try {
+        //try {
             return std::vformat(fmt, std::make_format_args(args...));
-        }
-        catch (const std::exception& e) {
-            throw std::runtime_error("Failed to format string: " + std::string(e.what()));
-        }
+        //}
+        //catch (const std::exception& e) {
+        //    PrintError(L"Failed to format string: {}", e.what());
+        //    return std::string();
+        //}
     }
 };
 

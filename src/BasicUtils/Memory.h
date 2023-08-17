@@ -5,33 +5,16 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
+#include "Console.h"
 
 namespace Memory {
-    template<typename T>
-    bool Read(LPVOID address, T& buffer, std::size_t bufferSize = -1)
-    {
-        if (address == nullptr)
-            throw std::runtime_error("Invalid address");
-
-        if (bufferSize == static_cast<std::size_t>(-1))
-            bufferSize = sizeof(buffer); // error
-
-        DWORD oldProtect = 0;
-        if (!VirtualProtect(address, bufferSize, PAGE_EXECUTE_READWRITE, &oldProtect))
-            throw std::runtime_error("Failed to set memory protection for reading");
-
-        std::memcpy(static_cast<void*>(&buffer), address, bufferSize);
-    
-        if (!VirtualProtect(address, bufferSize, oldProtect, &oldProtect))
-            throw std::runtime_error("Failed to restore memory protection after reading");
-        return true;
-    }
-    
     template <typename T>
     bool Write(LPVOID address, const T& buffer, std::size_t bufferSize = -1)
     {
-        if (address == nullptr)
-            throw std::runtime_error("Invalid address");
+        if (address == nullptr) {
+            PrintError(L"Write: Invalid address");
+            return false;
+        }
 
         const void* data = nullptr;
 
@@ -59,7 +42,8 @@ namespace Memory {
                 bufferSize = buffer.size() * sizeof(typename T::value_type);
             }
             else {
-                throw std::runtime_error("Unsupported type");
+                PrintError(L"Write: Unsupported type");
+                return false;
             }
         }
         else
@@ -68,13 +52,17 @@ namespace Memory {
         }
 
         DWORD oldProtect = 0;
-        if (!VirtualProtect(address, bufferSize, PAGE_EXECUTE_READWRITE, &oldProtect))
-            throw std::runtime_error("Failed to set memory protection for writing");
+        if (!VirtualProtect(address, bufferSize, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+            PrintError(L"Write: Failed to set memory protection for writing");
+            return false;
+        }
 
         std::memcpy(address, data, bufferSize);
 
-        if (!VirtualProtect(address, bufferSize, oldProtect, &oldProtect))
-            throw std::runtime_error("Failed to restore memory protection after writing");
+        if (!VirtualProtect(address, bufferSize, oldProtect, &oldProtect)) {
+            PrintError(L"Write: Failed to restore memory protection after writing");
+            return false;
+        }
 
         return true;
     }

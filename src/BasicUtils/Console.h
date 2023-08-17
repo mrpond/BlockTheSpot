@@ -2,13 +2,14 @@
 #define _CONSOLE_H
 
 #include <Windows.h>
+#pragma warning(disable: 4530)
 #include <iostream>
+#pragma warning(default: 4530)
 #include <string_view>
 #include <vector>
 #include <mutex>
 //#include <regex>
 #include <format>
-#include "Utils.h"
 
 namespace Console {
 	extern std::mutex cout_mutex;
@@ -34,12 +35,20 @@ namespace Console {
 #if defined(_DEBUG) || defined(_CONSOLE)
 	// Converts a value to the appropriate type for std::vformat()
 	template<typename T>
-	constexpr auto TypeConvert(const T& arg) {
+	constexpr auto TypeConvert(const T& arg)
+	{
 		if constexpr (std::is_same_v<T, const wchar_t*>) {
 			return std::wstring_view(arg);
 		}
 		else if constexpr (std::is_same_v<T, char*> || std::is_same_v<T, const char*> || std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view>) {
-			return Utils::ToString(arg);
+			auto ToString = [&](std::string_view narrow_string) {
+				int size_needed = MultiByteToWideChar(CP_UTF8, 0, &narrow_string[0], (int)narrow_string.size(), NULL, 0);
+				std::wstring wstrTo(size_needed, 0);
+				MultiByteToWideChar(CP_UTF8, 0, &narrow_string[0], (int)narrow_string.size(), &wstrTo[0], size_needed);
+				return wstrTo;
+			};
+
+			return ToString(arg);
 		}
 		else if constexpr (std::is_same_v < T, void*>) {
 			return reinterpret_cast<std::uintptr_t>(arg);
@@ -69,7 +78,7 @@ namespace Console {
 			std::wcout << std::vformat(fmt, std::make_wformat_args(TypeConvert(args)...)) << std::endl;
 		//}
 		//catch (const std::exception& e) {
-		//	throw std::runtime_error("Failed to format string: " + std::string(e.what()));
+		//	std::wcerr << L"Failed to format string: " << e.what() << std::endl;
 		//}
 #endif
 	}
@@ -181,5 +190,7 @@ namespace Console {
 //#endif
 //	}
 }
+
+using namespace Console;
 
 #endif // _CONSOLE_H
