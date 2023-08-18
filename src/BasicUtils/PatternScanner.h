@@ -10,15 +10,6 @@
 #include <span>
 #include "Memory.h"
 
-enum class AssemblyCode {
-    PUSH_VALUE = 0x68,
-    JUMP_IF_EQUAL = 0x74,
-    JUMP_IF_NOT_EQUAL = 0x75,
-    JUMP_RELATIVE_SHORT = 0xEB,
-    JUMP_RELATIVE_LONG = 0xE9,
-    CALL_RELATIVE = 0xE8
-};
-
 enum class ScanType {
     Unknown,    // The scan type is unknown
     Exact,      // The value must be exactly equal to the target value
@@ -56,9 +47,8 @@ public:
 
     Scan scan_first(std::wstring_view value, ScanType scan_type = ScanType::Unknown, bool forward = true) const;
 
-    std::vector<Scan> get_all_matching_codes(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
-    std::vector<Scan> get_all_matching_codes(std::vector<std::uint8_t> pattern, std::size_t base_address = 0, std::size_t image_size = 0) const;
-    Scan get_first_matching_code(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
+    std::vector<Scan> get_all_matching_codes(std::vector<std::uint8_t> pattern, bool check_displacement = true, std::size_t base_address = 0, std::size_t image_size = 0) const;
+    Scan get_first_matching_code(std::vector<std::uint8_t> pattern, bool check_displacement = true, std::size_t base_address = 0, std::size_t image_size = 0) const;
 
     template <typename T>
     T read() const {

@@ -442,34 +442,32 @@ Scan Scan::scan_first(std::wstring_view value, ScanType scan_type, bool forward)
     return is_found() ? PatternScanner::ScanFirst(m_address, m_module_info.second, { PatternScanner::SignatureToByteArray(value) }, ValueType::WString, scan_type, forward) : Scan(NULL, m_module_info);
 }
 
-std::vector<Scan> Scan::get_all_matching_codes(AssemblyCode code, std::size_t base_address, std::size_t image_size) const
-{
-    std::vector<uint8_t> pattern = { static_cast<std::uint8_t>(code) };
-    auto offset = pattern.size();
-    pattern.resize(pattern.size() + sizeof(m_address));
-    *reinterpret_cast<std::uintptr_t*>(pattern.data() + offset) = m_address;
-    return PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern, pattern.size()), ScanType::Unknown, true);
-}
-
-std::vector<Scan> Scan::get_all_matching_codes(std::vector<std::uint8_t> pattern, std::size_t base_address, std::size_t image_size) const
+std::vector<Scan> Scan::get_all_matching_codes(std::vector<std::uint8_t> pattern, bool check_displacement, std::size_t base_address, std::size_t image_size) const
 {
     std::vector<Scan> addresses;
     auto pattern_scan = PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern), ScanType::Unknown, true);
-
     for (const auto& it : pattern_scan) {
-        const auto rip_offset = *reinterpret_cast<const std::int32_t*>(it + pattern.size());
-        if (it + rip_offset + pattern.size() + sizeof(rip_offset) == m_address)
+        const auto instruction_address = static_cast<std::int32_t>(it);
+        const auto target_address = static_cast<std::int32_t>(m_address);
+        const auto displacement = target_address - instruction_address - pattern.size() - sizeof(std::int32_t);
+        const auto expected_value = check_displacement ? displacement : target_address;
+        if (*reinterpret_cast<const std::int32_t*>(it + pattern.size()) == expected_value)
             addresses.push_back(Scan(it, { base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size }));
     }
-
     return addresses;
 }
 
-Scan Scan::get_first_matching_code(AssemblyCode code, std::size_t base_address, std::size_t image_size) const
+Scan Scan::get_first_matching_code(std::vector<std::uint8_t> pattern, bool check_displacement, std::size_t base_address, std::size_t image_size) const
 {
-    std::vector<std::uint8_t> pattern = { static_cast<std::uint8_t>(code) };
-    auto offset = pattern.size();
-    pattern.resize(pattern.size() + sizeof(m_address));
-    *reinterpret_cast<std::uintptr_t*>(pattern.data() + offset) = m_address;
-    return PatternScanner::ScanFirst(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern, pattern.size()), ScanType::Unknown, true);
+    std::vector<Scan> addresses;
+    auto pattern_scan = PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern), ScanType::Unknown, true);
+    for (const auto& it : pattern_scan) {
+        const auto instruction_address = static_cast<std::int32_t>(it);
+        const auto target_address = static_cast<std::int32_t>(m_address);
+        const auto displacement = target_address - instruction_address - pattern.size() - sizeof(std::int32_t);
+        const auto expected_value = check_displacement ? displacement : target_address;
+        if (*reinterpret_cast<const std::int32_t*>(it + pattern.size()) == expected_value)
+            return Scan(it, { base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size });
+    }
+    return Scan();
 }

@@ -512,6 +512,7 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 		Logger::Log(L"Developer - failed not found!", Logger::LogLevel::Error);
 	}
 #else
+	//const auto developer = PatternScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x68 }, false);
 	const auto developer = PatternScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
 	if (developer.write<std::vector<std::uint8_t>>({ 0xB8, 0x03, 0x00 })) {
 		Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
