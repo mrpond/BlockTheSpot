@@ -451,6 +451,20 @@ std::vector<Scan> Scan::get_all_matching_codes(AssemblyCode code, std::size_t ba
     return PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern, pattern.size()), ScanType::Unknown, true);
 }
 
+std::vector<Scan> Scan::get_all_matching_codes(std::vector<std::uint8_t> pattern, std::size_t base_address, std::size_t image_size) const
+{
+    std::vector<Scan> addresses;
+    auto pattern_scan = PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern), ScanType::Unknown, true);
+
+    for (const auto& it : pattern_scan) {
+        const auto rip_offset = *reinterpret_cast<const std::int32_t*>(it + pattern.size());
+        if (it + rip_offset + pattern.size() + sizeof(rip_offset) == m_address)
+            addresses.push_back(Scan(it, { base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size }));
+    }
+
+    return addresses;
+}
+
 Scan Scan::get_first_matching_code(AssemblyCode code, std::size_t base_address, std::size_t image_size) const
 {
     std::vector<std::uint8_t> pattern = { static_cast<std::uint8_t>(code) };

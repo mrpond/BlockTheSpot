@@ -1,9 +1,9 @@
 ﻿#include "pch.h"
 
 /*
-* 
+*
 * Black banner still show even libcef hooked.
-* 
+*
 */
 
 //using _cef_urlrequest_create = cef_urlrequest_t * (*)(struct _cef_request_t* request,
@@ -46,7 +46,7 @@ DWORD WINAPI get_url(DWORD pRequest)
 	__asm
 	{
 		mov eax, pRequest
-		mov ecx, dword ptr ds:[eax+0x18]
+		mov ecx, dword ptr ds : [eax + 0x18]
 		mov edx, eax
 		push edx
 		call ecx
@@ -70,13 +70,13 @@ DWORD WINAPI get_str(DWORD pRequest)
 #endif
 
 #ifndef NDEBUG
-void* cef_urlrequest_create_hook (struct _cef_request_t* request, void* client, void* request_context)
+void* cef_urlrequest_create_hook(struct _cef_request_t* request, void* client, void* request_context)
 #else
 void* cef_urlrequest_create_hook(void* request, void* client, void* request_context)
 #endif
 {
 #ifndef NDEBUG
-	cef_string_utf16_t* url_utf16 = request->get_url (request);
+	cef_string_utf16_t* url_utf16 = request->get_url(request);
 	std::wstring url = Utils::ToString(url_utf16->str);
 	//Print({ Color::Yellow }, L"[{}] {}", L"request_get_url", Memory::GetMemberFunctionOffset(&_cef_request_t::get_url));
 #else
@@ -91,7 +91,7 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 	std::wstring url = *reinterpret_cast<wchar_t**>(url_utf16);
 #endif
 	for (const auto& blockurl : block_list) {
-		if (std::wstring_view::npos != url.find (blockurl)) {
+		if (std::wstring_view::npos != url.find(blockurl)) {
 			Logger::Log(L"blocked - " + url, Logger::LogLevel::Info);
 			//cef_string_userfree_utf16_free(url_utf16);
 			cef_string_userfree_utf16_free_orig((void*)url_utf16);
@@ -101,7 +101,7 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 	//cef_string_userfree_utf16_free(url_utf16);
 	cef_string_userfree_utf16_free_orig((void*)url_utf16);
 	Logger::Log(L"allow - " + url, Logger::LogLevel::Info);
-	return cef_urlrequest_create_orig (request, client, request_context);
+	return cef_urlrequest_create_orig(request, client, request_context);
 }
 
 #ifdef NEW_HOOK_SYSTEM
@@ -113,144 +113,144 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 {
 	int _retval = cef_zip_reader_read_file_orig(self, buffer, bufferSize);
 #ifndef NDEBUG
-		std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
-		//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&_cef_zip_reader_t::get_file_name));
-		//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
+	std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
+	//Print({ Color::Yellow }, L"[{}] {}", L"zip_reader_read_file", Memory::GetMemberFunctionOffset(&_cef_zip_reader_t::get_file_name));
+	//Print(L"{} {} {:X}", file_name, bufferSize, buffer);
 #else
 #ifdef _WIN64
-		auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 72));
+	auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 72));
 #else
-		auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 36));
+	auto get_file_name = (*(void* (__stdcall**)(void*))((std::uintptr_t)self + 36));
 #endif
-		std::wstring file_name = *reinterpret_cast<wchar_t**>(get_file_name(self));
+	std::wstring file_name = *reinterpret_cast<wchar_t**>(get_file_name(self));
 #endif
 
-		if (file_name == L"home-hpto.css") {
-			const auto hpto = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:flex;");
-			if (hpto.is_found()) {
-				if (hpto.write<const char*>(".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:none;")) {
-					Logger::Log(L"hptocss patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"hptocss patch failed!", Logger::LogLevel::Error);
-				}
+	if (file_name == L"home-hpto.css") {
+		const auto hpto = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:flex;");
+		if (hpto.is_found()) {
+			if (hpto.write<const char*>(".WiPggcPDzbwGxoxwLWFf{-webkit-box-pack:center;-ms-flex-pack:center;display:-webkit-box;display:-ms-flexbox;display:none;")) {
+				Logger::Log(L"hptocss patched!", Logger::LogLevel::Info);
 			}
 			else {
-				Logger::Log(L"hptocss - failed not found!", Logger::LogLevel::Error);
+				Logger::Log(L"hptocss patch failed!", Logger::LogLevel::Error);
 			}
 		}
+		else {
+			Logger::Log(L"hptocss - failed not found!", Logger::LogLevel::Error);
+		}
+	}
 
-		if (file_name == L"xpui-routes-profile.js") {
-			const auto isModalOpen = PatternScanner::ScanAll(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isModalOpen:!0");
-			if (isModalOpen[0].is_found()) {
-				for (const auto& it : isModalOpen) {
-					if (it.offset(13).write<const char>('1')) {
-						Logger::Log(L"isModalOpen patched!", Logger::LogLevel::Info);
-					}
-					else {
-						Logger::Log(L"isModalOpen - patch failed!", Logger::LogLevel::Error);
-					}
+	if (file_name == L"xpui-routes-profile.js") {
+		const auto isModalOpen = PatternScanner::ScanAll(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isModalOpen:!0");
+		if (isModalOpen[0].is_found()) {
+			for (const auto& it : isModalOpen) {
+				if (it.offset(13).write<const char>('1')) {
+					Logger::Log(L"isModalOpen patched!", Logger::LogLevel::Info);
 				}
-			}
-			else {
-				Logger::Log(L"isModalOpen - failed not found!", Logger::LogLevel::Error);
+				else {
+					Logger::Log(L"isModalOpen - patch failed!", Logger::LogLevel::Error);
+				}
 			}
 		}
+		else {
+			Logger::Log(L"isModalOpen - failed not found!", Logger::LogLevel::Error);
+		}
+	}
 
-		if (file_name == L"xpui.js") {
-			const auto skipads = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"adsEnabled:!0");
-			if (skipads.is_found()) {
-				if (skipads.offset(12).write<const char>('1')) {
-					Logger::Log(L"adsEnabled patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"adsEnabled - patch failed!", Logger::LogLevel::Error);
-				}
+	if (file_name == L"xpui.js") {
+		const auto skipads = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"adsEnabled:!0");
+		if (skipads.is_found()) {
+			if (skipads.offset(12).write<const char>('1')) {
+				Logger::Log(L"adsEnabled patched!", Logger::LogLevel::Info);
 			}
 			else {
-				Logger::Log(L"adsEnabled - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto sponsorship = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".set(\"allSponsorships\",t.sponsorships)}}(e,t);");
-			if (sponsorship.is_found()) {
-				if (sponsorship.offset(5).write<const char*>(std::string(15, ' ').append("\"").c_str())) {
-					Logger::Log(L"sponsorship patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"sponsorship patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"sponsorship - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto skipsentry = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sentry.io");
-			if (skipsentry.is_found()) {
-				if (skipsentry.write<const char*>("localhost")) {
-					Logger::Log(L"sentry.io -> localhost patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"sentry.io -> localhost - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"sentry.io -> localhost - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto ishptoenable = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"hptoEnabled:!0");
-			if (ishptoenable.is_found())
-			{
-				if (ishptoenable.offset(13).write<const char>('1')) {
-					Logger::Log(L"hptoEnabled patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"hptoEnabled - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"hptoEnabled - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto ishptohidden = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isHptoHidden:!0");
-			if (ishptohidden.is_found()) {
-				if (ishptohidden.offset(14).write<const char>('1')) {
-					Logger::Log(L"isHptoHidden patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"isHptoHidden - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"isHptoHidden - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto sp_localhost = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sp://ads/v1/ads/");
-			if (sp_localhost.is_found()) {
-				if (sp_localhost.write<const char*>("sp://localhost//")) {
-					Logger::Log(L"sp://ads/v1/ads/ patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"sp://ads/v1/ads/ - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"sp://ads/v1/ads/ - failed not found!", Logger::LogLevel::Error);
-			}
-
-			const auto premium_free = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"\"free\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),");
-			if (premium_free.is_found()) {
-				//Print(L"{}", premium_free.read<const char*>());
-				if (premium_free.write<const char*>("\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase(),")) {
-					Logger::Log(L"premium patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"premium - patch failed!", Logger::LogLevel::Error);
-				}
-			}
-			else {
-				Logger::Log(L"premium - failed not found!", Logger::LogLevel::Error);
+				Logger::Log(L"adsEnabled - patch failed!", Logger::LogLevel::Error);
 			}
 		}
+		else {
+			Logger::Log(L"adsEnabled - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto sponsorship = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".set(\"allSponsorships\",t.sponsorships)}}(e,t);");
+		if (sponsorship.is_found()) {
+			if (sponsorship.offset(5).write<const char*>(std::string(15, ' ').append("\"").c_str())) {
+				Logger::Log(L"sponsorship patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"sponsorship patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"sponsorship - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto skipsentry = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sentry.io");
+		if (skipsentry.is_found()) {
+			if (skipsentry.write<const char*>("localhost")) {
+				Logger::Log(L"sentry.io -> localhost patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"sentry.io -> localhost - patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"sentry.io -> localhost - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto ishptoenable = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"hptoEnabled:!0");
+		if (ishptoenable.is_found())
+		{
+			if (ishptoenable.offset(13).write<const char>('1')) {
+				Logger::Log(L"hptoEnabled patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"hptoEnabled - patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"hptoEnabled - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto ishptohidden = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isHptoHidden:!0");
+		if (ishptohidden.is_found()) {
+			if (ishptohidden.offset(14).write<const char>('1')) {
+				Logger::Log(L"isHptoHidden patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"isHptoHidden - patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"isHptoHidden - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto sp_localhost = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"sp://ads/v1/ads/");
+		if (sp_localhost.is_found()) {
+			if (sp_localhost.write<const char*>("sp://localhost//")) {
+				Logger::Log(L"sp://ads/v1/ads/ patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"sp://ads/v1/ads/ - patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"sp://ads/v1/ads/ - failed not found!", Logger::LogLevel::Error);
+		}
+
+		const auto premium_free = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"\"free\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),");
+		if (premium_free.is_found()) {
+			//Print(L"{}", premium_free.read<const char*>());
+			if (premium_free.write<const char*>("\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>null!==e.session?.productState&&1===parseInt(e.session?.productState?.ads,10),o=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase(),")) {
+				Logger::Log(L"premium patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"premium - patch failed!", Logger::LogLevel::Error);
+			}
+		}
+		else {
+			Logger::Log(L"premium - failed not found!", Logger::LogLevel::Error);
+		}
+	}
 	return _retval;
 }
 
@@ -498,21 +498,27 @@ __declspec(naked) void hook_zip_buffer()
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
 #ifdef _WIN64
-		const auto developer = PatternScanner::ScanFirst(L"48 8B 95 C0 05 00 00");
-		if (developer.offset(-3).write<std::vector<std::uint8_t>>({ 0xB3, 0x01, 0x90 })) {
+	//const auto developer = PatternScanner::ScanFirst(L"48 8B 95 C0 05 00 00").offset(-3);
+	const auto developer = PatternScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x48, 0x8D, 0x15 })[1].scan_first(L"D1 EB").offset(2);
+	if (developer.is_found()) {
+		if (developer.write<std::vector<std::uint8_t>>({ 0xB3, 0x01, 0x90 })) {
 			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 		}
 		else {
 			Logger::Log(L"Developer - patch failed!", Logger::LogLevel::Error);
 		}
+	}
+	else {
+		Logger::Log(L"Developer - failed not found!", Logger::LogLevel::Error);
+	}
 #else
-		const auto developer = PatternScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
-		if (developer.write<std::vector<std::uint8_t>>({ 0xB8, 0x03, 0x00 })) {
-			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"Developer - patch failed!", Logger::LogLevel::Error);
-		}
+	const auto developer = PatternScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
+	if (developer.write<std::vector<std::uint8_t>>({ 0xB8, 0x03, 0x00 })) {
+		Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"Developer - patch failed!", Logger::LogLevel::Error);
+	}
 #endif
 	return 0;
 }
@@ -520,13 +526,13 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 DWORD WINAPI BlockAds(LPVOID lpParam)
 {
 #if 0
-		const auto pod = PatternScanner::ScanFirst(L"80 7C 24 70 07 0F 85 ?? ?? ?? ?? 48 8D").offset(5);
-		if (pod.write<std::vector<std::uint8_t>>({ 0x90, 0xE9 })) {
-			Logger::Log(L"Block Audio Ads - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"Block Audio Ads - patch failed!", Logger::LogLevel::Error);
-		}
+	const auto pod = PatternScanner::ScanFirst(L"80 7C 24 70 07 0F 85 ?? ?? ?? ?? 48 8D").offset(5);
+	if (pod.write<std::vector<std::uint8_t>>({ 0x90, 0xE9 })) {
+		Logger::Log(L"Block Audio Ads - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"Block Audio Ads - patch failed!", Logger::LogLevel::Error);
+	}
 #else
 	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
 	if (cef_string_userfree_utf16_free_orig) {
@@ -544,42 +550,42 @@ DWORD WINAPI BlockBanner(LPVOID lpParam)
 	cef_zip_reader_create_orig ? Logger::Log(L"BlockBanner - patch success!", Logger::LogLevel::Info) : Logger::Log(L"BlockBanner - patch failed!", Logger::LogLevel::Error);
 #else
 #ifdef _WIN64
-		const auto FileName = PatternScanner::ScanFirst(L"48 85 C9 74 23 38 5C 24 48 74 14 E8 ?? ?? ?? ?? BA 18 00 00 00 48 8B 4C 24 40 E8 ?? ?? ?? ?? 48 89 5C 24 40 88 5C 24 48 48 8D 5E 08");
-		ret_addr_file_name = FileName + 5;
-		if (FileName.hook((PVOID)hook_file_name)) {
-			Logger::Log(L"FileName - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
-		}
+	const auto FileName = PatternScanner::ScanFirst(L"48 85 C9 74 23 38 5C 24 48 74 14 E8 ?? ?? ?? ?? BA 18 00 00 00 48 8B 4C 24 40 E8 ?? ?? ?? ?? 48 89 5C 24 40 88 5C 24 48 48 8D 5E 08");
+	ret_addr_file_name = FileName + 5;
+	if (FileName.hook((PVOID)hook_file_name)) {
+		Logger::Log(L"FileName - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
+	}
 
-		const auto SourceCode = PatternScanner::ScanFirst(L"48 63 C8 48 03 F1 49 3B F4 73 25 41 F6 C6 04");
-		ret_addr_file_source = SourceCode + 6;
-		if (SourceCode.hook((PVOID)hook_zip_buffer)) {
-			Logger::Log(L"SourceCode - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"SourceCode - patch failed!", Logger::LogLevel::Error);
-		}
+	const auto SourceCode = PatternScanner::ScanFirst(L"48 63 C8 48 03 F1 49 3B F4 73 25 41 F6 C6 04");
+	ret_addr_file_source = SourceCode + 6;
+	if (SourceCode.hook((PVOID)hook_zip_buffer)) {
+		Logger::Log(L"SourceCode - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"SourceCode - patch failed!", Logger::LogLevel::Error);
+	}
 #else
-		const auto FileName = PatternScanner::ScanFirst(L"8B 48 24 85 C9 74 4A 50 FF D1 C7 45 ?? ?? ?? ?? ?? 89 5D E8 88 5D EC 50").offset(0x11);
-		ret_addr_file_name = FileName + 7;
+	const auto FileName = PatternScanner::ScanFirst(L"8B 48 24 85 C9 74 4A 50 FF D1 C7 45 ?? ?? ?? ?? ?? 89 5D E8 88 5D EC 50").offset(0x11);
+	ret_addr_file_name = FileName + 7;
 
-		if (FileName.hook((PVOID)hook_file_name)) {
-			Logger::Log(L"FileName - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
-		}
+	if (FileName.hook((PVOID)hook_file_name)) {
+		Logger::Log(L"FileName - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"FileName - patch failed!", Logger::LogLevel::Error);
+	}
 
-		const auto SourceCode = PatternScanner::ScanFirst(L"8B 45 EC 03 C7 50 FF D2 03 F8").offset(3);
-		ret_addr_file_source = SourceCode + 5;
-		if (SourceCode.hook(hook_zip_buffer)) {
-			Logger::Log(L"SourceCode - patch success!", Logger::LogLevel::Info);
-		}
-		else {
-			Logger::Log(L"SourceCode - patch failed!", Logger::LogLevel::Error);
-		}
+	const auto SourceCode = PatternScanner::ScanFirst(L"8B 45 EC 03 C7 50 FF D2 03 F8").offset(3);
+	ret_addr_file_source = SourceCode + 5;
+	if (SourceCode.hook(hook_zip_buffer)) {
+		Logger::Log(L"SourceCode - patch success!", Logger::LogLevel::Info);
+	}
+	else {
+		Logger::Log(L"SourceCode - patch failed!", Logger::LogLevel::Error);
+	}
 #endif
 #endif
 	return 0;

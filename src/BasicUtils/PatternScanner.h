@@ -57,6 +57,7 @@ public:
     Scan scan_first(std::wstring_view value, ScanType scan_type = ScanType::Unknown, bool forward = true) const;
 
     std::vector<Scan> get_all_matching_codes(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
+    std::vector<Scan> get_all_matching_codes(std::vector<std::uint8_t> pattern, std::size_t base_address = 0, std::size_t image_size = 0) const;
     Scan get_first_matching_code(AssemblyCode code, std::size_t base_address = 0, std::size_t image_size = 0) const;
 
     template <typename T>
