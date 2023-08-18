@@ -1,4 +1,4 @@
-﻿//#define ENABLE_DETOURS
+﻿#define ENABLE_DETOURS
 
 #include "Hooking.h"
 #include <stdexcept>
