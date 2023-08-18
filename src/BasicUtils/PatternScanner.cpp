@@ -459,7 +459,6 @@ std::vector<Scan> Scan::get_all_matching_codes(std::vector<std::uint8_t> pattern
 
 Scan Scan::get_first_matching_code(std::vector<std::uint8_t> pattern, bool check_displacement, std::size_t base_address, std::size_t image_size) const
 {
-    std::vector<Scan> addresses;
     auto pattern_scan = PatternScanner::ScanAll(base_address == 0 ? m_module_info.first : base_address, image_size == 0 ? m_module_info.second : image_size, Utils::ToHexWideString(pattern), ScanType::Unknown, true);
     for (const auto& it : pattern_scan) {
         const auto instruction_address = static_cast<std::int32_t>(it);
