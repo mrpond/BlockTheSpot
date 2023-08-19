@@ -8,25 +8,28 @@
 
 class Hooking {
 public:
-    static bool HookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction);
-    static bool UnhookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction = nullptr);
+    static bool HookFunction(void** function_pointer, void* hook_function);
+    static bool UnhookFunction(void** function_pointer, void* hook_function = nullptr);
 
 private:
 #ifndef ENABLE_DETOURS
     struct HookData {
-        PVOID* ppFunctionPointer;
-        PBYTE pbCode;
-        PBYTE pbNewCode;
-        std::size_t originalCodeSize;
-        std::uint8_t g_OriginalCode[5];
+        void** function_pointer;
+        std::uint8_t* code;
+        std::uint8_t* new_code;
+        std::vector<std::uint8_t> original_code;
     };
 
-    static std::vector<HookData> HookDataList;
+    static std::vector<HookData> hook_data_list;
 
-    static bool BackupFunctionCode(HookData& hookData);
-    static bool ApplyHook(HookData& hookData, PVOID pHookFunction);
-    static bool RestoreFunctionCode(HookData& hookData);
-    static std::size_t GetOriginalCodeSize(PBYTE pbCode);
+    static bool BackupFunctionCode(HookData& hook_data);
+    static bool ApplyHook(HookData& hook_data, void* hook_function);
+    static bool RestoreFunctionCode(HookData& hook_data);
+    static std::size_t GetOriginalCodeSize(std::uint8_t* code);
+
+    static std::uint8_t* GenerateImmediateJump(std::uint8_t* code, std::uint8_t* jump_value);
+    static std::uint8_t* GenerateIndirectJump(std::uint8_t* code, std::uint8_t** jump_value);
+    static std::uint8_t* GenerateBreakpoint(std::uint8_t* code, std::uint8_t* limit);
 #endif
 };
 

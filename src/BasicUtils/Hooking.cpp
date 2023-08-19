@@ -1,4 +1,4 @@
-﻿#define ENABLE_DETOURS
+﻿//#define ENABLE_DETOURS
 
 #include "Hooking.h"
 #include <stdexcept>
@@ -12,11 +12,11 @@
 
 std::mutex mtx;
 
-bool Hooking::HookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
+bool Hooking::HookFunction(void** function_pointer, void* hook_function)
 {
     std::lock_guard<std::mutex> lock(mtx);
 
-    if (!ppFunctionPointer || !pHookFunction) {
+    if (!function_pointer || !hook_function) {
         PrintError(L"HookFunction: Invalid function pointer or hook function.");
         return false;
     }
@@ -34,7 +34,7 @@ bool Hooking::HookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
         return false;
     }
 
-    if ((error = DetourAttach(ppFunctionPointer, pHookFunction)) != NO_ERROR) {
+    if ((error = DetourAttach(function_pointer, hook_function)) != NO_ERROR) {
         PrintError(L"DetourAttach error: {}", error);
         return false;
     }
@@ -44,47 +44,40 @@ bool Hooking::HookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
         return false;
     }
 #else // It is currently in the testing phase. There may be errors.
-    if (!ppFunctionPointer || !pHookFunction) {
-        PrintError(L"HookFunction: Invalid function pointer or hook function.");
-        return false;
-    }
-
-    auto hookDataIt = std::find_if(HookDataList.begin(), HookDataList.end(),
-        [ppFunctionPointer](const HookData& hookData) {
-            return hookData.ppFunctionPointer == ppFunctionPointer;
+    auto hook_data_it = std::find_if(hook_data_list.begin(), hook_data_list.end(),
+        [function_pointer](const HookData& hook_data) {
+            return hook_data.function_pointer == function_pointer;
         });
 
-    if (hookDataIt != HookDataList.end()) {
+    if (hook_data_it != hook_data_list.end()) {
         PrintError(L"HookFunction: Function pointer is already hooked.");
         return false;
     }
 
-    HookData hookData;
-    hookData.ppFunctionPointer = ppFunctionPointer;
-    hookData.pbCode = reinterpret_cast<PBYTE>(*ppFunctionPointer);
+    HookData hook_data{ .function_pointer = function_pointer, .code = reinterpret_cast<std::uint8_t*>(*function_pointer) };
 
-    if (!BackupFunctionCode(hookData)) {
+    if (!BackupFunctionCode(hook_data)) {
         PrintError(L"HookFunction: BackupFunctionCode failed.");
         return false;
     }
 
-    if (!ApplyHook(hookData, pHookFunction)) {
+    if (!ApplyHook(hook_data, hook_function)) {
         PrintError(L"HookFunction: ApplyHook failed.");
         return false;
     }
 
-    HookDataList.push_back(hookData);
+    hook_data_list.push_back(hook_data);
 
-    *ppFunctionPointer = hookData.pbNewCode;
+    *function_pointer = hook_data.new_code;
 #endif
     return true;
 }
 
-bool Hooking::UnhookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
+bool Hooking::UnhookFunction(void** function_pointer, void* hook_function)
 {
     std::lock_guard<std::mutex> lock(mtx);
 #ifdef ENABLE_DETOURS
-    if (!ppFunctionPointer || !pHookFunction) {
+    if (!function_pointer || !hook_function) {
         PrintError(L"UnhookFunction: Invalid function pointer or hook function.");
         return false;
     }
@@ -101,7 +94,7 @@ bool Hooking::UnhookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
         return false;
     }
 
-    if ((error = DetourDetach(ppFunctionPointer, pHookFunction)) != NO_ERROR) {
+    if ((error = DetourDetach(function_pointer, hook_function)) != NO_ERROR) {
         PrintError(L"DetourDetach error: {}", error);
         return false;
     }
@@ -111,86 +104,78 @@ bool Hooking::UnhookFunction(PVOID* ppFunctionPointer, PVOID pHookFunction)
         return false;
     }
 #else
-    if (!ppFunctionPointer) {
+    if (!function_pointer) {
         PrintError(L"UnhookFunction: Invalid function pointer.");
         return false;
     }
 
-    auto hookDataIt = std::find_if(HookDataList.begin(), HookDataList.end(),
-        [ppFunctionPointer](const HookData& hookData) {
-            return hookData.ppFunctionPointer == ppFunctionPointer;
+    auto hook_data_it = std::find_if(hook_data_list.begin(), hook_data_list.end(),
+        [function_pointer](const HookData& hook_data) {
+            return hook_data.function_pointer == function_pointer;
         });
 
-    if (hookDataIt == HookDataList.end()) {
+    if (hook_data_it == hook_data_list.end()) {
         PrintError(L"UnhookFunction: Function pointer is not hooked.");
         return false;
     }
 
-    if (!RestoreFunctionCode(*hookDataIt)) {
+    if (!RestoreFunctionCode(*hook_data_it)) {
         PrintError(L"UnhookFunction: RestoreFunctionCode failed.");
         return false;
     }
 
-    HookDataList.erase(hookDataIt);
+    hook_data_list.erase(hook_data_it);
 #endif
     return true;
 }
 
 #ifndef ENABLE_DETOURS
-bool Hooking::BackupFunctionCode(HookData& hookData)
+bool Hooking::BackupFunctionCode(HookData& hook_data)
 {
-    hookData.originalCodeSize = GetOriginalCodeSize(hookData.pbCode);
-    if (hookData.originalCodeSize < 5) {
+    std::size_t original_code_size = GetOriginalCodeSize(hook_data.code);
+    hook_data.original_code.resize(original_code_size);
+    std::copy_n(reinterpret_cast<std::uint8_t*>(*hook_data.function_pointer), original_code_size, hook_data.original_code.begin());
+
+    if (hook_data.original_code.size() < 5) {
         PrintError(L"BackupFunctionCode: Original code size is less than 5 bytes.");
         return false;
     }
 
-    hookData.pbNewCode = reinterpret_cast<PBYTE>(VirtualAlloc(nullptr, hookData.originalCodeSize + 14, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
-    if (!hookData.pbNewCode) {
+    hook_data.new_code = reinterpret_cast<std::uint8_t*>(VirtualAlloc(nullptr, hook_data.original_code.size(), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+    if (!hook_data.new_code) {
         PrintError(L"BackupFunctionCode: Failed to allocate memory for new code.");
         return false;
     }
 
-    memcpy(hookData.pbNewCode, hookData.pbCode, hookData.originalCodeSize);
+    memcpy(hook_data.new_code, hook_data.code, hook_data.original_code.size());
 
 #ifdef _WIN64
-    hookData.pbNewCode[hookData.originalCodeSize] = 0xFF;
-    hookData.pbNewCode[hookData.originalCodeSize + 1] = 0x25;
-    PVOID pOffset = hookData.pbCode + hookData.originalCodeSize;
-    memcpy(hookData.pbNewCode + hookData.originalCodeSize + 6, &pOffset, sizeof(pOffset));
+    std::uint8_t* offset = hook_data.code + hook_data.original_code.size();
+    //hook_data.new_code[hook_data.original_code.size()] = 0xFF;
+    //hook_data.new_code[hook_data.original_code.size() + 1] = 0x25;
+    //memcpy(hook_data.new_code + hook_data.original_code.size() + 6, &offset, sizeof(offset));
+    GenerateIndirectJump(hook_data.new_code + hook_data.original_code.size(), reinterpret_cast<std::uint8_t**>(&offset));
+    //Print(L"{:X} => {}", (std::uintptr_t)hook_data.new_code, Utils::ToHexWideString(hook_data.new_code, hook_data.original_code.size() + 12));
 #else
-    hookData.pbNewCode[hookData.originalCodeSize] = 0xE9;
-    DWORD dwOffset = (DWORD)(hookData.pbCode - hookData.pbNewCode - 5);
-    memcpy(hookData.pbNewCode + hookData.originalCodeSize + 1, &dwOffset, sizeof(dwOffset));
+    std::uint8_t* offset = hook_data.code + hook_data.original_code.size();
+    GenerateImmediateJump(hook_data.new_code + hook_data.original_code.size(), offset);
 #endif
-
     return true;
 }
 
-bool Hooking::ApplyHook(HookData& hookData, PVOID pHookFunction)
+bool Hooking::ApplyHook(HookData& hook_data, void* hook_function)
 {
-    DWORD oldProtect;
-    if (!VirtualProtect(hookData.pbCode, hookData.originalCodeSize, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+    DWORD old_protect;
+    if (!VirtualProtect(hook_data.code, hook_data.original_code.size(), PAGE_EXECUTE_READWRITE, &old_protect)) {
         PrintError(L"ApplyHook: Failed to change memory protection for code.");
         return false;
     }
 
-    memcpy(hookData.g_OriginalCode, hookData.pbCode, hookData.originalCodeSize);
+    auto code = GenerateImmediateJump(hook_data.code, static_cast<std::uint8_t*>(hook_function));
+    GenerateBreakpoint(code, hook_data.code + hook_data.original_code.size());
 
-    INT32 offset = INT32(reinterpret_cast<PBYTE>(pHookFunction) - hookData.pbCode - 5);
-
-    if (offset < 0) {
-        PrintError(L"ApplyHook: Invalid offset.");
-        return false;
-    }
-
-    hookData.pbCode[0] = 0xE9;
-    memcpy(hookData.pbCode + 1, &offset, sizeof(offset));
-
-    memset(hookData.pbCode + 5, 0xCC, hookData.originalCodeSize - 5);
-
-    DWORD newProtect;
-    if (!VirtualProtect(hookData.pbCode, hookData.originalCodeSize, oldProtect, &newProtect)) {
+    DWORD new_protect;
+    if (!VirtualProtect(hook_data.code, hook_data.original_code.size(), old_protect, &new_protect)) {
         PrintError(L"ApplyHook: Failed to restore memory protection for code.");
         return false;
     }
@@ -198,24 +183,23 @@ bool Hooking::ApplyHook(HookData& hookData, PVOID pHookFunction)
     return true;
 }
 
-
-bool Hooking::RestoreFunctionCode(HookData& hookData)
+bool Hooking::RestoreFunctionCode(HookData& hook_data)
 {
-    DWORD oldProtect;
-    if (!VirtualProtect(hookData.pbCode, hookData.originalCodeSize, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+    DWORD old_protect;
+    if (!VirtualProtect(hook_data.code, hook_data.original_code.size(), PAGE_EXECUTE_READWRITE, &old_protect)) {
         PrintError(L"RestoreFunctionCode: Failed to change memory protection for code.");
         return false;
     }
 
-    memcpy(hookData.pbCode, hookData.g_OriginalCode, hookData.originalCodeSize);
+    memcpy(hook_data.code, hook_data.original_code.data(), hook_data.original_code.size());
 
-    DWORD newProtect;
-    if (!VirtualProtect(hookData.pbCode, hookData.originalCodeSize, oldProtect, &newProtect)) {
+    DWORD new_protect;
+    if (!VirtualProtect(hook_data.code, hook_data.original_code.size(), old_protect, &new_protect)) {
         PrintError(L"RestoreFunctionCode: Failed to restore memory protection for code.");
         return false;
     }
 
-    if (!VirtualFree(hookData.pbNewCode, 0, MEM_RELEASE)) {
+    if (!VirtualFree(hook_data.new_code, 0, MEM_RELEASE)) {
         PrintError(L"RestoreFunctionCode: Failed to free memory allocated for new code.");
         return false;
     }
@@ -223,49 +207,96 @@ bool Hooking::RestoreFunctionCode(HookData& hookData)
     return true;
 }
 
-std::size_t Hooking::GetOriginalCodeSize(PBYTE pbCode)
+std::size_t Hooking::GetOriginalCodeSize(std::uint8_t* code)
 {
-    std::size_t originalCodeSize = 0;
-
-    while (originalCodeSize < 5) {
-        std::uint8_t opcode = pbCode[originalCodeSize];
+    std::size_t original_code_size = 0;
+    while (original_code_size < 5) {
+        std::uint8_t opcode = code[original_code_size];
 
         if (opcode >= 0x50 && opcode <= 0x57) {
-            originalCodeSize += 1; // push rXX
+            original_code_size += 1; // push rXX
         }
-        else if (opcode == 0x41 && pbCode[originalCodeSize + 1] >= 0x50 && pbCode[originalCodeSize + 1] <= 0x57) {
-            originalCodeSize += 2; // push rXX
+        else if (opcode == 0x41 && code[original_code_size + 1] >= 0x50 && code[original_code_size + 1] <= 0x57) {
+            original_code_size += 2; // push rXX
         }
         else if (opcode >= 0x88 && opcode <= 0x8E) {
-            originalCodeSize += 2; // mov [rXX], rXX
+            original_code_size += 2; // mov [rXX], rXX
         }
         else if (opcode == 0x90) {
-            originalCodeSize += 1; // nop
+            original_code_size += 1; // nop
         }
         else if (opcode == 0x68) {
-            originalCodeSize += 5; // push imm32
+            original_code_size += 5; // push imm32
         }
         else if (opcode == 0xE9 || opcode == 0xEB) {
-            originalCodeSize += (opcode == 0xE9) ? 5 : 2; // jmp rel32 / jmp rel8
+            original_code_size += (opcode == 0xE9) ? 5 : 2; // jmp rel32 / jmp rel8
         }
-        else if (opcode == 0xFF && pbCode[originalCodeSize + 1] == 0x25) {
-            originalCodeSize += 6; // jmp [rip+imm32]
+        else if (opcode == 0xFF && code[original_code_size + 1] == 0x25) {
+            original_code_size += 6; // jmp [rip+imm32]
         }
-        else if (opcode == 0x48 && pbCode[originalCodeSize + 1] == 0x83 && pbCode[originalCodeSize + 2] == 0xEC) {
-            originalCodeSize += 4; // sub rsp, imm8
+        else if (opcode == 0x48 && code[original_code_size + 1] == 0x83 && code[original_code_size + 2] == 0xEC) {
+            original_code_size += 4; // sub rsp, imm8
         }
-        else if (opcode == 0x48 && pbCode[originalCodeSize + 1] == 0x81 && pbCode[originalCodeSize + 2] == 0xEC) {
-            originalCodeSize += 7; // sub rsp, imm32
+        else if (opcode == 0x48 && code[original_code_size + 1] == 0x81 && code[original_code_size + 2] == 0xEC) {
+            original_code_size += 7; // sub rsp, imm32
         }
         else {
-            PrintError(L"GetOriginalCodeSize: Unrecognized opcode encountered: {:#x} at address: {:#x}", opcode, reinterpret_cast<std::size_t>(&pbCode[originalCodeSize]));
-            originalCodeSize = 0;
-            break;
+            PrintError(L"GetOriginalCodeSize: Unrecognized opcode encountered: {:#x} at address: {:#x}", opcode, reinterpret_cast<std::size_t>(&code[original_code_size]));
+            return 0;
         }
     }
-
-    return originalCodeSize;
+    return original_code_size;
 }
 
-std::vector<Hooking::HookData> Hooking::HookDataList;
+std::uint8_t* Hooking::GenerateImmediateJump(std::uint8_t* code, std::uint8_t* jump_value)
+{
+    std::uint8_t* jump_source = code + 5;
+    *code++ = 0xE9;   // jmp +imm32
+    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(jump_value - jump_source);
+    code += sizeof(std::int32_t);
+    return code;
+}
+
+//std::uint8_t* Hooking::GenerateIndirectJump(std::uint8_t* code, std::uint8_t** jump_value)
+//{
+//    std::uint8_t* jump_source = code + 6;
+//    *code++ = 0xFF;   // jmp [+imm32]
+//    *code++ = 0x25;
+//    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(reinterpret_cast<std::uint8_t*>(jump_value) - jump_source);
+//    code += sizeof(std::int32_t);
+//    return code;
+//}
+
+std::uint8_t* Hooking::GenerateIndirectJump(std::uint8_t* code, std::uint8_t** jump_value)
+{
+    *code++ = 0x48; // rex.w
+    *code++ = 0xB8; // mov rax, imm64
+    *reinterpret_cast<std::uint64_t*>(code) = reinterpret_cast<std::uint64_t>(*jump_value);
+    code += sizeof(std::uint64_t);
+    *code++ = 0xFF; // jmp rax
+    *code++ = 0xE0;
+    return code;
+}
+
+//std::uint8_t* Hooking::GenerateIndirectJump(std::uint8_t* code, std::uint8_t** jump_value)
+//{
+//    *code++ = 0x50; // push rax
+//    *code++ = 0x48; // rex.w
+//    *code++ = 0xB8; // mov rax, imm64
+//    *reinterpret_cast<std::uint64_t*>(code) = reinterpret_cast<std::uint64_t>(*jump_value);
+//    code += sizeof(std::uint64_t);
+//    *code++ = 0xFF; // jmp rax
+//    **jump_value = 0x58; // pop rax
+//    return code;
+//}
+
+std::uint8_t* Hooking::GenerateBreakpoint(std::uint8_t* code, std::uint8_t* limit)
+{
+    while (code < limit) {
+        *code++ = 0xCC; // brk;
+    }
+    return code;
+}
+
+std::vector<Hooking::HookData> Hooking::hook_data_list;
 #endif
