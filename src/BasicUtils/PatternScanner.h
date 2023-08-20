@@ -42,7 +42,7 @@ public:
     Scan offset(std::size_t value) const;
     Scan disassemble() const;
 
-    PVOID* hook(PVOID pHookFunction) const;
+    void** hook(void* hook_function) const;
     bool unhook() const;
 
     Scan scan_first(std::wstring_view value, ScanType scan_type = ScanType::Unknown, bool forward = true) const;

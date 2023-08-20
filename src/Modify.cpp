@@ -276,7 +276,7 @@ void* cef_zip_reader_create_hook(void* stream)
 
 #endif
 
-	if (!Hooking::HookFunction(&(PVOID&)cef_zip_reader_read_file_orig, (PVOID)cef_zip_reader_read_file_hook)) {
+	if (!Hooking::HookFunction(&(void*&)cef_zip_reader_read_file_orig, (void*)cef_zip_reader_read_file_hook)) {
 		Logger::Log(L"zip_reader_read_file_hook - patch failed!", Logger::LogLevel::Error);
 	}
 
@@ -499,7 +499,8 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
 #ifdef _WIN64
 	//const auto developer = PatternScanner::ScanFirst(L"48 8B 95 C0 05 00 00").offset(-3);
-	const auto developer = PatternScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x48, 0x8D, 0x15 })[1].scan_first(L"D1 EB").offset(2);
+	const auto app_developer = PatternScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x48, 0x8D, 0x15 });
+	const auto developer = app_developer.size() > 1 ? app_developer[1].scan_first(L"D1 EB").offset(2) : Scan();
 	if (developer.is_found()) {
 		if (developer.write<std::vector<std::uint8_t>>({ 0xB3, 0x01, 0x90 })) {
 			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
@@ -537,7 +538,7 @@ DWORD WINAPI BlockAds(LPVOID lpParam)
 #else
 	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_string_userfree_utf16_free").data();
 	if (cef_string_userfree_utf16_free_orig) {
-		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").hook((PVOID)cef_urlrequest_create_hook);
+		cef_urlrequest_create_orig = (_cef_urlrequest_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_urlrequest_create").hook((void*)cef_urlrequest_create_hook);
 		cef_urlrequest_create_orig ? Logger::Log(L"BlockAds - patch success!", Logger::LogLevel::Info) : Logger::Log(L"BlockAds - patch failed!", Logger::LogLevel::Error);
 	}
 #endif
@@ -547,7 +548,7 @@ DWORD WINAPI BlockAds(LPVOID lpParam)
 DWORD WINAPI BlockBanner(LPVOID lpParam)
 {
 #ifdef NEW_HOOK_SYSTEM
-	cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").hook((PVOID)cef_zip_reader_create_hook);
+	cef_zip_reader_create_orig = (_cef_zip_reader_create)PatternScanner::GetFunctionAddress(L"libcef.dll", L"cef_zip_reader_create").hook((void*)cef_zip_reader_create_hook);
 	cef_zip_reader_create_orig ? Logger::Log(L"BlockBanner - patch success!", Logger::LogLevel::Info) : Logger::Log(L"BlockBanner - patch failed!", Logger::LogLevel::Error);
 #else
 #ifdef _WIN64

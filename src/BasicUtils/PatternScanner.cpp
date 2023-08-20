@@ -427,9 +427,9 @@ Scan Scan::disassemble() const
     return Scan(_Instruction.operand_value, m_module_info);
 }
 
-PVOID* Scan::hook(PVOID pHookFunction) const
+void** Scan::hook(void* hook_function) const
 {
-    return (is_found() && Hooking::HookFunction(&(PVOID&)m_address, pHookFunction)) ? reinterpret_cast<PVOID*>(m_address) : NULL;
+    return (is_found() && Hooking::HookFunction(&(void*&)m_address, hook_function)) ? reinterpret_cast<void**>(m_address) : NULL;
 }
 
 bool Scan::unhook() const
