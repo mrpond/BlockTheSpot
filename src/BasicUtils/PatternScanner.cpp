@@ -439,7 +439,7 @@ bool Scan::unhook() const
 
 Scan Scan::scan_first(std::wstring_view value, ScanType scan_type, bool forward) const
 {
-    return is_found() ? PatternScanner::ScanFirst(m_address, m_module_info.second, { PatternScanner::SignatureToByteArray(value) }, ValueType::WString, scan_type, forward) : Scan(NULL, m_module_info);
+    return is_found() ? PatternScanner::ScanFirst(m_address, m_module_info.second - rva(), { PatternScanner::SignatureToByteArray(value) }, ValueType::WString, scan_type, forward) : Scan(NULL, m_module_info);
 }
 
 std::vector<Scan> Scan::get_all_matching_codes(std::vector<std::uint8_t> pattern, bool check_displacement, std::size_t base_address, std::size_t image_size) const
