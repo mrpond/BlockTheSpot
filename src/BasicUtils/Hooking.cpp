@@ -1,4 +1,4 @@
-﻿//#define ENABLE_DETOURS
+﻿#define ENABLE_DETOURS
 
 #include "Hooking.h"
 #include <stdexcept>
@@ -111,7 +111,7 @@ bool Hooking::UnhookFunction(void** function_pointer, void* hook_function)
 
     auto hook_data_it = std::find_if(hook_data_list.begin(), hook_data_list.end(),
         [function_pointer](const HookData& hook_data) {
-            return hook_data.function_pointer == function_pointer;
+            return hook_data.code == *function_pointer;
         });
 
     if (hook_data_it == hook_data_list.end()) {
@@ -250,19 +250,19 @@ std::size_t Hooking::GetOriginalCodeSize(std::uint8_t* code)
 
 std::uint8_t* Hooking::GenerateImmediateJump(std::uint8_t* code, std::uint8_t* jump_value)
 {
-    std::uint8_t* jump_source = code + 5;
-    *code++ = 0xE9;   // jmp +imm32
-    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(jump_value - jump_source);
+    std::uintptr_t jump_source = jump_value - (code + 5); // error ?
+    *code++ = 0xE9;  // jmp +imm32
+    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(jump_source);
     code += sizeof(std::int32_t);
     return code;
 }
 
 //std::uint8_t* Hooking::GenerateIndirectJump(std::uint8_t* code, std::uint8_t** jump_value)
 //{
-//    std::uint8_t* jump_source = code + 6;
+//    std::uintptr_t jump_source = *jump_value - (code + 6);
 //    *code++ = 0xFF;   // jmp [+imm32]
 //    *code++ = 0x25;
-//    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(reinterpret_cast<std::uint8_t*>(jump_value) - jump_source);
+//    *reinterpret_cast<std::int32_t*>(code) = static_cast<std::int32_t>(jump_source);
 //    code += sizeof(std::int32_t);
 //    return code;
 //}
