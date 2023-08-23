@@ -268,7 +268,13 @@ Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
 $tempDirectory = $PWD
 Pop-Location
 
-Remove-Item -LiteralPath $tempDirectory -Recurse
+while ($null -ne (Get-Process -Name SpotifyFullSetupX64, SpotifyFullSetup -ErrorAction SilentlyContinue)) {
+    # Waiting until installation process completes
+    Start-Sleep -Milliseconds 100
+}
+
+Write-Host 'Cleaning up...'
+Remove-Item -LiteralPath $tempDirectory -Recurse -Force
 
 Write-Host 'Patching Complete, starting Spotify...'
 
