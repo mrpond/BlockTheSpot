@@ -140,20 +140,35 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 		}
 	}
 
-	if (file_name == L"xpui-routes-profile.js") {
-		const auto isModalOpen = PatternScanner::ScanAll(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isModalOpen:!0");
-		if (isModalOpen[0].is_found()) {
-			for (const auto& it : isModalOpen) {
-				if (it.offset(13).write<const char>('1')) {
-					Logger::Log(L"isModalOpen patched!", Logger::LogLevel::Info);
-				}
-				else {
-					Logger::Log(L"isModalOpen - patch failed!", Logger::LogLevel::Error);
-				}
+	//if (file_name == L"xpui-routes-profile.js") {
+	//	const auto isModalOpen = PatternScanner::ScanAll(reinterpret_cast<std::size_t>(buffer), bufferSize, L"isModalOpen:!0");
+	//	if (isModalOpen[0].is_found()) {
+	//		for (const auto& it : isModalOpen) {
+	//			if (it.offset(13).write<const char>('1')) {
+	//				Logger::Log(L"isModalOpen patched!", Logger::LogLevel::Info);
+	//			}
+	//			else {
+	//				Logger::Log(L"isModalOpen - patch failed!", Logger::LogLevel::Error);
+	//			}
+	//		}
+	//	}
+	//	else {
+	//		Logger::Log(L"isModalOpen - failed not found!", Logger::LogLevel::Error);
+	//	}
+	//}
+
+	if (file_name == L"xpui.css") {
+		const auto GenericModal = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".GenericModal__overlay{-webkit-box-align:center;-ms-flex-align:center;-webkit-box-pack:center;-ms-flex-pack:center;align-items:center;background-color:rgba(0,0,0,.7);bottom:0;display:-webkit-box;display:-ms-flexbox;display:flex;");
+		if (GenericModal.is_found()) {
+			if (GenericModal.write<const char*>(".GenericModal__overlay{-webkit-box-align:center;-ms-flex-align:center;-webkit-box-pack:center;-ms-flex-pack:center;align-items:center;background-color:rgba(0,0,0,.7);bottom:0;display:-webkit-box;display:-ms-flexbox;display:none;")) {
+				Logger::Log(L"GenericModal patched!", Logger::LogLevel::Info);
+			}
+			else {
+				Logger::Log(L"GenericModal patch failed!", Logger::LogLevel::Error);
 			}
 		}
 		else {
-			Logger::Log(L"isModalOpen - failed not found!", Logger::LogLevel::Error);
+			Logger::Log(L"GenericModal - failed not found!", Logger::LogLevel::Error);
 		}
 	}
 
@@ -501,7 +516,7 @@ DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 	//const auto developer = PatternScanner::ScanFirst(L"48 8B 95 C0 05 00 00").offset(-3);
 	const auto app_developer = PatternScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x48, 0x8D, 0x15 });
 	const auto developer = app_developer.size() > 1 ? app_developer[1].scan_first(L"D1 EB").offset(2) : Scan();
-	if (developer.is_found()) {
+	if (developer.is_found({ 0x80, 0xE3, 0x01 })) {
 		if (developer.write<std::vector<std::uint8_t>>({ 0xB3, 0x01, 0x90 })) {
 			Logger::Log(L"Developer - patch success!", Logger::LogLevel::Info);
 		}

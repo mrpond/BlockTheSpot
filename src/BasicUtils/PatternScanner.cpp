@@ -342,9 +342,19 @@ void Scan::print_address(std::wstring_view name) const
     Print({ Color::Yellow , Color::Cyan }, L"{:X} {}", m_address, !name.empty() ? L" : " + std::wstring(name.data()) : L"");
 }
 
-bool Scan::is_found() const
+bool Scan::is_found(const std::vector<std::uint8_t>& value) const
 {
-    return m_address != NULL;
+    if (m_address == NULL)
+        return false;
+
+    if (!value.empty()) {
+        for (std::size_t i = 0; i < value.size(); ++i) {
+            if (*(reinterpret_cast<std::uint8_t*>(m_address) + i) != value[i])
+                return false;
+        }
+    }
+
+    return true;
 }
 
 std::uint8_t* Scan::data() const

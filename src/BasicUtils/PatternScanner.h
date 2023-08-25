@@ -36,7 +36,7 @@ public:
 
     void print_address(std::wstring_view name = {}) const;
 
-    bool is_found() const;
+    bool is_found(const std::vector<std::uint8_t>& value = {}) const;
     std::uint8_t* data() const;
     Scan rva() const;
     Scan offset(std::size_t value) const;
