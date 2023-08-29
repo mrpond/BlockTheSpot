@@ -157,21 +157,6 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 	//	}
 	//}
 
-	if (file_name == L"xpui.css") {
-		const auto GenericModal = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L".GenericModal__overlay{-webkit-box-align:center;-ms-flex-align:center;-webkit-box-pack:center;-ms-flex-pack:center;align-items:center;background-color:rgba(0,0,0,.7);bottom:0;display:-webkit-box;display:-ms-flexbox;display:flex;");
-		if (GenericModal.is_found()) {
-			if (GenericModal.write<const char*>(".GenericModal__overlay{-webkit-box-align:center;-ms-flex-align:center;-webkit-box-pack:center;-ms-flex-pack:center;align-items:center;background-color:rgba(0,0,0,.7);bottom:0;display:-webkit-box;display:-ms-flexbox;display:none;")) {
-				Logger::Log(L"GenericModal patched!", Logger::LogLevel::Info);
-			}
-			else {
-				Logger::Log(L"GenericModal patch failed!", Logger::LogLevel::Error);
-			}
-		}
-		else {
-			Logger::Log(L"GenericModal - failed not found!", Logger::LogLevel::Error);
-		}
-	}
-
 	if (file_name == L"xpui.js") {
 		const auto skipads = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"adsEnabled:!0");
 		if (skipads.is_found()) {
