@@ -25,31 +25,31 @@
 
 ### Installation/Update:
 Not Automated:
-* Just download and run [BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/runners/BlockTheSpot.bat)
+* Just download and run [BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/BlockTheSpot.bat)
 
 or
 
 Automated:
 
-* Just download and run [BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/runners/BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
+* Just download and run [BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
 
 
 #### Fully automated installation via PowerShell
 
 ```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/runners/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
 ```
 
 #### Spicetify & BlockTheSpot Installation/Update:
 
 Not Automated:
 
-Just download and run [Spicetify&BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/runners/Spicetify%26BlockTheSpot.bat) then answer the prompts when given
+Just download and run [Spicetify&BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/Spicetify%26BlockTheSpot.bat) then answer the prompts when given
 
 or
 
 Automated:
-Just download and run [Spicetify&BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/runners/Spicetify%26BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
+Just download and run [Spicetify&BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/Spicetify%26BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
 
 #### Manual installation
 
@@ -58,7 +58,7 @@ Just download and run [Spicetify&BlockTheSpotNI.bat](https://raw.githubuserconte
 3. Unzip `dpapi.dll` and `config.ini` to Spotify directory. 
 
 ### Uninstall:
-* Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/runners/uninstall.bat)
+* Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/scripts/uninstall.bat)
 or
 * Remove `dpapi.dll` and `config.ini` from Spotify directory.
 or
