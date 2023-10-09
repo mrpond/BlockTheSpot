@@ -11,6 +11,7 @@
 #pragma warning(default: 4530)
 #include <codecvt>
 #include <fstream>
+#include <algorithm>
 
 namespace Utils
 {
