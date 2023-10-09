@@ -1,5 +1,7 @@
 param (
   $UninstallSpotifyStoreEdition
+  [switch]
+  $UpdateSpotify
 )
 
 # Ignore errors from `Stop-Process`
@@ -157,7 +159,7 @@ if (-not $spotifyInstalled) {
   $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion) -eq $false
 }
 
-if (-not $unsupportedClientVersion)
+if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion)
 {
   Write-Host 'Downloading the latest Spotify full setup, please wait...'
   $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetup.exe'
