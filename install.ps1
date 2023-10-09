@@ -1,10 +1,5 @@
 param (
-  [Parameter()]
-  [switch]
-  $UninstallSpotifyStoreEdition = (Read-Host -Prompt 'Uninstall Spotify Windows Store edition if it exists (Y/N)') -eq 'y',
-  [Parameter()]
-  [switch]
-  $UpdateSpotify
+  $UninstallSpotifyStoreEdition
 )
 
 # Ignore errors from `Stop-Process`
@@ -162,15 +157,7 @@ if (-not $spotifyInstalled) {
   $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion) -eq $false
 }
 
-if (-not $UpdateSpotify -and $unsupportedClientVersion)
-{
-  if ((Read-Host -Prompt 'In order to install Block the Spot, your Spotify client must be updated. Do you want to continue? (Y/N)') -ne 'y')
-  {
-    exit
-  }
-}
-
-if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion)
+if (-not $unsupportedClientVersion)
 {
   Write-Host 'Downloading the latest Spotify full setup, please wait...'
   $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetup.exe'
