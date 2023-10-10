@@ -1,5 +1,5 @@
 param (
-  $UninstallSpotifyStoreEdition
+  $UninstallSpotifyStoreEdition,
   [switch]
   $UpdateSpotify
 )
