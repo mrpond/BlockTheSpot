@@ -24,32 +24,21 @@
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows only and **not the Microsoft Store version**.
 
 ### Installation/Update:
-Not Automated:
-* Just download and run [BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/BlockTheSpot.bat)
+* Just download and run [BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/BlockTheSpot.bat)
 
 or
-
-Automated:
-
-* Just download and run [BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
-
 
 #### Fully automated installation via PowerShell
 
 ```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
 ```
 
-#### Spicetify & BlockTheSpot Installation/Update:
+#### BlockTheSpot with Spicetify Installation/Update:
 
-Not Automated:
-
-Just download and run [Spicetify&BlockTheSpot.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/Spicetify%26BlockTheSpot.bat) then answer the prompts when given
+* Just download and run [BlockTheSpot + Spicetify.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/BlockTheSpot%20%2B%20Spicetify.bat) then answer the prompts when given
 
 or
-
-Automated:
-Just download and run [Spicetify&BlockTheSpotNI.bat](https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/scripts/Spicetify%26BlockTheSpotNI.bat) in which NI is the shortening of the words No Interaction
 
 #### Manual installation
 
@@ -58,11 +47,21 @@ Just download and run [Spicetify&BlockTheSpotNI.bat](https://raw.githubuserconte
 3. Unzip `dpapi.dll` and `config.ini` to Spotify directory. 
 
 ### Uninstall:
-* Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/scripts/uninstall.bat)
+* Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/uninstall.bat)
 or
 * Remove `dpapi.dll` and `config.ini` from Spotify directory.
 or
 * Reinstall Spotify
+
+### BlockTheSpot with Spicetify Uninstall:
+
+```powershell
+spicetify restore
+rmdir -r -fo $env:APPDATA\spicetify
+rmdir -r -fo $env:LOCALAPPDATA\spicetify
+rm -fo $env:APPDATA\spotify\dpapi.dll
+rm -fo $env:APPDATA\spotify\config.ini
+```
 
 ### Additional Notes:
 
