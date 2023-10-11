@@ -34,12 +34,6 @@ or
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
 ```
 
-#### BlockTheSpot with Spicetify Installation/Update:
-
-* Just download and run [BlockTheSpot + Spicetify.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpot%20%2B%20Spicetify.bat) then answer the prompts when given
-
-or
-
 #### Manual installation
 
 1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
@@ -52,6 +46,10 @@ or
 * Remove `dpapi.dll` and `config.ini` from Spotify directory.
 or
 * Reinstall Spotify
+
+#### BlockTheSpot with Spicetify Installation/Update:
+
+* Just download and run [BlockTheSpot + Spicetify.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpot%20%2B%20Spicetify.bat) then answer the prompts when given
 
 ### BlockTheSpot with Spicetify Uninstall:
 
