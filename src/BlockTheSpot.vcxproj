@@ -60,6 +60,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\cef\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcef_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -85,7 +86,6 @@
     <ClInclude Include="BasicUtils\Memory.h" />
     <ClInclude Include="BasicUtils\PatternScanner.h" />
     <ClInclude Include="BasicUtils\Utils.h" />
-    <ClInclude Include="Debug.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="pch.h" />
@@ -97,7 +97,6 @@
     <ClCompile Include="BasicUtils\PatternScanner.cpp" />
     <ClCompile Include="BasicUtils\Utils.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
-    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Modify.cpp" />
   </ItemGroup>
