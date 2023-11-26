@@ -240,7 +240,7 @@ int cef_zip_reader_read_file_hook(void* self, void* buffer, size_t bufferSize)
 		const auto premium_free = PatternScanner::ScanFirst(reinterpret_cast<std::size_t>(buffer), bufferSize, L"\"free\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>\"premium\"===e.session?.productState?.catalogue?.toLowerCase()");
 		if (premium_free.is_found()) {
 			//Print(L"{}", premium_free.read<const char*>());
-			if (premium_free.write<const char*>(L"\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase()")) {
+			if (premium_free.write<const char*>("\"premium\"===e.session?.productState?.catalogue?.toLowerCase(),r=e=>\"free\"===e.session?.productState?.catalogue?.toLowerCase()")) {
 				Logger::Log(L"premium patched!", Logger::LogLevel::Info);
 			}
 			else {
