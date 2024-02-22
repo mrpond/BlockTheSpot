@@ -1,49 +1,17 @@
-﻿#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
-
-#if defined(__clang__)
-#pragma clang diagnostic ignored "-Wunused-variable"
-#endif
-
 #include "Utils.h"
-#include "Console.h"
-#pragma warning(disable: 4530)
-#include <chrono>
-#pragma warning(default: 4530)
-#include <codecvt>
-#include <fstream>
+
 #include <algorithm>
+#include <chrono>
 
 namespace Utils
 {
-    std::wstring ToHexWideString(const std::vector<uint8_t>& byte_array, const bool insert_spaces)
-    {
-        std::wostringstream oss;
-        oss << std::hex << std::setfill(L'0');
-
-        for (size_t i = 0; i < byte_array.size(); ++i)
-        {
-            if (i > 0 && insert_spaces)
-            {
-                oss << L' ';
-            }
-            oss << std::setw(2) << static_cast<int>(byte_array[i]);
-        }
-
-        std::wstring hex_string = oss.str();
-        std::transform(hex_string.begin(), hex_string.end(), hex_string.begin(), ::towupper);
-
-        return hex_string;
-    }
-    
     std::string ToHexString(const std::vector<uint8_t>& byte_array, const bool insert_spaces)
     {
         std::ostringstream oss;
         oss << std::hex << std::setfill('0');
 
-        for (size_t i = 0; i < byte_array.size(); ++i)
-        {
-            if (i > 0 && insert_spaces)
-            {
+        for (size_t i = 0; i < byte_array.size(); ++i) {
+            if (i > 0 && insert_spaces) {
                 oss << ' ';
             }
             oss << std::setw(2) << static_cast<int>(byte_array[i]);
@@ -68,6 +36,24 @@ namespace Utils
         return ToHexString(std::vector<uint8_t>(data, data + size), insert_spaces);
     }
 
+    std::wstring ToHexWideString(const std::vector<uint8_t>& byte_array, const bool insert_spaces)
+    {
+        std::wostringstream oss;
+        oss << std::hex << std::setfill(L'0');
+
+        for (size_t i = 0; i < byte_array.size(); ++i) {
+            if (i > 0 && insert_spaces) {
+                oss << L' ';
+            }
+            oss << std::setw(2) << static_cast<int>(byte_array[i]);
+        }
+
+        std::wstring hex_string = oss.str();
+        std::transform(hex_string.begin(), hex_string.end(), hex_string.begin(), ::towupper);
+
+        return hex_string;
+    }
+
     std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces)
     {
         if (data == nullptr) {
@@ -81,32 +67,45 @@ namespace Utils
         return ToHexWideString(std::vector<uint8_t>(data, data + size), insert_spaces);
     }
 
-    std::string ConvertUInt8ArrayToString(std::uint8_t* data)
+    std::string ConvertUInt8ArrayToString(uint8_t* data)
     {
         return std::string(reinterpret_cast<char*>(data), reinterpret_cast<char*>(data + std::strlen(reinterpret_cast<char*>(data))));
     }
 
-    std::wstring ConvertUInt8ArrayToWideString(std::uint8_t* data)
+    std::wstring ConvertUInt8ArrayToWideString(uint8_t* data)
     {
         return std::wstring(reinterpret_cast<wchar_t*>(data), reinterpret_cast<wchar_t*>(data + std::wcslen(reinterpret_cast<wchar_t*>(data))));
     }
 
+    std::string IntegerToHexString(uintptr_t integer_value)
+    {
+        return std::format("{:x}", integer_value);
+    }
+
+    std::wstring IntegerToHexWideString(uintptr_t integer_value)
+    {
+        return std::format(L"{:x}", integer_value);
+    }
+
     std::string ToString(std::wstring_view wide_string)
     {
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.to_bytes(wide_string.data(), wide_string.data() + wide_string.size());
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string[0], (int)wide_string.size(), NULL, 0, NULL, NULL);
+        std::string str_to(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, &wide_string[0], (int)wide_string.size(), &str_to[0], size_needed, NULL, NULL);
+        return str_to;
     }
 
     std::wstring ToString(std::string_view narrow_string)
     {
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.from_bytes(narrow_string.data(), narrow_string.data() + narrow_string.size());
+        int size_needed = MultiByteToWideChar(CP_UTF8, 0, &narrow_string[0], (int)narrow_string.size(), NULL, 0);
+        std::wstring wstr_to(size_needed, 0);
+        MultiByteToWideChar(CP_UTF8, 0, &narrow_string[0], (int)narrow_string.size(), &wstr_to[0], size_needed);
+        return wstr_to;
     }
 
     std::wstring ToString(std::u16string_view utf16_string)
     {
-        std::wstring_convert<std::codecvt_utf16<wchar_t, 0x10ffff, std::little_endian>> converter;
-        return converter.from_bytes(reinterpret_cast<const char*>(utf16_string.data()), reinterpret_cast<const char*>(utf16_string.data() + utf16_string.size()));
+        return std::wstring(utf16_string.begin(), utf16_string.end());
     }
 
     bool Contains(std::string_view str1, std::string_view str2, bool case_sensitive)
@@ -149,115 +148,29 @@ namespace Utils
             });
     }
 
-    void MeasureExecutionTime(std::function<void()> func, std::wstring_view name)
+	void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value)
+	{
+		WritePrivateProfileStringW(section.data(), key.data(), value.data(), ini_path.data());
+	}
+
+	std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key)
+	{
+		wchar_t value[255];
+		GetPrivateProfileStringW(section.data(), key.data(), L"", value, 255, ini_path.data());
+		return std::wstring(value);
+	}
+
+#ifndef NDEBUG
+    void MeasureExecutionTime(std::function<void()> func)
     {
         const auto start_time = std::chrono::high_resolution_clock::now();
         func();
         const auto end_time = std::chrono::high_resolution_clock::now();
         const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-        Print({ Color::White, Color::White, Color::Yellow, Color::White }, L"{}{}{}{}Execution time: {:d}ms\n", info.dwCursorPosition.Y != 0 ? L"\n" : L"",
-            !name.empty() ? L"[" : L"",
-            !name.empty() ? FormatString(L"{}", name).c_str() : L"",
-            !name.empty() ? L"] " : L"", duration);
+        SetConsoleTitleW(FormatString(L"Execution time: {:d}ms", duration).c_str());
     }
 
-    IniData ReadIniFile(const std::wstring& fileName)
-    {
-        IniData data;
-        std::wstring currentSection;
-
-        std::wifstream file(fileName);
-
-        if (!file) {
-            PrintError(L"ReadIniFile: Failed to open ini file.");
-            return {};
-        }
-
-        for (std::wstring line; getline(file, line);) {
-            if (line.empty() || line[0] == ';') {
-                continue;
-            }
-
-            if (line[0] == '[' && line.back() == ']') {
-                currentSection = line.substr(1, line.size() - 2);
-                data[currentSection] = {};
-            }
-            else {
-                size_t pos = line.find('=');
-                if (pos == std::wstring::npos) {
-                    continue;
-                }
-
-                std::wstring key = line.substr(0, pos);
-                std::wstring valueStr = line.substr(pos + 1);
-
-                if (key.empty() || valueStr.empty()) {
-                    continue;
-                }
-
-                bool value = (valueStr == L"true" || valueStr == L"1");
-
-                data[currentSection][key] = value;
-            }
-        }
-
-        return data;
-    }
-
-    void AppendIniFile(const std::wstring& fileName, IniData& data)
-    {
-        IniData existingData;
-    
-        if (std::wifstream existingFile(fileName); existingFile) {
-            existingData = ReadIniFile(fileName);
-        }
-
-        // Remove any key-value pairs from existingData that are not present in data
-        for (auto& [sectionName, sectionData] : existingData) {
-            for (auto it = sectionData.begin(); it != sectionData.end();) {
-                const auto& [key, value] = *it;
-                if (data[sectionName].find(key) == data[sectionName].end()) {
-                    it = sectionData.erase(it);
-                }
-                else {
-                    ++it;
-                }
-            }
-        }
-    
-        std::wofstream file(fileName);
-    
-        if (!file.is_open()) {
-            PrintError(L"AppendIniFile: Failed to open ini file.");
-            return;
-        }
-    
-        for (const auto& [sectionName, sectionData] : existingData) {
-            file << L"[" << sectionName << L"]" << '\n';
-    
-            for (const auto& [key, value] : sectionData) {
-                file << key << L"=" << (value ? L"1" : L"0") << '\n';
-                data[sectionName][key] = value;
-            }
-        }
-    
-        for (const auto& [sectionName, sectionData] : data) {
-            if (existingData.find(sectionName) == existingData.end()) {
-                file << L"[" << sectionName << L"]" << '\n';
-            }
-    
-            for (const auto& [key, value] : sectionData) {
-                if (existingData[sectionName].find(key) == existingData[sectionName].end()) {
-                    file << key << L"=" << (value ? L"1" : L"0") << '\n';
-                }
-            }
-        }
-    }
-
-#ifndef NDEBUG
     void PrintSymbols(std::wstring_view module_name)
     {
         HMODULE hModule = GetModuleHandleW(module_name.data());
@@ -265,7 +178,7 @@ namespace Utils
             PrintError(L"PrintSymbols: Failed to load module.");
             return;
         }
-
+        
         PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
         PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)dosHeader + dosHeader->e_lfanew);
         PIMAGE_EXPORT_DIRECTORY exportDirectory = (PIMAGE_EXPORT_DIRECTORY)((BYTE*)dosHeader + ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
@@ -277,14 +190,5 @@ namespace Utils
             Print(L"{}", reinterpret_cast<const char*>((BYTE*)dosHeader + names[i]));
         }
     }
-#endif
-
-    void SetLocaleToUTF8()
-    {
-#if defined(_DEBUG) || defined(_CONSOLE)
-        SetConsoleOutputCP(CP_UTF8);
-        SetConsoleCP(CP_UTF8);
-#endif
-        std::locale::global(std::locale("en_US.UTF-8"));
-    }
-}
+#endif // NDEBUG
+};

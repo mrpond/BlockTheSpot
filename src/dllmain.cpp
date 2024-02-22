@@ -1,5 +1,35 @@
 ﻿#include "pch.h"
 
+bool block_ads = true;
+bool block_banner = true;
+bool enable_developer = true;
+bool enable_log = false;
+
+void SyncConfigFile() {
+	std::wstring ini_path = L".\\config.ini";
+	std::map<std::wstring, bool*> config = {
+		{L"Block_Ads", &block_ads},
+		{L"Block_Banner", &block_banner},
+		{L"Enable_Developer", &enable_developer},
+		{L"Enable_Log", &enable_log},
+	};
+
+	for (const auto& [key, bool_ptr] : config) {
+		std::wstring current_value = Utils::ReadIniFile(ini_path, L"Config", key);
+		if (current_value.empty() || current_value != L"1" && current_value != L"0") {
+			Utils::WriteIniFile(ini_path, L"Config", key, *bool_ptr ? L"1" : L"0");
+		}
+		else {
+			*bool_ptr = (current_value == L"1");
+		}
+	}
+
+	PrintStatus(block_ads, L"Block ADS");
+	PrintStatus(block_banner, L"Block Banner");
+	PrintStatus(enable_developer, L"Enable Developer");
+	PrintStatus(enable_log, L"Enable Log");
+}
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	DisableThreadLibraryCalls(hModule);
@@ -19,44 +49,36 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 						MessageBoxW(0, L"Failed to redirect standard output", L"Error", 0);
 					if (_wfreopen(L"CONOUT$", L"w", stderr) == nullptr)
 						MessageBoxW(0, L"Failed to redirect standard error", L"Error", 0);
+				
+					SetConsoleOutputCP(CP_UTF8);
+					SetConsoleCP(CP_UTF8);
 				}
+
 				hThread = CreateThread(NULL, 0, Debug, NULL, 0, NULL);
 				if (hThread != nullptr) {
 					CloseHandle(hThread);
 				}
-				//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 #endif
 
-				Utils::SetLocaleToUTF8();
-				Utils::IniData data = {
-					{
-						L"Config", {
-							{L"Block_Ads", true},
-							{L"Block_Banner", true},
-							{L"Enable_Developer", true},
-							{L"Enable_Log", false},
-						}
-					}
-				};
-				Utils::AppendIniFile(L"config.ini", data);
-				Logger::Init(L"_AdBlocker.log", data[L"Config"][L"Enable_Log"]);
+				SyncConfigFile();
+				Logger::Init(L"blockthespot.log", enable_log);
 
-				if (data[L"Config"][L"Enable_Developer"]) {
-					hThread = CreateThread(NULL, 0, EnableDeveloper, NULL, 0, NULL);
-					if (hThread != nullptr) {
-						CloseHandle(hThread);
-					}
-				}
-
-				if (data[L"Config"][L"Block_Ads"]) {
+				if (block_ads) {
 					hThread = CreateThread(NULL, 0, BlockAds, NULL, 0, NULL);
 					if (hThread != nullptr) {
 						CloseHandle(hThread);
 					}
 				}
 
-				if (data[L"Config"][L"Block_Banner"]) {
+				if (block_banner) {
 					hThread = CreateThread(NULL, 0, BlockBanner, NULL, 0, NULL);
+					if (hThread != nullptr) {
+						CloseHandle(hThread);
+					}
+				}
+
+				if (enable_developer) {
+					hThread = CreateThread(NULL, 0, EnableDeveloper, NULL, 0, NULL);
 					if (hThread != nullptr) {
 						CloseHandle(hThread);
 					}

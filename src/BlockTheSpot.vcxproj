@@ -53,7 +53,6 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExceptionHandling>false</ExceptionHandling>
       <AdditionalIncludeDirectories>C:\cef;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -61,6 +60,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\cef\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>dpapi.def</ModuleDefinitionFile>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -70,7 +70,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,14 +77,14 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>dpapi.def</ModuleDefinitionFile>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BasicUtils\Console.h" />
     <ClInclude Include="BasicUtils\Hooking.h" />
     <ClInclude Include="BasicUtils\Logger.h" />
     <ClInclude Include="BasicUtils\Memory.h" />
-    <ClInclude Include="BasicUtils\PatternScanner.h" />
+    <ClInclude Include="BasicUtils\MemoryScanner.h" />
     <ClInclude Include="BasicUtils\Utils.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="framework.h" />
@@ -93,10 +92,10 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BasicUtils\Console.cpp" />
     <ClCompile Include="BasicUtils\Hooking.cpp" />
     <ClCompile Include="BasicUtils\Logger.cpp" />
-    <ClCompile Include="BasicUtils\PatternScanner.cpp" />
+    <ClCompile Include="BasicUtils\Memory.cpp" />
+    <ClCompile Include="BasicUtils\MemoryScanner.cpp" />
     <ClCompile Include="BasicUtils\Utils.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
     <ClCompile Include="Debug.cpp" />

@@ -1,84 +1,53 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
-#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 #include "Logger.h"
-#include "Console.h"
+#include "Utils.h"
 #include <fstream>
-#pragma warning(disable: 4530)
 #include <chrono>
-#pragma warning(default: 4530)
 #include <mutex>
-#include <locale>
-#include <codecvt>
 
-namespace Logger
-{
+namespace Logger {
     std::mutex mtx;
     std::wofstream file;
-    std::wstringstream buffer;
+    bool log_enabled = false;
 
-    void Init(std::wstring_view log_file, bool log_enable)
-    {
-        if (log_enable) {
+    void Init(std::wstring_view log_file, bool enable_logging) {
+        log_enabled = enable_logging;
+        if (log_enabled) {
             file.open(log_file.data(), std::ios::out | std::ios::trunc);
-
-            std::locale utf8_locale("en_US.UTF-8");
-            file.imbue(utf8_locale);
-            buffer.imbue(utf8_locale);
-
             if (!file.is_open()) {
                 PrintError(L"Failed to open log file.");
             }
         }
     }
 
-    void Flush()
-    {
-        if (file.is_open()) {
-            file << buffer.str();
-            buffer.str(L"");
-            file.flush();
-        }
-    }
-
-    void Close()
-    {
-        if (file.is_open()) {
-            Flush();
-            file.close();
-        }
-    }
-
-    std::wstring GetLevelInfo(LogLevel level)
-    {
+    std::wstring GetLevelInfo(LogLevel level) {
         switch (level) {
         case LogLevel::Info:
             return L"INFO";
         case LogLevel::Error:
             return L"ERROR";
         default:
-            return L"UNKNOWN";
+            return L"UNKN";
         }
     }
 
-    void Log(std::wstring_view message, LogLevel level)
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-
-        auto level_str = GetLevelInfo(level);
-
+    void Log(std::wstring_view message, LogLevel level) {
 #ifndef NDEBUG
         if (level == LogLevel::Error) {
-            PrintError(message.data());
+            PrintError(L"{}", message);
         }
 #endif
+        if (!log_enabled) return;
+
+        std::lock_guard<std::mutex> lock(mtx);
 
         if (file.is_open()) {
             auto now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-            std::wostringstream ss;
-            ss << std::put_time(std::localtime(&now_time), L"%Y-%m-%d %H:%M:%S");
-            buffer << ss.str() << L" | " << std::left << std::setw(5) << level_str << L" | " << message << std::endl;
-            Flush();
+            std::wstringstream ss;
+            ss << std::put_time(std::localtime(&now_time), L"%Y-%m-%d %H:%M:%S") << " | " << std::setw(5) << std::left << GetLevelInfo(level) << " | " << message << "\n";
+            file << ss.str();
+            file.flush();
         }
     }
 }

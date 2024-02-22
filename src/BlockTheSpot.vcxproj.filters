@@ -30,7 +30,7 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BasicUtils\Console.h">
+    <ClInclude Include="BasicUtils\Utils.h">
       <Filter>BasicUtils</Filter>
     </ClInclude>
     <ClInclude Include="BasicUtils\Hooking.h">
@@ -42,10 +42,7 @@
     <ClInclude Include="BasicUtils\Memory.h">
       <Filter>BasicUtils</Filter>
     </ClInclude>
-    <ClInclude Include="BasicUtils\PatternScanner.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Utils.h">
+    <ClInclude Include="BasicUtils\MemoryScanner.h">
       <Filter>BasicUtils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +56,10 @@
     <ClCompile Include="Modify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BasicUtils\Console.cpp">
+    <ClCompile Include="BlockTheSpot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Utils.cpp">
       <Filter>BasicUtils</Filter>
     </ClCompile>
     <ClCompile Include="BasicUtils\Hooking.cpp">
@@ -68,14 +68,11 @@
     <ClCompile Include="BasicUtils\Logger.cpp">
       <Filter>BasicUtils</Filter>
     </ClCompile>
-    <ClCompile Include="BasicUtils\PatternScanner.cpp">
+    <ClCompile Include="BasicUtils\Memory.cpp">
       <Filter>BasicUtils</Filter>
     </ClCompile>
-    <ClCompile Include="BasicUtils\Utils.cpp">
+    <ClCompile Include="BasicUtils\MemoryScanner.cpp">
       <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockTheSpot.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
