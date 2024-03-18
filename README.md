@@ -61,6 +61,17 @@ rm -fo $env:APPDATA\spotify\dpapi.dll
 rm -fo $env:APPDATA\spotify\config.ini
 ```
 
+### Disabling Automatic Updates
+
+The automatic update feature is enabled by default. To disable it:
+
+1. Navigate to the directory where Spotify is installed: `%APPDATA%\Spotify`.
+2. Open the `config.ini` file.
+3. Set `Enable_Auto_Update` to `0` under the `[Config]` section.
+4. Save your changes and close the file.
+
+Automatic updates will now be disabled. If you wish to update, you'll need to do so manually.
+
 ### Additional Notes:
 
 * Installation script automatically detects if your Spotify client version is supported, or not. If the version is not supported, you will be prompted to update your Spotify client. To enforce client update, supply an optional parameter `UpdateSpotify` to the installation script. 
