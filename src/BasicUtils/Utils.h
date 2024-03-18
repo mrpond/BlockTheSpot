@@ -6,6 +6,7 @@
 #include <string>
 #include <format>
 #include <functional>
+#include <mutex>
 
 namespace Utils
 {
@@ -15,8 +16,8 @@ namespace Utils
     std::wstring ToHexWideString(const std::vector<uint8_t>& byte_array, const bool insert_spaces);
     std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces);
 
-    std::string ConvertUInt8ArrayToString(uint8_t* data);
-    std::wstring ConvertUInt8ArrayToWideString(uint8_t* data);
+    std::vector<uint8_t> ToHexBytes(const std::string& hex_string);
+    std::vector<uint8_t> ToHexBytes(const std::wstring& hex_wstring);
 
     std::string IntegerToHexString(uintptr_t integer_value);
     std::wstring IntegerToHexWideString(uintptr_t integer_value);
@@ -34,10 +35,13 @@ namespace Utils
 	void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value);
 	std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key);
 
+    bool ReadFile(const std::wstring_view filename, std::wstring& out);
+    bool WriteFile(const std::wstring_view filename, const std::wstring_view content);
+
+    std::wstring FetchURL(std::wstring_view url);
+
 #ifndef NDEBUG
-    //Example: MeasureExecutionTime([&]() { Function(arg1, arg2); });
-    void MeasureExecutionTime(std::function<void()> func);
-    
+    void MeasureExecutionTime(std::function<void()> func, bool total_duration = true);
     void PrintSymbols(std::wstring_view module_name);
 #endif
 
@@ -91,18 +95,22 @@ namespace Utils
     };
 
 #if defined(_DEBUG) || defined(_CONSOLE)
+    static std::mutex console_mutex;
     void _Print(std::string_view fmt, const auto&... args)
     {
+        std::lock_guard<std::mutex> lock(console_mutex);
         std::cout << FormatString(fmt, args...) << std::endl;
     }
 
     void _Print(std::wstring_view fmt, const auto&... args)
     {
+        std::lock_guard<std::mutex> lock(console_mutex);
         std::wcout << FormatString(fmt, args...) << std::endl;
     }
 
-    void _Print(const std::vector<Color>& colors, std::wstring fmt, const auto&... args)
+    void _Print(const std::vector<Color>& colors, std::wstring_view fmt, const auto&... args)
     {
+        std::lock_guard<std::mutex> lock(console_mutex);
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         if (hConsole == INVALID_HANDLE_VALUE) {
             throw std::runtime_error("Failed to get console handle");
@@ -113,7 +121,7 @@ namespace Utils
         size_t color_index = 0;
 
         auto print_arg = [&](const auto& arg) {
-            if (pos != std::wstring::npos) {
+            if (pos != std::wstring_view::npos) {
                 std::wcout << fmt.substr(start, pos - start);
                 if (color_index < colors.size()) {
                     if (!SetConsoleTextAttribute(hConsole, static_cast<WORD>(colors[color_index]))) {
@@ -123,9 +131,9 @@ namespace Utils
                 }
 
                 size_t end = fmt.find(L"}", pos);
-                if (end != std::wstring::npos) {
-                    std::wstring formatSpecifier = fmt.substr(pos, end - pos + 1);
-                    std::wcout << Utils::FormatString(formatSpecifier, arg);
+                if (end != std::wstring_view::npos) {
+                    std::wstring_view format_specifier = fmt.substr(pos, end - pos + 1);
+                    std::wcout << FormatString(format_specifier, arg);
                     pos = fmt.find(L"{", end + 1);
                 }
                 else {
@@ -153,9 +161,10 @@ using Utils::Color;
 #if defined(_DEBUG) || defined(_CONSOLE)
 #define Print(fmt, ...) Utils::_Print(fmt, __VA_ARGS__)
 #define PrintColor(colors, fmt, ...) Utils::_Print(colors, fmt, __VA_ARGS__)
-#define PrintError(fmt, ...) Utils::_Print({ Color::Red }, L"{} " fmt, L" -", __VA_ARGS__)
-#define PrintStatus(flag, label) Utils::_Print({ (flag) ? Color::Green : Color::Red }, L"{} " label, (flag) ? L" +" : L" -")
+#define PrintError(fmt, ...) Utils::_Print({ Color::Red }, L"{} {}", L" -", Utils::FormatString(fmt, __VA_ARGS__))
+#define PrintStatus(flag, label) Utils::_Print({ (flag) ? Color::Green : Color::Red }, L"{} {}", (flag) ? L" +" : L" -", label)
 #else
+//#pragma warning(disable:4101)
 #define Print(fmt, ...)
 #define PrintColor(colors, fmt, ...)
 #define PrintError(fmt, ...)

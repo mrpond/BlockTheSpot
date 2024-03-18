@@ -1,7 +1,12 @@
-#include "Utils.h"
+﻿#include "Utils.h"
 
 #include <algorithm>
 #include <chrono>
+#include <cctype>
+#include <cwctype>
+#include <fstream>
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
 
 namespace Utils
 {
@@ -25,14 +30,6 @@ namespace Utils
 
     std::string ToHexString(const uint8_t* data, size_t size, const bool insert_spaces)
     {
-        if (data == nullptr) {
-            PrintError(L"ToHexString: The data pointer is null.");
-            return std::string();
-        }
-
-        if (size == 0)
-            size = std::strlen(reinterpret_cast<const char*>(data));
-
         return ToHexString(std::vector<uint8_t>(data, data + size), insert_spaces);
     }
 
@@ -56,25 +53,37 @@ namespace Utils
 
     std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces)
     {
-        if (data == nullptr) {
-            PrintError(L"ToHexWideString: The data pointer is null.");
-            return std::wstring();
-        }
-
-        if (size == 0)
-            size = std::wcslen(reinterpret_cast<const wchar_t*>(data));
-
         return ToHexWideString(std::vector<uint8_t>(data, data + size), insert_spaces);
     }
 
-    std::string ConvertUInt8ArrayToString(uint8_t* data)
+    std::vector<uint8_t> ToHexBytes(const std::string& hex_string)
     {
-        return std::string(reinterpret_cast<char*>(data), reinterpret_cast<char*>(data + std::strlen(reinterpret_cast<char*>(data))));
+        std::vector<uint8_t> byte_array;
+
+        std::istringstream iss(hex_string);
+        std::string hex_byte;
+
+        while (iss >> std::setw(2) >> hex_byte) {
+            uint8_t byte_value = static_cast<uint8_t>(std::stoi(hex_byte, nullptr, 16));
+            byte_array.push_back(byte_value);
+        }
+
+        return byte_array;
     }
 
-    std::wstring ConvertUInt8ArrayToWideString(uint8_t* data)
+    std::vector<uint8_t> ToHexBytes(const std::wstring& hex_wstring)
     {
-        return std::wstring(reinterpret_cast<wchar_t*>(data), reinterpret_cast<wchar_t*>(data + std::wcslen(reinterpret_cast<wchar_t*>(data))));
+        std::vector<uint8_t> byte_array;
+
+        std::wistringstream iss(hex_wstring);
+        std::wstring hex_byte;
+
+        while (iss >> std::setw(2) >> hex_byte) {
+            uint8_t byte_value = static_cast<uint8_t>(std::stoi(hex_byte, nullptr, 16));
+            byte_array.push_back(byte_value);
+        }
+
+        return byte_array;
     }
 
     std::string IntegerToHexString(uintptr_t integer_value)
@@ -148,27 +157,89 @@ namespace Utils
             });
     }
 
-	void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value)
-	{
-		WritePrivateProfileStringW(section.data(), key.data(), value.data(), ini_path.data());
-	}
+    void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value)
+    {
+        WritePrivateProfileStringW(section.data(), key.data(), value.data(), ini_path.data());
+    }
 
-	std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key)
-	{
-		wchar_t value[255];
-		GetPrivateProfileStringW(section.data(), key.data(), L"", value, 255, ini_path.data());
-		return std::wstring(value);
-	}
+    std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key)
+    {
+        wchar_t value[255];
+        GetPrivateProfileStringW(section.data(), key.data(), L"", value, 255, ini_path.data());
+        return std::wstring(value);
+    }
+
+    bool ReadFile(const std::wstring_view filename, std::wstring& out) {
+        std::wifstream file(filename.data(), std::ios::binary | std::ios::ate);
+        if (!file.is_open()) return false;
+
+        out.resize(file.tellg());
+        file.seekg(0, std::ios::beg);
+        file.read(&out[0], out.size());
+
+        return !file.fail();
+    }
+
+    bool WriteFile(const std::wstring_view filename, const std::wstring_view content) {
+        std::wofstream file(filename.data(), std::ios::binary);
+        if (!file.is_open()) return false;
+
+        file.write(content.data(), content.size());
+
+        return !file.fail();
+    }
+
+    std::wstring FetchURL(std::wstring_view url)
+    {
+        std::wstring data;
+
+        HINTERNET hInternet = InternetOpenW(L"HTTP Request", INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, 0);
+        if (!hInternet) {
+            PrintError(L"InternetOpen failed.");
+            return data;
+        }
+
+        HINTERNET hConnect = InternetOpenUrlW(hInternet, url.data(), nullptr, 0, INTERNET_FLAG_RELOAD, 0);
+        if (!hConnect) {
+            PrintError(L"InternetOpenUrl failed.");
+            InternetCloseHandle(hInternet);
+            return data;
+        }
+
+        size_t buffer_size = 1024;
+        std::vector<char> buffer(buffer_size);
+
+        DWORD bytes_read = 0;
+        do {
+            if (!InternetReadFile(hConnect, buffer.data(), static_cast<DWORD>(buffer_size), &bytes_read)) {
+                PrintError(L"InternetReadFile failed.");
+                data.clear();
+                break;
+            }
+            data.append(buffer.data(), buffer.data() + bytes_read);
+        } while (bytes_read > 0);
+
+        InternetCloseHandle(hConnect);
+        InternetCloseHandle(hInternet);
+
+        return data;
+    }
 
 #ifndef NDEBUG
-    void MeasureExecutionTime(std::function<void()> func)
+    void MeasureExecutionTime(std::function<void()> func, bool total_duration)
     {
+        static std::chrono::duration<double, std::milli> total_diff;
         const auto start_time = std::chrono::high_resolution_clock::now();
         func();
         const auto end_time = std::chrono::high_resolution_clock::now();
-        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-
-        SetConsoleTitleW(FormatString(L"Execution time: {:d}ms", duration).c_str());
+        std::chrono::duration<double, std::milli> diff = end_time - start_time;
+        if (total_duration) {
+            total_diff += diff;
+            SetConsoleTitleW(FormatString(L"Total execution time: {} ms", total_diff.count()).c_str());
+        }
+        else {
+            SetConsoleTitleW(FormatString(L"Execution time: {} ms", diff.count()).c_str());
+        }
     }
 
     void PrintSymbols(std::wstring_view module_name)

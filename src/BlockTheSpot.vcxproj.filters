@@ -45,6 +45,12 @@
     <ClInclude Include="BasicUtils\MemoryScanner.h">
       <Filter>BasicUtils</Filter>
     </ClInclude>
+    <ClInclude Include="BasicUtils\Json.h">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debug.cpp">
@@ -73,6 +79,12 @@
     </ClCompile>
     <ClCompile Include="BasicUtils\MemoryScanner.cpp">
       <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicUtils\Json.cpp">
+      <Filter>BasicUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

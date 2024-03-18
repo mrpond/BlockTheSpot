@@ -94,12 +94,11 @@ namespace MemoryScanner
     {
         std::vector<ScanResult> matches;
 
-        size_t pattern_size = pattern_byte.size();
-
-        if (pattern_byte.empty()) {
+        if (pattern_byte.empty() || !image_size) {
             return matches;
         }
-
+        
+        size_t pattern_size = pattern_byte.size();
         uint8_t* base_ptr = reinterpret_cast<uint8_t*>(base_address);
         uintptr_t end_address = base_address + image_size - pattern_size + 1;
 
@@ -156,9 +155,18 @@ namespace MemoryScanner
         return ScanFirst(mod.base_address, mod.module_size, signature);
     }
 
-    ScanResult::ScanResult(uintptr_t address, uintptr_t base, size_t size) : m_address(address), m_base_address(base), m_image_size(size)
+    ScanResult::ScanResult(uintptr_t address, uintptr_t base, size_t size, bool is_rva) : m_address(address), m_base_address(base), m_image_size(size)
     {
-        //...
+        if (is_rva && address) {
+            m_address += m_base_address;
+        }
+    }
+    
+    ScanResult::ScanResult(uintptr_t address, std::wstring_view module_name, bool is_rva) : m_address(address), m_base_address(GetModuleInfo(module_name).base_address), m_image_size(GetModuleInfo(module_name).module_size)
+    {
+        if (is_rva && address) {
+            m_address += m_base_address;
+        }
     }
 
     ScanResult::operator uintptr_t() const
@@ -166,18 +174,28 @@ namespace MemoryScanner
         return m_address;
     }
 
-    bool ScanResult::is_valid(const std::vector<uint8_t>& value) const
+    bool ScanResult::is_valid(const std::vector<uint8_t>& pattern_byte) const
     {
         if (m_address == 0) {
             return false;
         }
 
-        for (size_t i = 0; i < value.size(); ++i) {
-            if (*(reinterpret_cast<uint8_t*>(m_address) + i) != value[i])
+        for (size_t i = 0; i < pattern_byte.size(); ++i) {
+            if (pattern_byte[i] == 0) {
+                continue;
+            }
+
+            if (*(reinterpret_cast<uint8_t*>(m_address) + i) != pattern_byte[i]) {
                 return false;
+            }
         }
 
         return true;
+    }
+
+    bool ScanResult::is_valid(std::wstring_view signature) const
+    {
+        return is_valid(SignatureToByteArray(signature));
     }
 
     uint8_t* ScanResult::data() const
@@ -195,8 +213,7 @@ namespace MemoryScanner
             return ScanResult(0, m_base_address, m_image_size);
         }
 
-        uintptr_t rva_address = m_address - m_base_address;
-        return ScanResult(rva_address, m_base_address, m_image_size);
+        return ScanResult(m_address - m_base_address, m_base_address, m_image_size);
     }
 
     ScanResult ScanResult::offset(std::ptrdiff_t offset_value) const
@@ -221,19 +238,24 @@ namespace MemoryScanner
         return is_valid() ? ScanFirst(m_address, m_image_size - rva(), value) : ScanResult(0, m_base_address, m_image_size);
     }
 
-    bool ScanResult::write(const void* data, size_t size) const
+    bool ScanResult::write(const std::string_view& data) const
     {
-        return Memory::Write(reinterpret_cast<void*>(m_address), data, size);
+        return is_valid() ? Memory::Write(reinterpret_cast<void*>(m_address), data) : false;
+    }
+    
+    bool ScanResult::write(const std::wstring_view& data) const
+    {
+        return is_valid() ? Memory::Write(reinterpret_cast<void*>(m_address), data) : false;
     }
 
-    bool ScanResult::write(std::string_view data) const
+    bool ScanResult::write(const std::initializer_list<uint8_t>& data) const
     {
-        return Memory::Write(reinterpret_cast<void*>(m_address), data);
+        return is_valid() ? Memory::Write(reinterpret_cast<void*>(m_address), data) : false;
     }
-
-    bool ScanResult::write(std::initializer_list<uint8_t> data) const
+    
+    bool ScanResult::write(const std::vector<uint8_t>& data) const
     {
-        return Memory::Write(reinterpret_cast<void*>(m_address), data);
+        return is_valid() ? Memory::Write(reinterpret_cast<void*>(m_address), data) : false;
     }
 
     PVOID* ScanResult::hook(PVOID hook_function) const

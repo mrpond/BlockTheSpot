@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
@@ -12,6 +13,7 @@
 #include "BasicUtils/MemoryScanner.h"
 #include "BasicUtils/Memory.h"
 #include "BasicUtils/Hooking.h"
+#include "BasicUtils/Json.h"
 
 #ifndef NDEBUG
 #ifdef _WIN64

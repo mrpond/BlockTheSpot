@@ -7,11 +7,12 @@
 #include <mutex>
 
 namespace Logger {
-    std::mutex mtx;
     std::wofstream file;
     bool log_enabled = false;
+    bool has_error = false;
 
-    void Init(std::wstring_view log_file, bool enable_logging) {
+    void Init(std::wstring_view log_file, bool enable_logging)
+    {
         log_enabled = enable_logging;
         if (log_enabled) {
             file.open(log_file.data(), std::ios::out | std::ios::trunc);
@@ -21,7 +22,8 @@ namespace Logger {
         }
     }
 
-    std::wstring GetLevelInfo(LogLevel level) {
+    std::wstring GetLevelInfo(LogLevel level)
+    {
         switch (level) {
         case LogLevel::Info:
             return L"INFO";
@@ -32,14 +34,16 @@ namespace Logger {
         }
     }
 
-    void Log(std::wstring_view message, LogLevel level) {
-#ifndef NDEBUG
+    void Log(std::wstring_view message, LogLevel level)
+    {
         if (level == LogLevel::Error) {
+            has_error = true;
             PrintError(L"{}", message);
         }
-#endif
+
         if (!log_enabled) return;
 
+        static std::mutex mtx;
         std::lock_guard<std::mutex> lock(mtx);
 
         if (file.is_open()) {
@@ -49,5 +53,10 @@ namespace Logger {
             file << ss.str();
             file.flush();
         }
+    }
+
+    bool HasError()
+    {
+        return has_error;
     }
 }

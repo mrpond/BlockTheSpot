@@ -16,18 +16,21 @@ namespace MemoryScanner
     class ScanResult {
     public:
         ScanResult() : m_address(0), m_base_address(0), m_image_size(0) {}
-        ScanResult(uintptr_t address, uintptr_t base, size_t size);
+        ScanResult(uintptr_t address, uintptr_t base, size_t size, bool is_rva = false);
+        ScanResult(uintptr_t address, std::wstring_view module_name = {}, bool is_rva = false);
         operator uintptr_t() const;
 
-        bool is_valid(const std::vector<uint8_t>& value = {}) const;
+        bool is_valid(const std::vector<uint8_t>& pattern_byte = {}) const;
+        bool is_valid(std::wstring_view signature) const;
         uint8_t* data() const;
         ScanResult rva() const;
         ScanResult offset(std::ptrdiff_t offset_value) const;
         ScanResult scan_first(std::wstring_view value) const;
 
-        bool write(const void* data, size_t size) const;
-        bool write(std::string_view data) const;
-        bool write(std::initializer_list<uint8_t> data) const;
+        bool write(const std::string_view& data) const;
+        bool write(const std::wstring_view& data) const;
+        bool write(const std::initializer_list<uint8_t>& data) const;
+        bool write(const std::vector<uint8_t>& data) const;
 
         PVOID* hook(PVOID hook_function) const;
         bool unhook() const;

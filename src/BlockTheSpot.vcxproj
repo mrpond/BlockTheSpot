@@ -82,6 +82,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BasicUtils\Hooking.h" />
+    <ClInclude Include="BasicUtils\Json.h" />
     <ClInclude Include="BasicUtils\Logger.h" />
     <ClInclude Include="BasicUtils\Memory.h" />
     <ClInclude Include="BasicUtils\MemoryScanner.h" />
@@ -90,9 +91,11 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SettingsManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicUtils\Hooking.cpp" />
+    <ClCompile Include="BasicUtils\Json.cpp" />
     <ClCompile Include="BasicUtils\Logger.cpp" />
     <ClCompile Include="BasicUtils\Memory.cpp" />
     <ClCompile Include="BasicUtils\MemoryScanner.cpp" />
@@ -101,6 +104,7 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Modify.cpp" />
+    <ClCompile Include="SettingsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />

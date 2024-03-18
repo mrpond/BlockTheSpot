@@ -12,8 +12,6 @@ static _cef_zip_reader_create cef_zip_reader_create_orig = nullptr;
 using _cef_zip_reader_t_read_file = int(__stdcall*)(void* self, void* buffer, size_t bufferSize);
 static _cef_zip_reader_t_read_file cef_zip_reader_t_read_file_orig = nullptr;
 
-static constexpr std::array<std::wstring_view, 3> block_list = { L"/ads/", L"/ad-logic/", L"/gabo-receiver-service/" };
-
 #ifndef NDEBUG
 void* cef_urlrequest_create_hook(struct _cef_request_t* request, void* client, void* request_context)
 #else
@@ -21,23 +19,24 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 #endif
 {
 #ifndef NDEBUG
-	cef_string_utf16_t* url_utf16 = request->get_url (request);
+	cef_string_utf16_t* url_utf16 = request->get_url(request);
 	std::wstring url = Utils::ToString(url_utf16->str);
 #else
-	const auto get_url = *(void* (__stdcall**)(void*))((uintptr_t)request + cef_request_t_get_url_offset);
+	const auto get_url = *(void* (__stdcall**)(void*))((uintptr_t)request + SettingsManager::m_cef_request_t_get_url_offset);
 	auto url_utf16 = get_url(request);
 	std::wstring url = *reinterpret_cast<wchar_t**>(url_utf16);
 #endif
-	for (const auto& blockurl : block_list) {
-		if (std::wstring_view::npos != url.find (blockurl)) {
+	for (const auto& block_url : SettingsManager::m_block_list) {
+		if (std::wstring_view::npos != url.find(block_url)) {
 			Log(L"blocked - " + url, LogLevel::Info);
 			cef_string_userfree_utf16_free_orig((void*)url_utf16);
 			return nullptr;
 		}
 	}
+
 	cef_string_userfree_utf16_free_orig((void*)url_utf16);
 	Log(L"allow - " + url, LogLevel::Info);
-	return cef_urlrequest_create_orig (request, client, request_context);
+	return cef_urlrequest_create_orig(request, client, request_context);
 }
 
 #ifndef NDEBUG
@@ -51,120 +50,36 @@ int cef_zip_reader_t_read_file_hook(void* self, void* buffer, size_t bufferSize)
 #ifndef NDEBUG
 	std::wstring file_name = Utils::ToString(self->get_file_name(self)->str);
 #else
-	const auto get_file_name = (*(void* (__stdcall**)(void*))((uintptr_t)self + cef_zip_reader_get_file_name_offset));
+	const auto get_file_name = (*(void* (__stdcall**)(void*))((uintptr_t)self + SettingsManager::m_cef_zip_reader_t_get_file_name_offset));
 	std::wstring file_name = *reinterpret_cast<wchar_t**>(get_file_name(self));
 #endif
 
-	if (file_name == L"home-hpto.css") {
-		const auto hpto = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L".WiPggcPDzbwGxoxwLWFf{display:-webkit-box;display:-ms-flexbox;display:flex;");
-		if (hpto.is_valid()) {
-			if (hpto.write(".WiPggcPDzbwGxoxwLWFf{display:-webkit-box;display:-ms-flexbox;display:none;")) {
-				Log(L"hptocss patched!", LogLevel::Info);
+	if (SettingsManager::m_zip_reader.find(file_name) != SettingsManager::m_zip_reader.end()) {
+		for (auto& [name, data] : SettingsManager::m_zip_reader.at(file_name)) {
+			const auto& sig = data.at(L"Signature").get_string();
+			auto scan = MemoryScanner::ScanResult(data.at(L"Address").get_integer(), reinterpret_cast<uintptr_t>(buffer), bufferSize, true);
+			if (!scan.is_valid(sig)) {
+				scan = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, sig);
+				data.at(L"Address") = static_cast<int>(scan.rva());
+			}
+
+			if (scan.is_valid()) {
+				const auto& value = data.at(L"Value").get_string();
+				const auto& offset = data.at(L"Offset").get_integer();
+				const auto& fill = data.at(L"Fill").get_integer();
+
+				if (fill > 0) {
+					scan.offset(offset).write(Utils::ToString(std::wstring(fill, ' ').append(value))) ? Log(name + L" - patch success!", LogLevel::Info) : Log(name + L" - patch failed!", LogLevel::Error);
+				}
+				else {
+					scan.offset(offset).write(Utils::ToString(value)) ? Log(name + L" - patch success!", LogLevel::Info) : Log(name + L" - patch failed!", LogLevel::Error);
+				}
 			}
 			else {
-				Log(L"hptocss patch failed!", LogLevel::Error);
+				Log(name + L" - unable to find signature in memory!", LogLevel::Error);
 			}
-		}
-		else {
-			Log(L"hptocss - failed not found!", LogLevel::Error);
 		}
 	}
-
-	if (file_name == L"xpui.js") {
-		const auto skipads = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"adsEnabled:!0");
-		if (skipads.is_valid()) {
-			if (skipads.offset(12).write("1")) {
-				Log(L"adsEnabled patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"adsEnabled - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"adsEnabled - failed not found!", LogLevel::Error);
-		}
-
-		const auto sponsorship = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L".set(\"allSponsorships\",t.sponsorships)}}(e,t);");
-		if (sponsorship.is_valid()) {
-			if (sponsorship.offset(5).write(std::string(15, ' ').append("\"").c_str())) {
-				Log(L"sponsorship patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"sponsorship patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"sponsorship - failed not found!", LogLevel::Error);
-		}
-
-		const auto skipsentry = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"sentry.io");
-		if (skipsentry.is_valid()) {
-			if (skipsentry.write("localhost")) {
-				Log(L"sentry.io -> localhost patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"sentry.io -> localhost - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"sentry.io -> localhost - failed not found!", LogLevel::Error);
-		}
-
-		const auto ishptoenable = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"hptoEnabled:!0");
-		if (ishptoenable.is_valid())
-		{
-			if (ishptoenable.offset(13).write("1")) {
-				Log(L"hptoEnabled patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"hptoEnabled - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"hptoEnabled - failed not found!", LogLevel::Error);
-		}
-
-		const auto ishptohidden = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"isHptoHidden:!0");
-		if (ishptohidden.is_valid()) {
-			if (ishptohidden.offset(14).write("1")) {
-				Log(L"isHptoHidden patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"isHptoHidden - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"isHptoHidden - failed not found!", LogLevel::Error);
-		}
-
-		const auto sp_localhost = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"sp://ads/v1/ads/");
-		if (sp_localhost.is_valid()) {
-			if (sp_localhost.write("sp://localhost//")) {
-				Log(L"sp://ads/v1/ads/ patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"sp://ads/v1/ads/ - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"sp://ads/v1/ads/ - failed not found!", LogLevel::Error);
-		}
-
-		const auto premium_free = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, L"e.session?.productState?.catalogue?.toLowerCase()");
-		if (premium_free.is_valid()) {
-			//if (premium_free.offset(-1).write(std::string(48, ' ').append("\"\""))) {
-			if (premium_free.write("\"blockthespot-team-says-meow-meow-meow-meow-meow\"")) {
-				Log(L"premium patched!", LogLevel::Info);
-			}
-			else {
-				Log(L"premium - patch failed!", LogLevel::Error);
-			}
-		}
-		else {
-			Log(L"premium - failed not found!", LogLevel::Error);
-		}		
-	}
-
 	return _retval;
 }
 
@@ -179,47 +94,41 @@ void* cef_zip_reader_create_hook(void* stream)
 	cef_zip_reader_t_read_file_orig = (_cef_zip_reader_t_read_file)zip_reader->read_file;
 #else
 	auto zip_reader = cef_zip_reader_create_orig(stream);
-	cef_zip_reader_t_read_file_orig = *(_cef_zip_reader_t_read_file*)((uintptr_t)zip_reader + cef_zip_reader_t_read_file_offset);
+	cef_zip_reader_t_read_file_orig = *(_cef_zip_reader_t_read_file*)((uintptr_t)zip_reader + SettingsManager::m_cef_zip_reader_t_read_file_offset);
 #endif
 
 	if (!Hooking::HookFunction(&(PVOID&)cef_zip_reader_t_read_file_orig, (PVOID)cef_zip_reader_t_read_file_hook)) {
-		Log(L"zip_reader_read_file_hook - patch failed!", LogLevel::Error);
+		Log(L"Failed to hook cef_zip_reader::read_file function!", LogLevel::Error);
 	}
-	
+	else {
+		Hooking::UnhookFunction(&(PVOID&)cef_zip_reader_create_orig);
+	}
+
 	return zip_reader;
 }
 
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
-#ifdef _WIN64
-	const auto app_developer = MemoryScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x48, 0x8D, 0x15 });	
-	const auto developer = app_developer.size() > 1 ? app_developer[1].scan_first(L"D1 EB").offset(2) : MemoryScanner::ScanResult();
-	if (developer.is_valid({ 0x80, 0xE3, 0x01 })) {
-		if (developer.write({ 0xB3, 0x01, 0x90 })) {
-			Log(L"Developer - patch success!", LogLevel::Info);
+	auto& dev_data = SettingsManager::m_developer.at(SettingsManager::m_architecture);
+	const auto& sig = dev_data.at(L"Signature").get_string();
+	auto scan = MemoryScanner::ScanResult(dev_data.at(L"Address").get_integer(), L"", true);
+	if (!scan.is_valid(sig)) {
+		scan = MemoryScanner::ScanFirst(sig);
+		dev_data.at(L"Address") = static_cast<int>(scan.rva());
+	}
+
+	if (scan.is_valid()) {
+		if (scan.offset(dev_data.at(L"Offset").get_integer()).write(Utils::ToHexBytes(dev_data.at(L"Value").get_string()))) {
+			Log(L"Developer - successfully patched!", LogLevel::Info);
 		}
 		else {
-			Log(L"Developer - patch failed!", LogLevel::Error);
+			Log(L"Developer - failed to patch!", LogLevel::Error);
 		}
 	}
 	else {
-		Log(L"Developer - failed not found!", LogLevel::Error);
+		Log(L"Developer - unable to find signature in memory!", LogLevel::Error);
 	}
-#else
-	//const auto app_developer = MemoryScanner::ScanFirst(L"app-developer").get_all_matching_codes({ 0x68 }, false);
-	const auto developer = MemoryScanner::ScanFirst(L"25 01 FF FF FF 89 ?? ?? ?? FF FF");
-	if (developer.is_valid()) {
-		if (developer.write({ 0xB8, 0x03, 0x00 })) {
-			Log(L"Developer - patch success!", LogLevel::Info);
-		}
-		else {
-			Log(L"Developer - patch failed!", LogLevel::Error);
-		}
-	}
-	else {
-		Log(L"Developer - failed not found!", LogLevel::Error);
-	}
-#endif
+
 	return 0;
 }
 

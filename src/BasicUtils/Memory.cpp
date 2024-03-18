@@ -24,13 +24,23 @@ namespace Memory {
         return false;
     }
 
-    bool Write(void* address, std::string_view& data) 
+    bool Write(void* address, const std::string_view& data)
+    {
+        return Write(address, data.data(), data.size());
+    }
+    
+    bool Write(void* address, const std::wstring_view& data)
     {
         return Write(address, data.data(), data.size());
     }
 
-    bool Write(void* address, std::initializer_list<uint8_t>& data) 
+    bool Write(void* address, const std::initializer_list<uint8_t>& data)
     {
         return Write(address, data.begin(), data.size());
+    }
+
+    bool Write(void* address, const std::vector<uint8_t>& data)
+    {
+        return Write(address, data.data(), data.size());
     }
 }

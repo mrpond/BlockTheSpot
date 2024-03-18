@@ -1,35 +1,5 @@
 ﻿#include "pch.h"
 
-bool block_ads = true;
-bool block_banner = true;
-bool enable_developer = true;
-bool enable_log = false;
-
-void SyncConfigFile() {
-	std::wstring ini_path = L".\\config.ini";
-	std::map<std::wstring, bool*> config = {
-		{L"Block_Ads", &block_ads},
-		{L"Block_Banner", &block_banner},
-		{L"Enable_Developer", &enable_developer},
-		{L"Enable_Log", &enable_log},
-	};
-
-	for (const auto& [key, bool_ptr] : config) {
-		std::wstring current_value = Utils::ReadIniFile(ini_path, L"Config", key);
-		if (current_value.empty() || current_value != L"1" && current_value != L"0") {
-			Utils::WriteIniFile(ini_path, L"Config", key, *bool_ptr ? L"1" : L"0");
-		}
-		else {
-			*bool_ptr = (current_value == L"1");
-		}
-	}
-
-	PrintStatus(block_ads, L"Block ADS");
-	PrintStatus(block_banner, L"Block Banner");
-	PrintStatus(enable_developer, L"Enable Developer");
-	PrintStatus(enable_log, L"Enable Log");
-}
-
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	DisableThreadLibraryCalls(hModule);
@@ -59,25 +29,23 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					CloseHandle(hThread);
 				}
 #endif
+				SettingsManager::Init();
 
-				SyncConfigFile();
-				Logger::Init(L"blockthespot.log", enable_log);
-
-				if (block_ads) {
+				if (SettingsManager::m_config.at(L"Block_Ads")) {
 					hThread = CreateThread(NULL, 0, BlockAds, NULL, 0, NULL);
 					if (hThread != nullptr) {
 						CloseHandle(hThread);
 					}
 				}
 
-				if (block_banner) {
+				if (SettingsManager::m_config.at(L"Block_Banner")) {
 					hThread = CreateThread(NULL, 0, BlockBanner, NULL, 0, NULL);
 					if (hThread != nullptr) {
 						CloseHandle(hThread);
 					}
 				}
 
-				if (enable_developer) {
+				if (SettingsManager::m_config.at(L"Enable_Developer")) {
 					hThread = CreateThread(NULL, 0, EnableDeveloper, NULL, 0, NULL);
 					if (hThread != nullptr) {
 						CloseHandle(hThread);

@@ -9,6 +9,7 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include "SettingsManager.h"
 #include "Modify.h"
 #include "Debug.h"
 
