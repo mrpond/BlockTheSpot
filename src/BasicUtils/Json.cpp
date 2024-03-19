@@ -7,10 +7,20 @@
 
 Json& Json::operator[](const std::wstring& key)
 {
-    return at(key);
+    if (auto* object_ptr = std::get_if<Object>(&m_value)) {
+        auto it = object_ptr->find(key);
+        if (it != object_ptr->end()) {
+            return it->second;
+        }
+        return (*object_ptr)[key];
+    }
+
+    m_value = Object();
+    return std::get<Object>(m_value)[key];
 }
 
-Json& Json::operator[](size_t index) {
+Json& Json::operator[](size_t index)
+{
     return at(index);
 }
 
@@ -47,7 +57,7 @@ bool operator==(const Json& lhs, const Json& rhs)
 
 bool operator!=(const Json& lhs, const Json& rhs)
 {
-    return !(lhs.m_value == rhs.m_value);
+    return !(lhs == rhs);
 }
 
 Json::Object::iterator Json::begin()
@@ -58,6 +68,11 @@ Json::Object::iterator Json::begin()
     throw std::runtime_error("Json value is not an object");
 }
 
+Json::Object::const_iterator Json::begin() const
+{
+    return const_cast<Json*>(this)->begin();
+}
+
 Json::Object::iterator Json::end()
 {
     if (is_object()) {
@@ -66,11 +81,22 @@ Json::Object::iterator Json::end()
     throw std::runtime_error("Json value is not an object");
 }
 
-Json::Object::iterator Json::find(const std::wstring& key) {
+Json::Object::const_iterator Json::end() const
+{
+    return const_cast<Json*>(this)->end();
+}
+
+Json::Object::iterator Json::find(const std::wstring& key)
+{
     if (is_object()) {
         return std::get<Object>(m_value).find(key);
     }
     throw std::runtime_error("Json value is not an object");
+}
+
+Json::Object::const_iterator Json::find(const std::wstring& key) const
+{
+    return const_cast<Json*>(this)->find(key);
 }
 
 //Json::Array::iterator Json::begin()
@@ -194,48 +220,23 @@ Json::Array Json::get_array() const
 
 Json& Json::at(const std::wstring& key)
 {
-#if 1
-    auto* map_ptr = std::get_if<Object>(&m_value);
-
-    if (map_ptr) {
-        auto it = map_ptr->find(key);
-        if (it != map_ptr->end()) {
-            return it->second;
-        }
-        return (*map_ptr)[key];
-    }
-
-    m_value = Object();
-    return std::get<Object>(m_value)[key];
-#else
-    auto* object_ptr = std::get_if<Object>(&m_value);
-
-    if (object_ptr) {
+    if (auto* object_ptr = std::get_if<Object>(&m_value)) {
         auto it = object_ptr->find(key);
         if (it != object_ptr->end()) {
             return it->second;
         }
         throw std::out_of_range("Key not found in JSON object");
     }
-
     throw std::runtime_error("Trying to access key in non-object JSON value");
-#endif
+}
+
+const Json& Json::at(const std::wstring& key) const
+{
+    return const_cast<Json&>(*this).at(key);
 }
 
 Json& Json::at(std::size_t index)
 {
-#if 1
-    if (auto* vector_ptr = std::get_if<Array>(&m_value)) {
-        if (index < vector_ptr->size()) {
-            return (*vector_ptr)[index];
-        }
-        vector_ptr->resize(index + 1);
-        return (*vector_ptr)[index];
-    }
-
-    m_value = Array(index + 1);
-    return std::get<Array>(m_value)[index];
-#else
     if (auto* array_ptr = std::get_if<Array>(&m_value)) {
         if (index < array_ptr->size()) {
             return (*array_ptr)[index];
@@ -243,7 +244,11 @@ Json& Json::at(std::size_t index)
         throw std::out_of_range("Index out of range in JSON array");
     }
     throw std::out_of_range("Trying to access index in non-array JSON value");
-#endif
+}
+
+const Json& Json::at(std::size_t index) const
+{
+    return const_cast<Json&>(*this).at(index);
 }
 
 void Json::clear()
@@ -490,7 +495,7 @@ Json Json::parse_number(std::wistream& is)
     if (number_iss.fail() || !number_iss.eof()) {
         throw std::runtime_error("Invalid JSON number");
     }
-
+    
     if (number_str.find(L'.') != std::wstring::npos || number_str.find(L'e') != std::wstring::npos || number_str.find(L'E') != std::wstring::npos) {
         return number;
     }

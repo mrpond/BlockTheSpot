@@ -169,12 +169,8 @@ bool SettingsManager::Load()
 
 DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    auto update_interval = std::chrono::minutes(1);
-
-    while (true) {
-        if (std::chrono::steady_clock::now() - start_time > update_interval) break;
-
+    const auto end_time = std::chrono::steady_clock::now() + std::chrono::minutes(1);
+    while (std::chrono::steady_clock::now() < end_time) {
         m_settings_changed = (
             m_app_settings.at(L"Latest Release Date") != m_latest_release_date ||
             m_app_settings.at(L"Block List") != m_block_list ||
@@ -199,8 +195,10 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
             static Json release_info;
             if (release_info.empty()) {
                 release_info = Json::parse(Utils::FetchURL(L"https://api.github.com/repos/mrpond/BlockTheSpot/releases/latest"));
-
-                if (release_info.is_object() && release_info.at(L"published_at").get_string() != m_latest_release_date) {
+                if (!release_info.is_object() || release_info.find(L"published_at") == release_info.end() || !release_info.at(L"published_at").is_string()) {
+                    Log(L"Release info is invalid or doesn't contain published_at field.", LogLevel::Error);
+                }
+                else if (release_info.at(L"published_at").get_string() != m_latest_release_date) {
                     Json app_settings = Json::parse(Utils::FetchURL(L"https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/blockthespot_settings.json"));
                     if (app_settings.is_object()) {
                         m_app_settings = app_settings;
@@ -216,11 +214,11 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
                         //}
                     }
                     else {
-                        Log(L"Failed to fetch app settings from the server.", LogLevel::Error);
+                        Log(L"Failed to parse app settings from URL.", LogLevel::Error);
                     }
                 }
-                else if (release_info.empty()) {
-                    Log(L"Failed to fetch release information from the server.", LogLevel::Error);
+                else {
+                    Log(L"No new version of BlockTheSpot available.", LogLevel::Info);
                 }
             }
         }
@@ -256,7 +254,7 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Block List
-    for (auto& item : m_app_settings.at(L"Block List").get_array()) {
+    for (const auto& item : m_app_settings.at(L"Block List").get_array()) {
         if (!item.is_string()) {
             Log(L"Invalid data type in Block List.", LogLevel::Error);
             return false;
@@ -264,7 +262,12 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Cef Offsets
-    for (auto& [arch, offset_data] : m_app_settings.at(L"Cef Offsets")) {
+    for (const auto& [arch, offset_data] : m_app_settings.at(L"Cef Offsets")) {
+        if (arch != L"x64" && arch != L"x32") {
+            Log(L"Invalid architecture in Cef Offsets settings.", LogLevel::Error);
+            return false;
+        }
+
         if (!offset_data.is_object() ||
             offset_data.find(L"cef_request_t_get_url") == offset_data.end() || !offset_data.at(L"cef_request_t_get_url").is_integer() ||
             offset_data.find(L"cef_zip_reader_t_get_file_name") == offset_data.end() || !offset_data.at(L"cef_zip_reader_t_get_file_name").is_integer() ||
@@ -275,7 +278,12 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Developer
-    for (auto& [arch, dev_data] : m_app_settings.at(L"Developer")) {
+    for (const auto& [arch, dev_data] : m_app_settings.at(L"Developer")) {
+        if (arch != L"x64" && arch != L"x32") {
+            Log(L"Invalid architecture in Developer settings.", LogLevel::Error);
+            return false;
+        }
+
         if (!dev_data.is_object() ||
             !dev_data.at(L"Signature").is_string() ||
             !dev_data.at(L"Value").is_string() ||
@@ -287,13 +295,13 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Zip Reader
-    for (auto& [file_name, file_data] : m_app_settings.at(L"Zip Reader")) {
+    for (const auto& [file_name, file_data] : m_app_settings.at(L"Zip Reader")) {
         if (!file_data.is_object()) {
             Log(L"Invalid data for Zip Reader entry '" + file_name + L"' in settings file.", LogLevel::Error);
             return false;
         }
 
-        for (auto& [setting_name, setting_data] : file_data) {
+        for (const auto& [setting_name, setting_data] : file_data) {
             if (!setting_data.is_object() ||
                 !setting_data.at(L"Signature").is_string() ||
                 !setting_data.at(L"Value").is_string() ||

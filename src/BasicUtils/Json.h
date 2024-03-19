@@ -52,8 +52,13 @@ public:
     friend bool operator!=(const Json& lhs, const Json& rhs);
 
     Object::iterator begin();
+    Object::const_iterator begin() const;
+    
     Object::iterator end();
+    Object::const_iterator end() const;
+    
     Object::iterator find(const std::wstring& key);
+    Object::const_iterator find(const std::wstring& key) const;
 
     bool is_null() const;
     bool is_integer() const;
@@ -73,7 +78,7 @@ public:
     Array get_array() const;
 
     template <typename T>
-    void get_to(T& value) const
+    void get_to(T& value) const 
     {
         if constexpr (std::is_same_v<T, Json>) {
             value = *this;
@@ -114,7 +119,10 @@ public:
     }
 
     Json& at(const std::wstring& key);
+    const Json& at(const std::wstring& key) const;
+
     Json& at(size_t index);
+    const Json& at(size_t index) const;
 
     void clear();
     bool empty() const;
