@@ -286,6 +286,15 @@ std::size_t Json::size() const
     return 0;
 }
 
+bool Json::contains(const std::wstring& key) const
+{
+    if (is_object()) {
+        const auto& object = std::get<Object>(m_value);
+        return object.find(key) != object.end();
+    }
+    return false;
+}
+
 std::wstring Json::dump(int indent) const
 {
     std::wostringstream os;
@@ -495,7 +504,7 @@ Json Json::parse_number(std::wistream& is)
     if (number_iss.fail() || !number_iss.eof()) {
         throw std::runtime_error("Invalid JSON number");
     }
-    
+
     if (number_str.find(L'.') != std::wstring::npos || number_str.find(L'e') != std::wstring::npos || number_str.find(L'E') != std::wstring::npos) {
         return number;
     }

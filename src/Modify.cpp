@@ -54,7 +54,7 @@ int cef_zip_reader_t_read_file_hook(void* self, void* buffer, size_t bufferSize)
 	std::wstring file_name = *reinterpret_cast<wchar_t**>(get_file_name(self));
 #endif
 
-	if (SettingsManager::m_zip_reader.find(file_name) != SettingsManager::m_zip_reader.end()) {
+	if (SettingsManager::m_zip_reader.contains(file_name)) {
 		for (auto& [name, data] : SettingsManager::m_zip_reader.at(file_name)) {
 			const auto& sig = data.at(L"Signature").get_string();
 			auto scan = MemoryScanner::ScanResult(data.at(L"Address").get_integer(), reinterpret_cast<uintptr_t>(buffer), bufferSize, true);

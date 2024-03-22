@@ -127,6 +127,8 @@ public:
     void clear();
     bool empty() const;
     size_t size() const;
+    
+    bool contains(const std::wstring& key) const;
 
     std::wstring dump(int indent = 0) const;
 

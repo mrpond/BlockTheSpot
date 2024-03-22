@@ -195,7 +195,7 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
             static Json release_info;
             if (release_info.empty()) {
                 release_info = Json::parse(Utils::FetchURL(L"https://api.github.com/repos/mrpond/BlockTheSpot/releases/latest"));
-                if (!release_info.is_object() || release_info.find(L"published_at") == release_info.end() || !release_info.at(L"published_at").is_string()) {
+                if (!release_info.contains(L"published_at") || !release_info.at(L"published_at").is_string()) {
                     Log(L"Release info is invalid or doesn't contain published_at field.", LogLevel::Error);
                 }
                 else if (release_info.at(L"published_at").get_string() != m_latest_release_date) {
@@ -238,7 +238,7 @@ bool SettingsManager::ValidateSettings()
 
     const std::vector<std::wstring> keys = { L"Latest Release Date", L"Block List", L"Zip Reader", L"Developer", L"Cef Offsets" };
     for (const auto& key : keys) {
-        if (m_app_settings.find(key) == m_app_settings.end()) {
+        if (!m_app_settings.contains(key)) {
             Log(L"Key '" + key + L"' is missing in settings file.", LogLevel::Error);
             return false;
         }
@@ -268,10 +268,9 @@ bool SettingsManager::ValidateSettings()
             return false;
         }
 
-        if (!offset_data.is_object() ||
-            offset_data.find(L"cef_request_t_get_url") == offset_data.end() || !offset_data.at(L"cef_request_t_get_url").is_integer() ||
-            offset_data.find(L"cef_zip_reader_t_get_file_name") == offset_data.end() || !offset_data.at(L"cef_zip_reader_t_get_file_name").is_integer() ||
-            offset_data.find(L"cef_zip_reader_t_read_file") == offset_data.end() || !offset_data.at(L"cef_zip_reader_t_read_file").is_integer()) {
+        if (!offset_data.contains(L"cef_request_t_get_url") || !offset_data.at(L"cef_request_t_get_url").is_integer() ||
+            !offset_data.contains(L"cef_zip_reader_t_get_file_name") || !offset_data.at(L"cef_zip_reader_t_get_file_name").is_integer() ||
+            !offset_data.contains(L"cef_zip_reader_t_read_file") || !offset_data.at(L"cef_zip_reader_t_read_file").is_integer()) {
             Log(L"Invalid data for Cef Offsets in settings file.", LogLevel::Error);
             return false;
         }
@@ -284,11 +283,10 @@ bool SettingsManager::ValidateSettings()
             return false;
         }
 
-        if (!dev_data.is_object() ||
-            !dev_data.at(L"Signature").is_string() ||
-            !dev_data.at(L"Value").is_string() ||
-            !dev_data.at(L"Offset").is_integer() ||
-            !dev_data.at(L"Address").is_integer()) {
+        if (!dev_data.contains(L"Signature") || !dev_data.at(L"Signature").is_string() ||
+            !dev_data.contains(L"Value") || !dev_data.at(L"Value").is_string() ||
+            !dev_data.contains(L"Offset") || !dev_data.at(L"Offset").is_integer() ||
+            !dev_data.contains(L"Address") || !dev_data.at(L"Address").is_integer()) {
             Log(L"Invalid data for Developer settings in settings file.", LogLevel::Error);
             return false;
         }
@@ -296,24 +294,33 @@ bool SettingsManager::ValidateSettings()
 
     // Zip Reader
     for (const auto& [file_name, file_data] : m_app_settings.at(L"Zip Reader")) {
+        if (file_name.empty()) {
+            Log(L"File name is empty for a Zip Reader entry in settings file.", LogLevel::Error);
+            return false;
+        }
+
         if (!file_data.is_object()) {
             Log(L"Invalid data for Zip Reader entry '" + file_name + L"' in settings file.", LogLevel::Error);
             return false;
         }
 
         for (const auto& [setting_name, setting_data] : file_data) {
-            if (!setting_data.is_object() ||
-                !setting_data.at(L"Signature").is_string() ||
-                !setting_data.at(L"Value").is_string() ||
-                !setting_data.at(L"Offset").is_integer() ||
-                !setting_data.at(L"Fill").is_integer() ||
-                !setting_data.at(L"Address").is_integer()) {
+            if (setting_name.empty()) {
+                Log(L"Setting name is empty for a setting in Zip Reader entry '" + file_name + L"' in settings file.", LogLevel::Error);
+                return false;
+            }
+
+            if (!setting_data.contains(L"Signature") || !setting_data.at(L"Signature").is_string() ||
+                !setting_data.contains(L"Value") || !setting_data.at(L"Value").is_string() ||
+                !setting_data.contains(L"Offset") || !setting_data.at(L"Offset").is_integer() ||
+                !setting_data.contains(L"Fill") || !setting_data.at(L"Fill").is_integer() ||
+                !setting_data.contains(L"Address") || !setting_data.at(L"Address").is_integer()) {
                 Log(L"Invalid data for setting '" + setting_name + L"' in Zip Reader entry '" + file_name + L"' in settings file.", LogLevel::Error);
                 return false;
             }
         }
     }
-    
+
     return true;
 }
 
