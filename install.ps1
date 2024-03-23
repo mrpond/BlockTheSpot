@@ -265,6 +265,31 @@ $patchFiles = (Join-Path -Path $PWD -ChildPath 'dpapi.dll'), (Join-Path -Path $P
 
 Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
 
+function Install-VcRedist {
+    # https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
+    $vcRedistX86Url = "https://aka.ms/vs/17/release/vc_redist.x86.exe"
+    $vcRedistX64Url = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+
+    if ([Environment]::Is64BitOperatingSystem) {
+        if (!(Test-Path 'HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64')) {
+            $vcRedistX64File = Join-Path -Path $PWD -ChildPath 'vc_redist.x64.exe'
+            Write-Host "Downloading and installing vc_redist.x64.exe..."
+            Get-File -Uri $vcRedistX64Url -TargetFile $vcRedistX64File
+            Start-Process -FilePath $vcRedistX64File -ArgumentList "/install /quiet /norestart" -Wait
+        }
+    }
+    else {
+        if (!(Test-Path 'HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x86')) {
+            $vcRedistX86File = Join-Path -Path $PWD -ChildPath 'vc_redist.x86.exe'
+            Write-Host "Downloading and installing vc_redist.x86.exe..."
+            Get-File -Uri $vcRedistX86Url -TargetFile $vcRedistX86File
+            Start-Process -FilePath $vcRedistX86File -ArgumentList "/install /quiet /norestart" -Wait
+        }
+    }
+}
+
+Install-VcRedist
+
 $tempDirectory = $PWD
 Pop-Location
 
