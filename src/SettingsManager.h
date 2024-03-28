@@ -21,7 +21,7 @@ private:
     static bool Save();
     static bool Load();
     static DWORD WINAPI Update(LPVOID lpParam);
-    static bool ValidateSettings();
+    static bool ValidateSettings(const Json& settings);
     static void SyncConfigFile();
 
     static Json m_app_settings;

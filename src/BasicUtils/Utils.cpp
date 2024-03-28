@@ -5,8 +5,8 @@
 #include <cctype>
 #include <cwctype>
 #include <fstream>
-#include <wininet.h>
-#pragma comment(lib, "wininet.lib")
+#include <winhttp.h>
+#pragma comment(lib, "winhttp.lib")
 
 namespace Utils
 {
@@ -169,18 +169,20 @@ namespace Utils
         return std::wstring(value);
     }
 
-    bool ReadFile(const std::wstring_view filename, std::wstring& out) {
+    bool ReadFile(const std::wstring_view filename, std::wstring& out)
+    {
         std::wifstream file(filename.data(), std::ios::binary | std::ios::ate);
         if (!file.is_open()) return false;
 
-        out.resize(file.tellg());
+        out.resize(static_cast<std::wstring::size_type>(file.tellg()));
         file.seekg(0, std::ios::beg);
         file.read(&out[0], out.size());
 
         return !file.fail();
     }
 
-    bool WriteFile(const std::wstring_view filename, const std::wstring_view content) {
+    bool WriteFile(const std::wstring_view filename, const std::wstring_view content)
+    {
         std::wofstream file(filename.data(), std::ios::binary);
         if (!file.is_open()) return false;
 
@@ -189,56 +191,116 @@ namespace Utils
         return !file.fail();
     }
 
-    std::wstring FetchURL(std::wstring_view url)
+    std::wstring HttpGetRequest(std::wstring_view url)
     {
-        std::wstring data;
+        std::wstring response;
 
-        HINTERNET hInternet = InternetOpenW(L"HTTP Request", INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, 0);
-        if (!hInternet) {
-            PrintError(L"InternetOpen failed.");
-            return data;
+        auto session = WinHttpOpen(L"WinHTTP", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+        if (!session) {
+            PrintError(L"Failed to initialize WinHTTP session");
+            return response;
         }
 
-        HINTERNET hConnect = InternetOpenUrlW(hInternet, url.data(), nullptr, 0, INTERNET_FLAG_RELOAD, 0);
-        if (!hConnect) {
-            PrintError(L"InternetOpenUrl failed.");
-            InternetCloseHandle(hInternet);
-            return data;
+        URL_COMPONENTS url_comp;
+        ZeroMemory(&url_comp, sizeof(url_comp));
+        url_comp.dwStructSize = sizeof(url_comp);
+        url_comp.dwHostNameLength = -1;
+        url_comp.dwUrlPathLength = -1;
+
+        if (!WinHttpCrackUrl(url.data(), static_cast<DWORD>(url.length()), 0, &url_comp)) {
+            PrintError(L"Failed to parse URL");
+            WinHttpCloseHandle(session);
+            return response;
         }
 
-        size_t buffer_size = 1024;
-        std::vector<char> buffer(buffer_size);
+        std::wstring host(url_comp.lpszHostName, url_comp.dwHostNameLength);
+        std::wstring path(url_comp.lpszUrlPath, url_comp.dwUrlPathLength);
 
-        DWORD bytes_read = 0;
+        auto connect = WinHttpConnect(session, host.c_str(), url_comp.nPort, 0);
+        if (!connect) {
+            PrintError(L"Failed to connect to host");
+            WinHttpCloseHandle(session);
+            return response;
+        }
+
+        auto request = WinHttpOpenRequest(connect, L"GET", path.c_str(), NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
+                                            url_comp.nPort == INTERNET_DEFAULT_HTTPS_PORT ? WINHTTP_FLAG_SECURE : 0);
+        if (!request) {
+            PrintError(L"Failed to open request");
+            WinHttpCloseHandle(connect);
+            WinHttpCloseHandle(session);
+            return response;
+        }
+
+        if (!WinHttpSendRequest(request, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) {
+            PrintError(L"Failed to send request");
+            WinHttpCloseHandle(request);
+            WinHttpCloseHandle(connect);
+            WinHttpCloseHandle(session);
+            return response;
+        }
+
+        if (!WinHttpReceiveResponse(request, NULL)) {
+            PrintError(L"Failed to receive response");
+            WinHttpCloseHandle(request);
+            WinHttpCloseHandle(connect);
+            WinHttpCloseHandle(session);
+            return response;
+        }
+
+        DWORD size = 0;
+        DWORD downloaded = 0;
+        std::vector<char> buffer(1024);
+
         do {
-            if (!InternetReadFile(hConnect, buffer.data(), static_cast<DWORD>(buffer_size), &bytes_read)) {
-                PrintError(L"InternetReadFile failed.");
-                data.clear();
+            if (!WinHttpQueryDataAvailable(request, &size)) {
+                PrintError(L"Failed to query data availability");
+                WinHttpCloseHandle(request);
+                WinHttpCloseHandle(connect);
+                WinHttpCloseHandle(session);
+                return response;
+            }
+
+            if (size == 0) {
                 break;
             }
-            data.append(buffer.data(), buffer.data() + bytes_read);
-        } while (bytes_read > 0);
 
-        InternetCloseHandle(hConnect);
-        InternetCloseHandle(hInternet);
+            if (size > buffer.size()) {
+                buffer.resize(size);
+            }
 
-        return data;
+            if (WinHttpReadData(request, buffer.data(), size, &downloaded)) {
+                response.append(buffer.begin(), buffer.begin() + downloaded);
+            } else {
+                PrintError(L"Failed to read data");
+                WinHttpCloseHandle(request);
+                WinHttpCloseHandle(connect);
+                WinHttpCloseHandle(session);
+                return response;
+            }
+        } while (size > 0);
+
+        WinHttpCloseHandle(request);
+        WinHttpCloseHandle(connect);
+        WinHttpCloseHandle(session);
+
+        return response;
     }
 
 #ifndef NDEBUG
     void MeasureExecutionTime(std::function<void()> func, bool total_duration)
     {
-        static std::chrono::duration<double, std::milli> total_diff;
+        static std::chrono::duration<double> total_diff;
         const auto start_time = std::chrono::high_resolution_clock::now();
         func();
         const auto end_time = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> diff = end_time - start_time;
+        std::chrono::duration<double> diff = end_time - start_time;
         if (total_duration) {
             total_diff += diff;
-            SetConsoleTitleW(FormatString(L"Total execution time: {} ms", total_diff.count()).c_str());
+            SetConsoleTitleW((L"Total execution time: " + std::to_wstring(total_diff.count()) + L" seconds").c_str());
         }
         else {
-            SetConsoleTitleW(FormatString(L"Execution time: {} ms", diff.count()).c_str());
+            SetConsoleTitleW((L"Execution time: " + std::to_wstring(diff.count()) + L" seconds").c_str());
         }
     }
 

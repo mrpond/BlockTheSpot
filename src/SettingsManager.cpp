@@ -145,7 +145,7 @@ bool SettingsManager::Load()
 
     m_app_settings = Json::parse(buffer);
 
-    if (!ValidateSettings()) {
+    if (!ValidateSettings(m_app_settings)) {
         return false;
     }
 
@@ -194,14 +194,14 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
         if (m_config.at(L"Enable_Auto_Update") && Logger::HasError()) {
             static Json release_info;
             if (release_info.empty()) {
-                release_info = Json::parse(Utils::FetchURL(L"https://api.github.com/repos/mrpond/BlockTheSpot/releases/latest"));
+                release_info = Json::parse(Utils::HttpGetRequest(L"https://api.github.com/repos/mrpond/BlockTheSpot/releases/latest"));
                 if (!release_info.contains(L"published_at") || !release_info.at(L"published_at").is_string()) {
                     Log(L"Release info is invalid or doesn't contain published_at field.", LogLevel::Error);
                 }
                 else if (release_info.at(L"published_at").get_string() != m_latest_release_date) {
-                    Json app_settings = Json::parse(Utils::FetchURL(L"https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/blockthespot_settings.json"));
-                    if (app_settings.is_object()) {
-                        m_app_settings = app_settings;
+                    Json remote_app_settings = Json::parse(Utils::HttpGetRequest(L"https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/blockthespot_settings.json"));
+                    if (ValidateSettings(remote_app_settings)) {
+                        m_app_settings = remote_app_settings;
                         m_app_settings.at(L"Latest Release Date") = release_info.at(L"published_at").get_string();
 
                         if (!Utils::WriteFile(m_app_settings_file, m_app_settings.dump(4))) {
@@ -228,33 +228,33 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
     return 0;
 }
 
-bool SettingsManager::ValidateSettings()
+bool SettingsManager::ValidateSettings(const Json& settings)
 {
     // App Settings
-    if (m_app_settings.empty() || !m_app_settings.is_object()) {
+    if (settings.empty() || !settings.is_object()) {
         Log(L"Invalid JSON format in settings file.", LogLevel::Error);
         return false;
     }
 
     const std::vector<std::wstring> keys = { L"Latest Release Date", L"Block List", L"Zip Reader", L"Developer", L"Cef Offsets" };
     for (const auto& key : keys) {
-        if (!m_app_settings.contains(key)) {
+        if (!settings.contains(key)) {
             Log(L"Key '" + key + L"' is missing in settings file.", LogLevel::Error);
             return false;
         }
     }
 
-    if (!m_app_settings.at(L"Latest Release Date").is_string() ||
-        !m_app_settings.at(L"Block List").is_array() ||
-        !m_app_settings.at(L"Zip Reader").is_object() ||
-        !m_app_settings.at(L"Developer").is_object() ||
-        !m_app_settings.at(L"Cef Offsets").is_object()) {
+    if (!settings.at(L"Latest Release Date").is_string() ||
+        !settings.at(L"Block List").is_array() ||
+        !settings.at(L"Zip Reader").is_object() ||
+        !settings.at(L"Developer").is_object() ||
+        !settings.at(L"Cef Offsets").is_object()) {
         Log(L"Invalid data types in settings file.", LogLevel::Error);
         return false;
     }
 
     // Block List
-    for (const auto& item : m_app_settings.at(L"Block List").get_array()) {
+    for (const auto& item : settings.at(L"Block List").get_array()) {
         if (!item.is_string()) {
             Log(L"Invalid data type in Block List.", LogLevel::Error);
             return false;
@@ -262,7 +262,7 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Cef Offsets
-    for (const auto& [arch, offset_data] : m_app_settings.at(L"Cef Offsets")) {
+    for (const auto& [arch, offset_data] : settings.at(L"Cef Offsets")) {
         if (arch != L"x64" && arch != L"x32") {
             Log(L"Invalid architecture in Cef Offsets settings.", LogLevel::Error);
             return false;
@@ -277,7 +277,7 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Developer
-    for (const auto& [arch, dev_data] : m_app_settings.at(L"Developer")) {
+    for (const auto& [arch, dev_data] : settings.at(L"Developer")) {
         if (arch != L"x64" && arch != L"x32") {
             Log(L"Invalid architecture in Developer settings.", LogLevel::Error);
             return false;
@@ -293,7 +293,7 @@ bool SettingsManager::ValidateSettings()
     }
 
     // Zip Reader
-    for (const auto& [file_name, file_data] : m_app_settings.at(L"Zip Reader")) {
+    for (const auto& [file_name, file_data] : settings.at(L"Zip Reader")) {
         if (file_name.empty()) {
             Log(L"File name is empty for a Zip Reader entry in settings file.", LogLevel::Error);
             return false;

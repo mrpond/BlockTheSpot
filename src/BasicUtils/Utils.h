@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <format>
 #include <functional>
 #include <mutex>
@@ -38,7 +39,7 @@ namespace Utils
     bool ReadFile(const std::wstring_view filename, std::wstring& out);
     bool WriteFile(const std::wstring_view filename, const std::wstring_view content);
 
-    std::wstring FetchURL(std::wstring_view url);
+    std::wstring HttpGetRequest(std::wstring_view url);
 
 #ifndef NDEBUG
     void MeasureExecutionTime(std::function<void()> func, bool total_duration = true);

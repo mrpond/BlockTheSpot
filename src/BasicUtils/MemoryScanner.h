@@ -13,6 +13,13 @@ namespace MemoryScanner
         size_t module_size;
     };
 
+    struct BytePattern {
+        struct HalfByte {
+            uint8_t data{};
+            bool wildcard{};
+        } half_byte[2]{};
+    };
+
     class ScanResult {
     public:
         ScanResult() : m_address(0), m_base_address(0), m_image_size(0) {}
@@ -20,8 +27,8 @@ namespace MemoryScanner
         ScanResult(uintptr_t address, std::wstring_view module_name = {}, bool is_rva = false);
         operator uintptr_t() const;
 
-        bool is_valid(const std::vector<uint8_t>& pattern_byte = {}) const;
-        bool is_valid(std::wstring_view signature) const;
+        bool is_valid(const std::vector<BytePattern>& parsed_pattern = {}) const;
+        bool is_valid(std::wstring_view pattern) const;
         uint8_t* data() const;
         ScanResult rva() const;
         ScanResult offset(std::ptrdiff_t offset_value) const;
@@ -35,8 +42,11 @@ namespace MemoryScanner
         PVOID* hook(PVOID hook_function) const;
         bool unhook() const;
 
-        std::vector<ScanResult> get_all_matching_codes(const std::vector<uint8_t>& pattern_byte, bool calculate_relative_offset = true, uintptr_t base_address = 0, size_t image_size = 0, bool only_first = false) const;
-        ScanResult get_first_matching_code(const std::vector<uint8_t>& pattern_byte, bool calculate_relative_offset = true, uintptr_t base_address = 0, size_t image_size = 0) const;
+        std::vector<ScanResult> get_all_references(const std::vector<BytePattern>& parsed_pattern, bool calculate_relative_address = true, uintptr_t base_address = 0, size_t image_size = 0, bool only_first = false) const;
+        std::vector<ScanResult> get_all_references(std::wstring_view pattern, bool calculate_relative_address = true, uintptr_t base_address = 0, size_t image_size = 0, bool only_first = false) const;
+
+        ScanResult get_first_reference(const std::vector<BytePattern>& parsed_pattern, bool calculate_relative_address = true, uintptr_t base_address = 0, size_t image_size = 0) const;
+        ScanResult get_first_reference(std::wstring_view pattern, bool calculate_relative_address = true, uintptr_t base_address = 0, size_t image_size = 0) const;
 
         uintptr_t get_base_address() const;
         size_t get_image_size() const;
@@ -51,14 +61,15 @@ namespace MemoryScanner
 
     ModuleInfo GetModuleInfo(std::wstring_view module_name = {});
     ScanResult GetFunctionAddress(std::string_view module_name, std::string_view function_name);
+    std::vector<BytePattern> ParseBytePattern(std::wstring_view pattern);
     
-    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, const std::vector<uint8_t>& pattern_byte, bool only_first = false);
-    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, std::wstring_view signature);
-    std::vector<ScanResult> ScanAll(std::wstring_view signature, std::wstring_view module_name = {});
+    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, const std::vector<BytePattern>& parsed_pattern, bool only_first = false);
+    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, std::wstring_view pattern);
+    std::vector<ScanResult> ScanAll(std::wstring_view pattern, std::wstring_view module_name = {});
     
-    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, const std::vector<uint8_t>& pattern_byte);
-    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, std::wstring_view signature);
-    ScanResult ScanFirst(std::wstring_view signature, std::wstring_view module_name = {});
+    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, const std::vector<BytePattern>& parsed_pattern);
+    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, std::wstring_view pattern);
+    ScanResult ScanFirst(std::wstring_view pattern, std::wstring_view module_name = {});
 }
 
 #endif // MEMORY_SCANNER_H

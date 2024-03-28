@@ -1,12 +1,12 @@
-#include "MemoryScanner.h"
+﻿#include "MemoryScanner.h"
 #include "Hooking.h"
 #include "Utils.h"
 #include "Memory.h"
 #include <sstream>
 #include <Psapi.h>
 #include <algorithm>
-#include <Memory.h>
 #include <unordered_map>
+#include <execution>
 
 namespace MemoryScanner 
 {
@@ -57,102 +57,111 @@ namespace MemoryScanner
         return ScanResult(reinterpret_cast<uintptr_t>(function_address), reinterpret_cast<uintptr_t>(module_info.lpBaseOfDll), module_info.SizeOfImage);
     }
 
-    std::vector<uint8_t> SignatureToByteArray(std::wstring_view signature)
+    std::vector<BytePattern> ParseBytePattern(std::wstring_view byte_pattern)
     {
-        std::vector<uint8_t> signature_bytes;
-        std::wstring word;
-        std::wistringstream iss(signature.data());
-
-        while (iss >> word) {
-            if (word.size() == 1 && word[0] == L'?') {
-                signature_bytes.push_back(0);
-            }
-            else if (word.size() == 2 && word[0] == L'?' && word[1] == L'?') {
-                signature_bytes.push_back(0);
-            }
-            else if (word.size() == 2 && std::isxdigit(word[0]) && std::isxdigit(word[1])) {
-                unsigned long value = std::stoul(word, nullptr, 16);
-                if (value > 255) {
-                    return { 0 };
+        std::vector<BytePattern> parsed_pattern;
+        bool is_hex = byte_pattern.find_first_not_of(L"0123456789ABCDEFabcdef? ") == std::wstring::npos;
+        if (is_hex) {
+            std::wistringstream iss(byte_pattern.data());
+            std::wstring byte;
+            while (iss >> byte) {
+                BytePattern bp;
+                if (byte.size() == 1 && byte[0] == L'?') {
+                    bp.half_byte[0].wildcard = true;
+                    bp.half_byte[1].wildcard = true;
                 }
-                signature_bytes.push_back(static_cast<uint8_t>(value));
-            }
-            else {
-                for (wchar_t c : word) {
-                    if (c > 255) {
-                        return { 0 };
+                else {
+                    if (byte[0] == L'?') {
+                        bp.half_byte[0].wildcard = true;
                     }
-                    signature_bytes.push_back(static_cast<uint8_t>(c));
+                    else {
+                        bp.half_byte[0].data = std::stoi(std::wstring(1, byte[0]), nullptr, 16);
+                    }
+
+                    if (byte[1] == L'?') {
+                        bp.half_byte[1].wildcard = true;
+                    }
+                    else {
+                        bp.half_byte[1].data = std::stoi(std::wstring(1, byte[1]), nullptr, 16);
+                    }
+                }
+                parsed_pattern.push_back(bp);
+            }
+        }
+        else {
+            for (wchar_t ch : byte_pattern) {
+                BytePattern bp;
+                bp.half_byte[0].data = ch >> 4;
+                bp.half_byte[1].data = ch & 0xF;
+                parsed_pattern.push_back(bp);
+            }
+        }
+
+        return parsed_pattern;
+    }
+
+    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, const std::vector<BytePattern>& parsed_pattern, bool only_first)
+    {
+        std::vector<ScanResult> result;
+        const uint8_t* start = reinterpret_cast<const uint8_t*>(base_address);
+        const uint8_t* end = start + image_size;
+        const size_t pattern_size = parsed_pattern.size();
+        const BytePattern& first_pattern = parsed_pattern[0];
+
+        for (const uint8_t* it = start; it + pattern_size <= end; ++it) {
+            if ((first_pattern.half_byte[0].wildcard || ((it[0] & 0xF0) == (first_pattern.half_byte[0].data << 4))) &&
+                (first_pattern.half_byte[1].wildcard || ((it[0] & 0x0F) == first_pattern.half_byte[1].data))) {
+                
+                bool found = true;
+                for (size_t i = 1; i < pattern_size; ++i) {
+                    const BytePattern& pattern = parsed_pattern[i];
+                    uint8_t byte = it[i];
+
+                    if (!(pattern.half_byte[0].wildcard || ((byte & 0xF0) == (pattern.half_byte[0].data << 4))) ||
+                        !(pattern.half_byte[1].wildcard || ((byte & 0x0F) == pattern.half_byte[1].data))) {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    result.push_back(ScanResult(reinterpret_cast<uintptr_t>(it), base_address, image_size));
+                    if (only_first) {
+                        break;
+                    }
                 }
             }
         }
 
-        return signature_bytes;
+        return result;
     }
 
-    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, const std::vector<uint8_t>& pattern_byte, bool only_first)
+    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, std::wstring_view pattern)
     {
-        std::vector<ScanResult> matches;
-
-        if (pattern_byte.empty() || !image_size) {
-            return matches;
-        }
-        
-        size_t pattern_size = pattern_byte.size();
-        uint8_t* base_ptr = reinterpret_cast<uint8_t*>(base_address);
-        uintptr_t end_address = base_address + image_size - pattern_size + 1;
-
-        while (base_ptr < reinterpret_cast<uint8_t*>(end_address)) {
-            base_ptr = static_cast<uint8_t*>(memchr(base_ptr, pattern_byte[0], end_address - reinterpret_cast<uintptr_t>(base_ptr)));
-            if (!base_ptr) {
-                break;
-            }
-
-            bool found = true;
-            for (size_t i = 1; i < pattern_size; ++i) {
-                if (pattern_byte[i] != 0 && pattern_byte[i] != base_ptr[i]) {
-                    found = false;
-                    break;
-                }
-            }
-
-            if (found) {
-                matches.push_back(ScanResult(reinterpret_cast<uintptr_t>(base_ptr), base_address, image_size));
-                if (only_first) break;
-            }
-
-            ++base_ptr;
-        }
-
-        return matches;
+        return ScanAll(base_address, image_size, ParseBytePattern(pattern));
     }
 
-    std::vector<ScanResult> ScanAll(uintptr_t base_address, size_t image_size, std::wstring_view signature)
+    std::vector<ScanResult> ScanAll(std::wstring_view pattern, std::wstring_view module_name)
     {
-        return ScanAll(base_address, image_size, SignatureToByteArray(signature));
+        const auto module_info = GetModuleInfo(module_name);
+        return ScanAll(module_info.base_address, module_info.module_size, pattern);
     }
 
-    std::vector<ScanResult> ScanAll(std::wstring_view signature, std::wstring_view module_name)
+    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, const std::vector<BytePattern>& parsed_pattern)
     {
-        const auto mod = GetModuleInfo(module_name);
-        return ScanAll(mod.base_address, mod.module_size, signature);
+        const auto addresses = ScanAll(base_address, image_size, parsed_pattern, true);
+        return addresses.empty() ? ScanResult(0, 0, 0) : addresses.front();
     }
 
-    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, const std::vector<uint8_t>& pattern_byte)
+    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, std::wstring_view pattern)
     {
-        const auto matches = ScanAll(base_address, image_size, pattern_byte, true);
-        return matches.empty() ? ScanResult(0, 0, 0) : matches.at(0);
+        return ScanFirst(base_address, image_size, ParseBytePattern(pattern));
     }
 
-    ScanResult ScanFirst(uintptr_t base_address, size_t image_size, std::wstring_view signature)
+    ScanResult ScanFirst(std::wstring_view pattern, std::wstring_view module_name)
     {
-        return ScanFirst(base_address, image_size, SignatureToByteArray(signature));
-    }
-
-    ScanResult ScanFirst(std::wstring_view signature, std::wstring_view module_name)
-    {
-        const auto mod = GetModuleInfo(module_name);
-        return ScanFirst(mod.base_address, mod.module_size, signature);
+        const auto module_info = GetModuleInfo(module_name);
+        return ScanFirst(module_info.base_address, module_info.module_size, pattern);
     }
 
     ScanResult::ScanResult(uintptr_t address, uintptr_t base, size_t size, bool is_rva) : m_address(address), m_base_address(base), m_image_size(size)
@@ -174,18 +183,24 @@ namespace MemoryScanner
         return m_address;
     }
 
-    bool ScanResult::is_valid(const std::vector<uint8_t>& pattern_byte) const
+    bool ScanResult::is_valid(const std::vector<BytePattern>& parsed_pattern) const
     {
         if (m_address == 0) {
             return false;
         }
 
-        for (size_t i = 0; i < pattern_byte.size(); ++i) {
-            if (pattern_byte[i] == 0) {
+        for (size_t i = 0; i < parsed_pattern.size(); ++i) {
+            BytePattern pattern = parsed_pattern[i];
+            if (pattern.half_byte[0].wildcard && pattern.half_byte[1].wildcard) {
                 continue;
             }
+            
+            uint8_t byte = *(reinterpret_cast<uint8_t*>(m_address) + i);
+            uint8_t pattern_byte = (pattern.half_byte[0].data << 4) | pattern.half_byte[1].data;
+            bool match_high_nibble = pattern.half_byte[0].wildcard || (byte & 0xF0) == (pattern_byte & 0xF0);
+            bool match_low_nibble = pattern.half_byte[1].wildcard || (byte & 0x0F) == (pattern_byte & 0x0F);
 
-            if (*(reinterpret_cast<uint8_t*>(m_address) + i) != pattern_byte[i]) {
+            if (!(match_high_nibble && match_low_nibble)) {
                 return false;
             }
         }
@@ -193,9 +208,9 @@ namespace MemoryScanner
         return true;
     }
 
-    bool ScanResult::is_valid(std::wstring_view signature) const
+    bool ScanResult::is_valid(std::wstring_view pattern) const
     {
-        return is_valid(SignatureToByteArray(signature));
+        return is_valid(ParseBytePattern(pattern));
     }
 
     uint8_t* ScanResult::data() const
@@ -268,37 +283,89 @@ namespace MemoryScanner
         return is_valid() ? Hooking::UnhookFunction(&(PVOID&)m_address) : false;
     }
 
-    std::vector<ScanResult> ScanResult::get_all_matching_codes(const std::vector<uint8_t>& pattern_byte, bool calculate_relative_offset, uintptr_t base_address, size_t image_size, bool only_first) const
+    std::vector<ScanResult> ScanResult::get_all_references(const std::vector<BytePattern>& parsed_pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size, bool only_first) const
     {
         if (base_address == 0) base_address = m_base_address;
         if (image_size == 0) image_size = m_image_size;
-
-        if (!calculate_relative_offset) {
-            std::vector<uint8_t> new_pattern_byte = pattern_byte;
-            new_pattern_byte.insert(new_pattern_byte.end(), reinterpret_cast<const uint8_t*>(&m_address),
-                reinterpret_cast<const uint8_t*>(&m_address) + sizeof(m_address));
-
-            return ScanAll(base_address, image_size, new_pattern_byte, only_first);
-        }
         
-        std::vector<ScanResult> matches;
-        const auto all_matches = ScanAll(base_address, image_size, pattern_byte);
-        for (const auto& address : all_matches) {
-            const auto offset_address = address + pattern_byte.size();
-            const auto relative_offset = static_cast<int32_t>(m_address) - static_cast<int32_t>(offset_address) - sizeof(int32_t);
-            if (*reinterpret_cast<const int32_t*>(offset_address) == relative_offset) {
-                matches.push_back(ScanResult(address, base_address, image_size));
+        if (!calculate_relative_address) {
+            std::vector<BytePattern> new_parsed_pattern = parsed_pattern;
+            const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&m_address);
+            for (size_t i = 0; i < sizeof(uintptr_t); ++i) {
+                BytePattern bp;
+                uint8_t byte = ptr[i];
+                bp.half_byte[0].data = byte >> 4;
+                bp.half_byte[1].data = byte & 0xF;
+                new_parsed_pattern.push_back(bp);
+            }
+            return ScanAll(base_address, image_size, new_parsed_pattern, only_first);
+        }
+
+#if 0
+        std::vector<ScanResult> result;
+        const auto pattern_size = parsed_pattern.size();
+        for (const auto& address : ScanAll(base_address, image_size, parsed_pattern)) {
+            const auto offset_ptr = reinterpret_cast<int32_t*>(address.data() + pattern_size);
+            const auto relative_address = address + pattern_size + *offset_ptr + sizeof(int32_t);
+            if (relative_address == m_address) {
+                result.push_back(ScanResult(address, base_address, image_size));
                 if (only_first) break;
             }
         }
+        return result;
+#else
+        std::vector<ScanResult> result;
+        const uint8_t* start = reinterpret_cast<const uint8_t*>(base_address);
+        const uint8_t* end = start + image_size;
+        const size_t pattern_size = parsed_pattern.size();
+        const BytePattern& first_pattern = parsed_pattern[0];
 
-        return matches;
+        for (const uint8_t* it = start; it + pattern_size <= end; ++it) {
+            if ((first_pattern.half_byte[0].wildcard || ((it[0] & 0xF0) == (first_pattern.half_byte[0].data << 4))) &&
+                (first_pattern.half_byte[1].wildcard || ((it[0] & 0x0F) == first_pattern.half_byte[1].data))) {
+                
+                bool found = true;
+                for (size_t i = 1; i < pattern_size; ++i) {
+                    const BytePattern& pattern = parsed_pattern[i];
+                    uint8_t byte = it[i];
+
+                    if (!(pattern.half_byte[0].wildcard || ((byte & 0xF0) == (pattern.half_byte[0].data << 4))) ||
+                        !(pattern.half_byte[1].wildcard || ((byte & 0x0F) == pattern.half_byte[1].data))) {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    const auto offset_ptr = reinterpret_cast<int32_t*>(const_cast<uint8_t*>(it + pattern_size));
+                    const auto relative_address = reinterpret_cast<uintptr_t>(it) + pattern_size + *offset_ptr + sizeof(int32_t);
+                    if (relative_address == m_address) {
+                        result.push_back(ScanResult(reinterpret_cast<uintptr_t>(it), base_address, image_size));
+                        if (only_first) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+#endif
     }
 
-    ScanResult ScanResult::get_first_matching_code(const std::vector<uint8_t>& pattern_byte, bool calculate_relative_offset, uintptr_t base_address, size_t image_size) const
+    std::vector<ScanResult> ScanResult::get_all_references(std::wstring_view pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size, bool only_first) const
     {
-        const auto matches = get_all_matching_codes(pattern_byte, calculate_relative_offset, base_address, image_size, true);
-        return matches.empty() ? ScanResult(0, m_base_address, m_image_size) : matches.at(0);
+        return get_all_references(ParseBytePattern(pattern), calculate_relative_address, base_address, image_size, only_first);
+    }
+
+    ScanResult ScanResult::get_first_reference(const std::vector<BytePattern>& parsed_pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size) const
+    {
+        const auto references = get_all_references(parsed_pattern, calculate_relative_address, base_address, image_size, true);
+        return references.empty() ? ScanResult(0, 0, 0) : references.front();
+    }
+    
+    ScanResult ScanResult::get_first_reference(std::wstring_view pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size) const
+    {
+        return get_first_reference(ParseBytePattern(pattern), calculate_relative_address, base_address, image_size);
     }
 
     uintptr_t ScanResult::get_base_address() const
