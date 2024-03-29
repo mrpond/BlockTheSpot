@@ -204,6 +204,12 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
                         m_app_settings = remote_app_settings;
                         m_app_settings.at(L"Latest Release Date") = release_info.at(L"published_at").get_string();
 
+                        m_app_settings.at(L"Latest Release Date").get_to(m_latest_release_date);
+                        m_app_settings.at(L"Block List").get_to(m_block_list);
+                        m_app_settings.at(L"Zip Reader").get_to(m_zip_reader);
+                        m_app_settings.at(L"Developer").get_to(m_developer);
+                        m_app_settings.at(L"Cef Offsets").get_to(m_cef_offsets);
+
                         if (!Utils::WriteFile(m_app_settings_file, m_app_settings.dump(4))) {
                             Log(Utils::FormatString(L"Failed to open settings file: {}", m_app_settings_file), LogLevel::Error);
                         }
