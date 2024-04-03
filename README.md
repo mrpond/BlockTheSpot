@@ -11,7 +11,7 @@
 </center>
 
 ### Features:
-* Unlocks all premium features except downloads.
+* Unlocks all premium features except downloads, and "Very High" audio quality.
 * Lives through Spotify updates. No need to patch Spotify after every update anymore.
 
 #### Experimental features from developer mode
