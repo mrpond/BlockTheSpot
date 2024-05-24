@@ -62,7 +62,6 @@ public:
 
     bool is_null() const;
     bool is_integer() const;
-    bool is_float() const;
     bool is_double() const;
     bool is_boolean() const;
     bool is_string() const;
@@ -70,7 +69,6 @@ public:
     bool is_array() const;
 
     int get_integer() const;
-    float get_float() const;
     double get_double() const;
     bool get_boolean() const;
     std::wstring get_string() const;
@@ -129,6 +127,8 @@ public:
     size_t size() const;
     
     bool contains(const std::wstring& key) const;
+    size_t count(const std::wstring& key) const;
+    void erase(const std::wstring& key);
 
     std::wstring dump(int indent = 0) const;
 
@@ -146,5 +146,67 @@ private:
     static Json parse_boolean(std::wistream& is);
     static Json parse_null(std::wistream& is);
 };
+
+/*
+
+class Json::iterator {
+public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::pair<const std::wstring, Json>;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    iterator(Object::iterator it) : m_it(it) {}
+
+    reference operator*() const { return *m_it; }
+    pointer operator->() { return &(*m_it); }
+
+    iterator& operator++() { ++m_it; return *this; }
+    iterator operator++(int) { iterator temp = *this; ++(*this); return temp; }
+
+    iterator& operator--() { --m_it; return *this; }
+    iterator operator--(int) { iterator temp = *this; --(*this); return temp; }
+
+    bool operator==(const iterator& other) const { return m_it == other.m_it; }
+    bool operator!=(const iterator& other) const { return !(*this == other); }
+
+    std::wstring key() const { return m_it->first; }
+    Json& value() const { return m_it->second; }
+
+private:
+    Object::iterator m_it;
+};
+
+class Json::const_iterator {
+public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = const std::pair<const std::wstring, Json>;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    const_iterator(Object::const_iterator it) : m_it(it) {}
+
+    reference operator*() const { return *m_it; }
+    pointer operator->() { return &(*m_it); }
+
+    const_iterator& operator++() { ++m_it; return *this; }
+    const_iterator operator++(int) { const_iterator temp = *this; ++(*this); return temp; }
+
+    const_iterator& operator--() { --m_it; return *this; }
+    const_iterator operator--(int) { const_iterator temp = *this; --(*this); return temp; }
+
+    bool operator==(const const_iterator& other) const { return m_it == other.m_it; }
+    bool operator!=(const const_iterator& other) const { return !(*this == other); }
+
+    std::wstring key() const { return m_it->first; }
+    const Json& value() const { return m_it->second; }
+
+private:
+    Object::const_iterator m_it;
+};
+
+*/
 
 #endif // JSON_H

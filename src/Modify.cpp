@@ -28,14 +28,14 @@ void* cef_urlrequest_create_hook(void* request, void* client, void* request_cont
 #endif
 	for (const auto& block_url : SettingsManager::m_block_list) {
 		if (std::wstring_view::npos != url.find(block_url)) {
-			Log(L"blocked - " + url, LogLevel::Info);
+			LogInfo(L"blocked - {}", url);
 			cef_string_userfree_utf16_free_orig((void*)url_utf16);
 			return nullptr;
 		}
 	}
 
 	cef_string_userfree_utf16_free_orig((void*)url_utf16);
-	Log(L"allow - " + url, LogLevel::Info);
+	LogInfo(L"allow - {}", url);
 	return cef_urlrequest_create_orig(request, client, request_context);
 }
 
@@ -55,28 +55,24 @@ int cef_zip_reader_t_read_file_hook(void* self, void* buffer, size_t bufferSize)
 #endif
 
 	if (SettingsManager::m_zip_reader.contains(file_name)) {
-		for (auto& [name, data] : SettingsManager::m_zip_reader.at(file_name)) {
-			const auto& sig = data.at(L"Signature").get_string();
-			auto scan = MemoryScanner::ScanResult(data.at(L"Address").get_integer(), reinterpret_cast<uintptr_t>(buffer), bufferSize, true);
-			if (!scan.is_valid(sig)) {
-				scan = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, sig);
-				data.at(L"Address") = static_cast<int>(scan.rva());
+		for (auto& [setting_name, setting_data] : SettingsManager::m_zip_reader.at(file_name)) {
+			auto scan = MemoryScanner::ScanResult(setting_data.at(L"Address").get_integer(), reinterpret_cast<uintptr_t>(buffer), bufferSize, true);
+			if (!scan.is_valid(setting_data.at(L"Signature").get_string())) {
+				scan = MemoryScanner::ScanFirst(reinterpret_cast<uintptr_t>(buffer), bufferSize, setting_data.at(L"Signature").get_string());
+				setting_data.at(L"Address") = static_cast<int>(scan.rva());
 			}
 
 			if (scan.is_valid()) {
-				const auto& value = data.at(L"Value").get_string();
-				const auto& offset = data.at(L"Offset").get_integer();
-				const auto& fill = data.at(L"Fill").get_integer();
-
-				if (fill > 0) {
-					scan.offset(offset).write(Utils::ToString(std::wstring(fill, ' ').append(value))) ? Log(name + L" - patch success!", LogLevel::Info) : Log(name + L" - patch failed!", LogLevel::Error);
+				const std::wstring fill_value(setting_data.at(L"Fill").get_integer(), L' ');
+				if (scan.offset(setting_data.at(L"Offset").get_integer()).write(Utils::ToString(fill_value + setting_data.at(L"Value").get_string()))) {
+					LogInfo(L"{} - patch success!", setting_name);
 				}
 				else {
-					scan.offset(offset).write(Utils::ToString(value)) ? Log(name + L" - patch success!", LogLevel::Info) : Log(name + L" - patch failed!", LogLevel::Error);
+					LogError(L"{} - patch failed!", setting_name);
 				}
 			}
 			else {
-				Log(name + L" - unable to find signature in memory!", LogLevel::Error);
+				LogError(L"{} - unable to find signature in memory!", setting_name);
 			}
 		}
 	}
@@ -98,7 +94,7 @@ void* cef_zip_reader_create_hook(void* stream)
 #endif
 
 	if (!Hooking::HookFunction(&(PVOID&)cef_zip_reader_t_read_file_orig, (PVOID)cef_zip_reader_t_read_file_hook)) {
-		Log(L"Failed to hook cef_zip_reader::read_file function!", LogLevel::Error);
+		LogError(L"Failed to hook cef_zip_reader::read_file function!");
 	}
 	else {
 		Hooking::UnhookFunction(&(PVOID&)cef_zip_reader_create_orig);
@@ -110,23 +106,22 @@ void* cef_zip_reader_create_hook(void* stream)
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
 	auto& dev_data = SettingsManager::m_developer.at(SettingsManager::m_architecture);
-	const auto& sig = dev_data.at(L"Signature").get_string();
 	auto scan = MemoryScanner::ScanResult(dev_data.at(L"Address").get_integer(), L"", true);
-	if (!scan.is_valid(sig)) {
-		scan = MemoryScanner::ScanFirst(sig);
+	if (!scan.is_valid(dev_data.at(L"Signature").get_string())) {
+		scan = MemoryScanner::ScanFirst(dev_data.at(L"Signature").get_string());
 		dev_data.at(L"Address") = static_cast<int>(scan.rva());
 	}
 
 	if (scan.is_valid()) {
 		if (scan.offset(dev_data.at(L"Offset").get_integer()).write(Utils::ToHexBytes(dev_data.at(L"Value").get_string()))) {
-			Log(L"Developer - successfully patched!", LogLevel::Info);
+			LogInfo(L"Developer - successfully patched!");
 		}
 		else {
-			Log(L"Developer - failed to patch!", LogLevel::Error);
+			LogError(L"Developer - failed to patch!");
 		}
 	}
 	else {
-		Log(L"Developer - unable to find signature in memory!", LogLevel::Error);
+		LogError(L"Developer - unable to find signature in memory!");
 	}
 
 	return 0;
@@ -136,18 +131,18 @@ DWORD WINAPI BlockAds(LPVOID lpParam)
 {
 	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_string_userfree_utf16_free").data();
 	if (!cef_string_userfree_utf16_free_orig) {
-		Log(L"BlockAds - patch failed!", LogLevel::Error);
+		LogError(L"BlockAds - patch failed!");
 		return 0;
 	}
 
 	cef_urlrequest_create_orig = (_cef_urlrequest_create)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_urlrequest_create").hook((PVOID)cef_urlrequest_create_hook);
-	cef_urlrequest_create_orig ? Log(L"BlockAds - patch success!", LogLevel::Info) : Log(L"BlockAds - patch failed!", LogLevel::Error);
+	cef_urlrequest_create_orig ? LogInfo(L"BlockAds - patch success!") : LogError(L"BlockAds - patch failed!");
 	return 0;
 }
 
 DWORD WINAPI BlockBanner(LPVOID lpParam)
 {
 	cef_zip_reader_create_orig = (_cef_zip_reader_create)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_zip_reader_create").hook((PVOID)cef_zip_reader_create_hook);
-	cef_zip_reader_create_orig ? Log(L"BlockBanner - patch success!", LogLevel::Info) : Log(L"BlockBanner - patch failed!", LogLevel::Error);
+	cef_zip_reader_create_orig ? LogInfo(L"BlockBanner - patch success!") : LogError(L"BlockBanner - patch failed!");
 	return 0;
 }

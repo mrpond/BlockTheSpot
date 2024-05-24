@@ -19,9 +19,11 @@ public:
 
 private:
     static bool Save();
-    static bool Load();
+    static bool Load(const Json& settings = nullptr);
     static DWORD WINAPI Update(LPVOID lpParam);
+    static bool UpdateSettingsFromServer();
     static bool ValidateSettings(const Json& settings);
+    static bool CompareSettings(const Json& current_settings, const Json& reference_settings = m_app_settings/*, bool update_if_changed = false*/);
     static void SyncConfigFile();
 
     static Json m_app_settings;

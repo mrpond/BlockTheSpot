@@ -1,10 +1,13 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "Logger.h"
 #include "Utils.h"
 #include <fstream>
 #include <chrono>
 #include <mutex>
+#include <locale>
+#include <codecvt>
 
 namespace Logger {
     std::wofstream file;
@@ -19,18 +22,19 @@ namespace Logger {
             if (!file.is_open()) {
                 PrintError(L"Failed to open log file.");
             }
+            else {
+                file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t>));
+            }
         }
     }
 
     std::wstring GetLevelInfo(LogLevel level)
     {
         switch (level) {
-        case LogLevel::Info:
-            return L"INFO";
-        case LogLevel::Error:
-            return L"ERROR";
-        default:
-            return L"UNKN";
+            case LogLevel::Info: return L"INFO";
+            case LogLevel::Error: return L"ERROR";
+            case LogLevel::Debug: return L"DEBUG";
+            default: return L"UNKN";
         }
     }
 
@@ -39,6 +43,10 @@ namespace Logger {
         if (level == LogLevel::Error) {
             has_error = true;
             PrintError(L"{}", message);
+        }
+        
+        if (level == LogLevel::Debug) {
+            PrintInfo(L"{}", message);
         }
 
         if (!log_enabled) return;

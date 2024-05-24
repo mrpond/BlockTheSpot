@@ -11,11 +11,11 @@
 
 namespace Utils
 {
-    std::string ToHexString(const std::vector<uint8_t>& byte_array, const bool insert_spaces);
-    std::string ToHexString(const uint8_t* data, size_t size, const bool insert_spaces);
+    std::string ToHexString(const std::vector<uint8_t>& byte_array, const bool insert_spaces = true);
+    std::string ToHexString(const uint8_t* data, size_t size, const bool insert_spaces = true);
     
-    std::wstring ToHexWideString(const std::vector<uint8_t>& byte_array, const bool insert_spaces);
-    std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces);
+    std::wstring ToHexWideString(const std::vector<uint8_t>& byte_array, const bool insert_spaces = true);
+    std::wstring ToHexWideString(const uint8_t* data, size_t size, const bool insert_spaces = true);
 
     std::vector<uint8_t> ToHexBytes(const std::string& hex_string);
     std::vector<uint8_t> ToHexBytes(const std::wstring& hex_wstring);
@@ -27,11 +27,11 @@ namespace Utils
     std::wstring ToString(std::string_view narrow_string);
     std::wstring ToString(std::u16string_view utf16_string);
 
-    bool Contains(std::string_view str1, std::string_view str2, bool case_sensitive);
-    bool Contains(std::wstring_view str1, std::wstring_view str2, bool case_sensitive);
+    bool Contains(std::string_view str1, std::string_view str2, bool case_sensitive = false);
+    bool Contains(std::wstring_view str1, std::wstring_view str2, bool case_sensitive = false);
 
-    bool Equals(std::string_view str1, std::string_view str2, bool case_sensitive);
-    bool Equals(std::wstring_view str1, std::wstring_view str2, bool case_sensitive);
+    bool Equals(std::string_view str1, std::string_view str2, bool case_sensitive = false);
+    bool Equals(std::wstring_view str1, std::wstring_view str2, bool case_sensitive = false);
 
 	void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value);
 	std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key);
@@ -162,12 +162,14 @@ using Utils::Color;
 #if defined(_DEBUG) || defined(_CONSOLE)
 #define Print(fmt, ...) Utils::_Print(fmt, __VA_ARGS__)
 #define PrintColor(colors, fmt, ...) Utils::_Print(colors, fmt, __VA_ARGS__)
+#define PrintInfo(fmt, ...) Utils::_Print({ Color::Yellow }, L"{} {}", L" *", Utils::FormatString(fmt, __VA_ARGS__))
 #define PrintError(fmt, ...) Utils::_Print({ Color::Red }, L"{} {}", L" -", Utils::FormatString(fmt, __VA_ARGS__))
 #define PrintStatus(flag, label) Utils::_Print({ (flag) ? Color::Green : Color::Red }, L"{} {}", (flag) ? L" +" : L" -", label)
 #else
 //#pragma warning(disable:4101)
 #define Print(fmt, ...)
 #define PrintColor(colors, fmt, ...)
+#define PrintInfo(fmt, ...)
 #define PrintError(fmt, ...)
 #define PrintStatus(flag, label)
 #endif

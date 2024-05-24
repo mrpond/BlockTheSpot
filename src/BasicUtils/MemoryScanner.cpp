@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <execution>
+#include <span>
 
 namespace MemoryScanner 
 {
@@ -40,13 +41,13 @@ namespace MemoryScanner
         if (module_handle == nullptr) {
             module_handle = LoadLibraryA(module_name.data());
             if (module_handle == nullptr) {
-                return ScanResult(0, 0, 0);
+                return ScanResult();
             }
         }
 
         FARPROC function_address = GetProcAddress(module_handle, function_name.data());
         if (function_address == nullptr) {
-            return ScanResult(0, 0, 0);
+            return ScanResult();
         }
 
         MODULEINFO module_info;
@@ -66,30 +67,16 @@ namespace MemoryScanner
             std::wstring byte;
             while (iss >> byte) {
                 BytePattern bp;
-                if (byte.size() == 1 && byte[0] == L'?') {
-                    bp.half_byte[0].wildcard = true;
-                    bp.half_byte[1].wildcard = true;
-                }
-                else {
-                    if (byte[0] == L'?') {
-                        bp.half_byte[0].wildcard = true;
-                    }
-                    else {
-                        bp.half_byte[0].data = std::stoi(std::wstring(1, byte[0]), nullptr, 16);
-                    }
-
-                    if (byte[1] == L'?') {
-                        bp.half_byte[1].wildcard = true;
-                    }
-                    else {
-                        bp.half_byte[1].data = std::stoi(std::wstring(1, byte[1]), nullptr, 16);
-                    }
+                for (size_t i = 0; i < byte.size(); i++) {
+                    bp.half_byte[i].wildcard = (byte[i] == L'?');
+                    bp.half_byte[i].data = bp.half_byte[i].wildcard ? 0 : std::stoi(std::wstring(1, byte[i]), nullptr, 16);
+                    if (byte.size() == 1) bp.half_byte[1].wildcard = true;
                 }
                 parsed_pattern.push_back(bp);
             }
         }
         else {
-            for (wchar_t ch : byte_pattern) {
+            for (const auto &ch : byte_pattern) {
                 BytePattern bp;
                 bp.half_byte[0].data = ch >> 4;
                 bp.half_byte[1].data = ch & 0xF;
@@ -108,12 +95,12 @@ namespace MemoryScanner
         const size_t pattern_size = parsed_pattern.size();
         const BytePattern& first_pattern = parsed_pattern[0];
 
-        for (const uint8_t* it = start; it + pattern_size <= end; ++it) {
+        for (const uint8_t* it = start; it + pattern_size <= end; it++) {
             if ((first_pattern.half_byte[0].wildcard || ((it[0] & 0xF0) == (first_pattern.half_byte[0].data << 4))) &&
                 (first_pattern.half_byte[1].wildcard || ((it[0] & 0x0F) == first_pattern.half_byte[1].data))) {
                 
                 bool found = true;
-                for (size_t i = 1; i < pattern_size; ++i) {
+                for (size_t i = 1; i < pattern_size; i++) {
                     const BytePattern& pattern = parsed_pattern[i];
                     uint8_t byte = it[i];
 
@@ -150,7 +137,7 @@ namespace MemoryScanner
     ScanResult ScanFirst(uintptr_t base_address, size_t image_size, const std::vector<BytePattern>& parsed_pattern)
     {
         const auto addresses = ScanAll(base_address, image_size, parsed_pattern, true);
-        return addresses.empty() ? ScanResult(0, 0, 0) : addresses.front();
+        return addresses.empty() ? ScanResult() : addresses.front();
     }
 
     ScanResult ScanFirst(uintptr_t base_address, size_t image_size, std::wstring_view pattern)
@@ -166,14 +153,14 @@ namespace MemoryScanner
 
     ScanResult::ScanResult(uintptr_t address, uintptr_t base, size_t size, bool is_rva) : m_address(address), m_base_address(base), m_image_size(size)
     {
-        if (is_rva && address) {
+        if (is_rva && address != -1) {
             m_address += m_base_address;
         }
     }
     
     ScanResult::ScanResult(uintptr_t address, std::wstring_view module_name, bool is_rva) : m_address(address), m_base_address(GetModuleInfo(module_name).base_address), m_image_size(GetModuleInfo(module_name).module_size)
     {
-        if (is_rva && address) {
+        if (is_rva && address != -1) {
             m_address += m_base_address;
         }
     }
@@ -185,11 +172,11 @@ namespace MemoryScanner
 
     bool ScanResult::is_valid(const std::vector<BytePattern>& parsed_pattern) const
     {
-        if (m_address == 0) {
+        if (m_address == -1) {
             return false;
         }
 
-        for (size_t i = 0; i < parsed_pattern.size(); ++i) {
+        for (size_t i = 0; i < parsed_pattern.size(); i++) {
             BytePattern pattern = parsed_pattern[i];
             if (pattern.half_byte[0].wildcard && pattern.half_byte[1].wildcard) {
                 continue;
@@ -225,7 +212,7 @@ namespace MemoryScanner
     ScanResult ScanResult::rva() const
     {
         if (!is_valid()) {
-            return ScanResult(0, m_base_address, m_image_size);
+            return ScanResult(-1, m_base_address, m_image_size);
         }
 
         return ScanResult(m_address - m_base_address, m_base_address, m_image_size);
@@ -234,7 +221,7 @@ namespace MemoryScanner
     ScanResult ScanResult::offset(std::ptrdiff_t offset_value) const
     {
         if (!is_valid()) {
-            return ScanResult(0, m_base_address, m_image_size);
+            return ScanResult(-1, m_base_address, m_image_size);
         }
 
         uintptr_t new_address = m_address;
@@ -250,7 +237,7 @@ namespace MemoryScanner
 
     ScanResult ScanResult::scan_first(std::wstring_view value) const
     {
-        return is_valid() ? ScanFirst(m_address, m_image_size - rva(), value) : ScanResult(0, m_base_address, m_image_size);
+        return is_valid() ? ScanFirst(m_address, m_image_size - rva(), value) : ScanResult(-1, m_base_address, m_image_size);
     }
 
     bool ScanResult::write(const std::string_view& data) const
@@ -291,7 +278,7 @@ namespace MemoryScanner
         if (!calculate_relative_address) {
             std::vector<BytePattern> new_parsed_pattern = parsed_pattern;
             const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&m_address);
-            for (size_t i = 0; i < sizeof(uintptr_t); ++i) {
+            for (size_t i = 0; i < sizeof(uintptr_t); i++) {
                 BytePattern bp;
                 uint8_t byte = ptr[i];
                 bp.half_byte[0].data = byte >> 4;
@@ -320,12 +307,12 @@ namespace MemoryScanner
         const size_t pattern_size = parsed_pattern.size();
         const BytePattern& first_pattern = parsed_pattern[0];
 
-        for (const uint8_t* it = start; it + pattern_size <= end; ++it) {
+        for (const uint8_t* it = start; it + pattern_size <= end; it++) {
             if ((first_pattern.half_byte[0].wildcard || ((it[0] & 0xF0) == (first_pattern.half_byte[0].data << 4))) &&
                 (first_pattern.half_byte[1].wildcard || ((it[0] & 0x0F) == first_pattern.half_byte[1].data))) {
                 
                 bool found = true;
-                for (size_t i = 1; i < pattern_size; ++i) {
+                for (size_t i = 1; i < pattern_size; i++) {
                     const BytePattern& pattern = parsed_pattern[i];
                     uint8_t byte = it[i];
 
@@ -360,7 +347,7 @@ namespace MemoryScanner
     ScanResult ScanResult::get_first_reference(const std::vector<BytePattern>& parsed_pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size) const
     {
         const auto references = get_all_references(parsed_pattern, calculate_relative_address, base_address, image_size, true);
-        return references.empty() ? ScanResult(0, 0, 0) : references.front();
+        return references.empty() ? ScanResult() : references.front();
     }
     
     ScanResult ScanResult::get_first_reference(std::wstring_view pattern, bool calculate_relative_address, uintptr_t base_address, size_t image_size) const

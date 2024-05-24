@@ -290,17 +290,17 @@ namespace Utils
 #ifndef NDEBUG
     void MeasureExecutionTime(std::function<void()> func, bool total_duration)
     {
-        static std::chrono::duration<double> total_diff;
         const auto start_time = std::chrono::high_resolution_clock::now();
         func();
         const auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff = end_time - start_time;
         if (total_duration) {
+            static std::chrono::duration<double> total_diff;
             total_diff += diff;
-            SetConsoleTitleW((L"Total execution time: " + std::to_wstring(total_diff.count()) + L" seconds").c_str());
+            SetConsoleTitleW(FormatString(L"Total execution time: {:f} seconds", total_diff.count()).c_str());
         }
         else {
-            SetConsoleTitleW((L"Execution time: " + std::to_wstring(diff.count()) + L" seconds").c_str());
+            SetConsoleTitleW(FormatString(L"Execution time: {:f} seconds", diff.count()).c_str());
         }
     }
 

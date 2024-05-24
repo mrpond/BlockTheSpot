@@ -125,11 +125,6 @@ bool Json::is_integer() const
     return std::holds_alternative<int>(m_value);
 }
 
-bool Json::is_float() const
-{
-    return std::holds_alternative<float>(m_value);
-}
-
 bool Json::is_double() const
 {
     return std::holds_alternative<double>(m_value);
@@ -157,64 +152,55 @@ bool Json::is_array() const
 
 int Json::get_integer() const
 {
-    if (std::holds_alternative<int>(m_value)) {
+    if (is_integer()) {
         return std::get<int>(m_value);
     }
-    Log(L"JSON value is not an integer", LogLevel::Error);
+    LogError(L"JSON value is not an integer");
     return 0;
-}
-
-float Json::get_float() const
-{
-    if (std::holds_alternative<float>(m_value)) {
-        return std::get<float>(m_value);
-    }
-    Log(L"JSON value is not an float", LogLevel::Error);
-    return 0.0f;
 }
 
 double Json::get_double() const
 {
-    if (std::holds_alternative<double>(m_value)) {
+    if (is_double()) {
         return std::get<double>(m_value);
     }
-    Log(L"JSON value is not a double", LogLevel::Error);
+    LogError(L"JSON value is not a double");
     return 0.0;
 }
 
 bool Json::get_boolean() const
 {
-    if (std::holds_alternative<bool>(m_value)) {
+    if (is_boolean()) {
         return std::get<bool>(m_value);
     }
-    Log(L"JSON value is not a boolean", LogLevel::Error);
+    LogError(L"JSON value is not a boolean");
     return false;
 }
 
 std::wstring Json::get_string() const
 {
-    if (std::holds_alternative<std::wstring>(m_value)) {
+    if (is_string()) {
         return std::get<std::wstring>(m_value);
     }
-    Log(L"JSON value is not a string", LogLevel::Error);
+    LogError(L"JSON value is not a string");
     return L"";
 }
 
 Json::Object Json::get_object() const
 {
-    if (std::holds_alternative<Object>(m_value)) {
+    if (is_object()) {
         return std::get<Object>(m_value);
     }
-    Log(L"JSON value is not an object", LogLevel::Error);
+    LogError(L"JSON value is not an object");
     return Object();
 }
 
 Json::Array Json::get_array() const
 {
-    if (std::holds_alternative<Array>(m_value)) {
+    if (is_array()) {
         return std::get<Array>(m_value);
     }
-    Log(L"JSON value is not an array", LogLevel::Error);
+    LogError(L"JSON value is not an array");
     return Array();
 }
 
@@ -253,23 +239,23 @@ const Json& Json::at(std::size_t index) const
 
 void Json::clear()
 {
-    if (std::holds_alternative<Object>(m_value)) {
+    if (is_object()) {
         std::get<Object>(m_value).clear();
     }
-    else if (std::holds_alternative<Array>(m_value)) {
+    else if (is_array()) {
         std::get<Array>(m_value).clear();
     }
 }
 
 bool Json::empty() const
 {
-    if (std::holds_alternative<Object>(m_value)) {
+    if (is_object()) {
         return std::get<Object>(m_value).empty();
     }
-    else if (std::holds_alternative<Array>(m_value)) {
+    else if (is_array()) {
         return std::get<Array>(m_value).empty();
     }
-    else if (std::holds_alternative<nullptr_t>(m_value)) {
+    else if (is_null()) {
         return true;
     }
     return false;
@@ -277,10 +263,10 @@ bool Json::empty() const
 
 std::size_t Json::size() const
 {
-    if (std::holds_alternative<Object>(m_value)) {
+    if (is_object()) {
         return std::get<Object>(m_value).size();
     }
-    else if (std::holds_alternative<Array>(m_value)) {
+    else if (is_array()) {
         return std::get<Array>(m_value).size();
     }
     return 0;
@@ -293,6 +279,21 @@ bool Json::contains(const std::wstring& key) const
         return object.find(key) != object.end();
     }
     return false;
+}
+
+size_t Json::count(const std::wstring& key) const {
+    if (is_object()) {
+        const auto& object = std::get<Object>(m_value);
+        return object.count(key);
+    }
+    return 0;
+}
+
+void Json::erase(const std::wstring& key) {
+    if (is_object()) {
+        auto& object = std::get<Object>(m_value);
+        object.erase(key);
+    }
 }
 
 std::wstring Json::dump(int indent) const
@@ -381,7 +382,7 @@ Json Json::parse(std::wistream& is)
         }
     }
     catch (const std::exception& e) {
-        Log(Utils::FormatString(L"{}", e.what()), LogLevel::Error);
+        LogError(L"{}", e.what());
         return Json();
     }
 }

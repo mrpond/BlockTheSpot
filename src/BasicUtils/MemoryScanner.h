@@ -15,14 +15,14 @@ namespace MemoryScanner
 
     struct BytePattern {
         struct HalfByte {
-            uint8_t data{};
-            bool wildcard{};
+            uint8_t data;
+            bool wildcard;
         } half_byte[2]{};
     };
 
     class ScanResult {
     public:
-        ScanResult() : m_address(0), m_base_address(0), m_image_size(0) {}
+        ScanResult() : m_address(-1), m_base_address(0), m_image_size(0) {}
         ScanResult(uintptr_t address, uintptr_t base, size_t size, bool is_rva = false);
         ScanResult(uintptr_t address, std::wstring_view module_name = {}, bool is_rva = false);
         operator uintptr_t() const;
