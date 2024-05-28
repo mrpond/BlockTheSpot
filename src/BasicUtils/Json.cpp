@@ -272,6 +272,31 @@ std::size_t Json::size() const
     return 0;
 }
 
+Json::ValueType Json::type() const
+{
+    if (is_object()) {
+        return ValueType::Object;
+    }
+    else if (is_array()) {
+        return ValueType::Array;
+    }
+    else if (is_string()) {
+        return ValueType::String;
+    }
+    else if (is_boolean()) {
+        return ValueType::Boolean;
+    }
+    else if (is_integer()) {
+        return ValueType::Integer;
+    }
+    else if (is_double()) {
+        return ValueType::Double;
+    }
+    else {
+        return ValueType::Null;
+    }
+}
+
 bool Json::contains(const std::wstring& key) const
 {
     if (is_object()) {

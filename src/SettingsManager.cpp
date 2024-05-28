@@ -23,7 +23,7 @@ void SettingsManager::Init()
 
 bool SettingsManager::Save()
 {
-    m_latest_release_date = L"2024-05-24";
+    m_latest_release_date = L"2024-05-24"; // Update only when significant changes occur.
     
     m_block_list = { 
         L"/ads/",
@@ -202,7 +202,7 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
         }
 
         if (m_config.at(L"Enable_Auto_Update") && Logger::HasError()) {
-            static auto update_done = false;
+            static bool update_done;
             if (!update_done) {
                 update_done = UpdateSettingsFromServer();
             }
@@ -249,25 +249,19 @@ bool SettingsManager::ValidateSettings(const Json& settings)
         return false;
     }
 
-    if (!settings.contains(L"Latest Release Date") || !settings.at(L"Latest Release Date").is_string()) {
-        LogError(L"Invalid or missing 'Latest Release Date' in settings file.");
-        return false;
-    }
-    if (!settings.contains(L"Block List") || !settings.at(L"Block List").is_array()) {
-        LogError(L"Invalid or missing 'Block List' in settings file.");
-        return false;
-    }
-    if (!settings.contains(L"Zip Reader") || !settings.at(L"Zip Reader").is_object()) {
-        LogError(L"Invalid or missing 'Zip Reader' in settings file.");
-        return false;
-    }
-    if (!settings.contains(L"Developer") || !settings.at(L"Developer").is_object()) {
-        LogError(L"Invalid or missing 'Developer' in settings file.");
-        return false;
-    }
-    if (!settings.contains(L"Cef Offsets") || !settings.at(L"Cef Offsets").is_object()) {
-        LogError(L"Invalid or missing 'Cef Offsets' in settings file.");
-        return false;
+    static const std::unordered_map<std::wstring, Json::ValueType> keys = { 
+        {L"Latest Release Date", Json::ValueType::String},
+        {L"Block List", Json::ValueType::Array},
+        {L"Zip Reader", Json::ValueType::Object},
+        {L"Developer", Json::ValueType::Object},
+        {L"Cef Offsets", Json::ValueType::Object}
+    };
+
+    for (const auto& key : keys) {
+        if (!settings.contains(key.first) || settings.at(key.first).type() != key.second) {
+            LogError(L"Invalid or missing '{}' in settings file.", key.first);
+            return false;
+        }
     }
 
     // Block List
@@ -285,11 +279,12 @@ bool SettingsManager::ValidateSettings(const Json& settings)
             return false;
         }
 
-        if (!offset_data.contains(L"cef_request_t_get_url") || !offset_data.at(L"cef_request_t_get_url").is_integer() ||
-            !offset_data.contains(L"cef_zip_reader_t_get_file_name") || !offset_data.at(L"cef_zip_reader_t_get_file_name").is_integer() ||
-            !offset_data.contains(L"cef_zip_reader_t_read_file") || !offset_data.at(L"cef_zip_reader_t_read_file").is_integer()) {
-            LogError(L"Invalid data for Cef Offsets in settings file.");
-            return false;
+        static const std::vector<std::wstring> offset_keys = { L"cef_request_t_get_url", L"cef_zip_reader_t_get_file_name", L"cef_zip_reader_t_read_file" };
+        for (const auto& key : offset_keys) {
+            if (!offset_data.contains(key) || !offset_data.at(key).is_integer()) {
+                LogError(L"Invalid or missing key '{}' in Cef Offsets settings.", key);
+                return false;
+            }
         }
     }
 
@@ -300,12 +295,18 @@ bool SettingsManager::ValidateSettings(const Json& settings)
             return false;
         }
 
-        if (!dev_data.contains(L"Signature") || !dev_data.at(L"Signature").is_string() ||
-            !dev_data.contains(L"Value") || !dev_data.at(L"Value").is_string() ||
-            !dev_data.contains(L"Offset") || !dev_data.at(L"Offset").is_integer() ||
-            !dev_data.contains(L"Address") || !dev_data.at(L"Address").is_integer()) {
-            LogError(L"Invalid data for Developer settings in settings file.");
-            return false;
+        static const std::unordered_map<std::wstring, Json::ValueType> dev_keys = { 
+            {L"Signature", Json::ValueType::String},
+            {L"Value", Json::ValueType::String},
+            {L"Offset", Json::ValueType::Integer},
+            {L"Address", Json::ValueType::Integer}
+        };
+
+        for (const auto& key : dev_keys) {
+            if (!dev_data.contains(key.first) || dev_data.at(key.first).type() != key.second) {
+                LogError(L"Invalid or missing data for key '{}' in Developer settings.", key.first);
+                return false;
+            }
         }
     }
 
