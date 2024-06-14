@@ -264,28 +264,22 @@ Write-Host 'Patching Spotify...'
 $patchFiles = (Join-Path -Path $PWD -ChildPath 'dpapi.dll'), (Join-Path -Path $PWD -ChildPath 'config.ini')
 
 Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
+Remove-Item -LiteralPath (Join-Path -Path $spotifyDirectory -ChildPath 'blockthespot_settings.json') -Force # temporary
 
 function Install-VcRedist {
-    # https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
-    $vcRedistX86Url = "https://aka.ms/vs/17/release/vc_redist.x86.exe"
-    $vcRedistX64Url = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+  $architecture = if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" }
+  # https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
+  $vcRedistUrl = "https://aka.ms/vs/17/release/vc_redist.$($architecture).exe"
+  $registryPath = "HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\$architecture"
+  $installedVersion = [version]((Get-ItemProperty $registryPath -ErrorAction SilentlyContinue).Version).Substring(1)
+  $latestVersion = [version]"14.40.33810.0"
 
-    if ([Environment]::Is64BitOperatingSystem) {
-        if (!(Test-Path 'HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64')) {
-            $vcRedistX64File = Join-Path -Path $PWD -ChildPath 'vc_redist.x64.exe'
-            Write-Host "Downloading and installing vc_redist.x64.exe..."
-            Get-File -Uri $vcRedistX64Url -TargetFile $vcRedistX64File
-            Start-Process -FilePath $vcRedistX64File -ArgumentList "/install /quiet /norestart" -Wait
-        }
-    }
-    else {
-        if (!(Test-Path 'HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x86')) {
-            $vcRedistX86File = Join-Path -Path $PWD -ChildPath 'vc_redist.x86.exe'
-            Write-Host "Downloading and installing vc_redist.x86.exe..."
-            Get-File -Uri $vcRedistX86Url -TargetFile $vcRedistX86File
-            Start-Process -FilePath $vcRedistX86File -ArgumentList "/install /quiet /norestart" -Wait
-        }
-    }
+  if ($installedVersion -lt $latestVersion) {
+      $vcRedistFile = Join-Path -Path $PWD -ChildPath "vc_redist.$architecture.exe"
+      Write-Host "Downloading and installing vc_redist.$architecture.exe..."
+      Invoke-WebRequest -Uri $vcRedistUrl -OutFile $vcRedistFile
+      Start-Process -FilePath $vcRedistFile -ArgumentList "/install /quiet /norestart" -Wait
+  }
 }
 
 Install-VcRedist
