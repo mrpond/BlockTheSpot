@@ -23,7 +23,7 @@ void SettingsManager::Init()
 
 bool SettingsManager::Save()
 {
-    m_latest_release_date = L"2024-05-24"; // Update only when significant changes occur.
+    m_latest_release_date = L"2024-06-16"; // Update only when significant changes occur.
     
     m_block_list = { 
         L"/ads/",
@@ -86,7 +86,7 @@ bool SettingsManager::Save()
             }},
             {L"premium_free", {
                 {L"Signature", L"\"free\"===(null===(t=e.session)"},
-                {L"Value", L"\"\""},
+                {L"Value", L"\""},
                 {L"Offset", 0},
                 {L"Fill", 4},
                 {L"Address", -1}
@@ -224,8 +224,8 @@ bool SettingsManager::UpdateSettingsFromServer()
     
     if (!CompareSettings(server_settings)) {
         const auto forced_update = m_latest_release_date != server_settings.at(L"Latest Release Date");
-
-        if (!Load(server_settings) && !Utils::WriteFile(m_app_settings_file, server_settings.dump(2))) {
+        
+        if (!Load(server_settings) || !Utils::WriteFile(m_app_settings_file, server_settings.dump(2))) {
             LogError(L"Failed to load server settings or write to the settings file: {}", m_app_settings_file);
             return false;
         }

@@ -33,8 +33,8 @@ namespace Utils
     bool Equals(std::string_view str1, std::string_view str2, bool case_sensitive = false);
     bool Equals(std::wstring_view str1, std::wstring_view str2, bool case_sensitive = false);
 
-	void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value);
-	std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key);
+    void WriteIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key, std::wstring_view value);
+    std::wstring ReadIniFile(std::wstring_view ini_path, std::wstring_view section, std::wstring_view key);
 
     bool ReadFile(const std::wstring_view filename, std::wstring& out);
     bool WriteFile(const std::wstring_view filename, const std::wstring_view content);
@@ -43,28 +43,7 @@ namespace Utils
 
 #ifndef NDEBUG
     void MeasureExecutionTime(std::function<void()> func, bool total_duration = true);
-    void PrintSymbols(std::wstring_view module_name);
 #endif
-
-    template<typename T>
-    const auto& TypeConvert(const T& arg)
-    {
-        if constexpr (std::is_same_v<T, const wchar_t*>) {
-            return std::wstring_view(arg);
-        }
-        else if constexpr (std::is_same_v<T, const char*>) {
-            return ToString(arg);
-        }
-        else if constexpr (std::is_same_v < T, void*>) {
-            return reinterpret_cast<uintptr_t>(arg);
-        }
-        else if constexpr (std::is_pointer_v<T>) {
-            return *arg;
-        }
-        else {
-            return arg;
-        }
-    }
 
     std::string FormatString(std::string_view fmt, const auto&... args)
     {
@@ -73,7 +52,7 @@ namespace Utils
 
     std::wstring FormatString(std::wstring_view fmt, const auto&... args)
     {
-        return std::vformat(fmt, std::make_wformat_args(TypeConvert(args)...));
+        return std::vformat(fmt, std::make_wformat_args(args...));
     }
 
     enum class Color : WORD

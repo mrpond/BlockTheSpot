@@ -303,25 +303,5 @@ namespace Utils
             SetConsoleTitleW(FormatString(L"Execution time: {:f} seconds", diff.count()).c_str());
         }
     }
-
-    void PrintSymbols(std::wstring_view module_name)
-    {
-        HMODULE hModule = GetModuleHandleW(module_name.data());
-        if (!hModule && !(hModule = LoadLibraryW(module_name.data()))) {
-            PrintError(L"PrintSymbols: Failed to load module.");
-            return;
-        }
-        
-        PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
-        PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)dosHeader + dosHeader->e_lfanew);
-        PIMAGE_EXPORT_DIRECTORY exportDirectory = (PIMAGE_EXPORT_DIRECTORY)((BYTE*)dosHeader + ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
-        PDWORD functions = (PDWORD)((BYTE*)dosHeader + exportDirectory->AddressOfFunctions);
-        PDWORD names = (PDWORD)((BYTE*)dosHeader + exportDirectory->AddressOfNames);
-        PWORD ordinals = (PWORD)((BYTE*)dosHeader + exportDirectory->AddressOfNameOrdinals);
-
-        for (DWORD i = 0; i < exportDirectory->NumberOfNames; i++) {
-            Print(L"{}", reinterpret_cast<const char*>((BYTE*)dosHeader + names[i]));
-        }
-    }
 #endif // NDEBUG
 };

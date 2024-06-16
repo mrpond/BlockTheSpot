@@ -407,7 +407,7 @@ Json Json::parse(std::wistream& is)
         }
     }
     catch (const std::exception& e) {
-        LogError(L"{}", e.what());
+        LogError(Utils::ToString(e.what()));
         return Json();
     }
 }
