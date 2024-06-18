@@ -12,7 +12,7 @@ LPVOID __stdcall LoadAPI(const char* api_name)
     if (!hModule) {
         hModule = LoadLibraryW(path.c_str());
         if (!hModule) {
-            PrintError(L"Failed to load library: {}", path);
+            LogError(L"Failed to load library: {}", path);
             return nullptr;
         }
     }
@@ -20,7 +20,7 @@ LPVOID __stdcall LoadAPI(const char* api_name)
     if (function_map.find(api_name) == function_map.end()) {
         FARPROC proc = GetProcAddress(hModule, api_name);
         if (!proc) {
-            PrintError(L"Failed to get address of function: {}", api_name);
+            LogError(L"Failed to get address of function: {}", Utils::ToString(api_name));
             return nullptr;
         }
         function_map[api_name] = proc;

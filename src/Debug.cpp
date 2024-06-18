@@ -10,16 +10,14 @@ DWORD WINAPI Debug(LPVOID lpParam)
         const auto cef_zip_reader_t_read_file = offsetof(cef_zip_reader_t, read_file);
 
         if (cef_request_t_get_url != SettingsManager::m_cef_request_t_get_url_offset) {
-            PrintError(L"The offset of cef_request_t::get_url has changed: {}", cef_request_t_get_url);
+            LogError(L"The offset of cef_request_t::get_url has changed: {}", cef_request_t_get_url);
         }
         if (cef_zip_reader_t_get_file_name != SettingsManager::m_cef_zip_reader_t_get_file_name_offset) {
-            PrintError(L"The offset of cef_zip_reader_t::get_file_name has changed: {}", cef_zip_reader_t_get_file_name);
+            LogError(L"The offset of cef_zip_reader_t::get_file_name has changed: {}", cef_zip_reader_t_get_file_name);
         }
         if (cef_zip_reader_t_read_file != SettingsManager::m_cef_zip_reader_t_read_file_offset) {
-            PrintError(L"The offset of cef_zip_reader_t::read_file has changed: {}", cef_zip_reader_t_read_file);
+            LogError(L"The offset of cef_zip_reader_t::read_file has changed: {}", cef_zip_reader_t_read_file);
         }
-
-        // Utils::PrintSymbols(L"chrome_elf.dll");
 
         Utils::MeasureExecutionTime([&]() {
 
@@ -41,7 +39,7 @@ DWORD WINAPI Debug(LPVOID lpParam)
         });
     }
     catch (const std::exception& e) {
-        PrintError(L"{}", e.what());
+        LogError(Utils::ToString(e.what()));
     }
     return 0;
 }
