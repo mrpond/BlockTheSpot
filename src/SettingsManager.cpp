@@ -50,7 +50,7 @@ bool SettingsManager::Save()
                 {L"Address", -1}
             }},
             {L"sponsorship", {
-                {L"Signature", L".set(\"allSponsorships\",t.sponsorships)})}(e,t);" },
+                {L"Signature", L".set(\"allSponsorships\",t.sponsorships)}}(e,t);"},
                 {L"Value", L"\""},
                 {L"Offset", 5},
                 {L"Fill", 15},
@@ -85,7 +85,7 @@ bool SettingsManager::Save()
                 {L"Address", -1}
             }},
             {L"premium_free", {
-                {L"Signature", L"\"free\"===(null===(t=e.session)"},
+                {L"Signature", L"\"free\"===e.session?.productState?.catalogue?.toLowerCase()"},
                 {L"Value", L"\""},
                 {L"Offset", 0},
                 {L"Fill", 4},

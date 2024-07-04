@@ -31,7 +31,7 @@
         "Address": -1
       },
       "sponsorship": {
-        "Signature": ".set(\"allSponsorships\",t.sponsorships)})}(e,t);",
+        "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
@@ -59,7 +59,7 @@
         "Address": -1
       },
       "premium_free": {
-        "Signature": "\"free\"===(null===(t=e.session)",
+        "Signature": "\"free\"===e.session?.productState?.catalogue?.toLowerCase()",
         "Value": "\"",
         "Offset": 0,
         "Fill": 4,
