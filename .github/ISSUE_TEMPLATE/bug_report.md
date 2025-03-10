@@ -8,29 +8,32 @@ assignees: ''
 ---
 
 ---
+
 ### Describe the bug
+
 A clear and concise description of what the bug is, along with your OS [eg. Windows 10]:
 
 Zip and attach the log file.
 
 ---
 
- - [ ] You are using the Spotify `last tested version` mentioned in the [README](https://github.com/mrpond/BlockTheSpot/blob/master/README.md).
- - [ ] You are using the latest [BlockTheSpot](https://www.github.com/mrpond/BlockTheSpot/releases) from github.
- - [ ] You uninstalled Spotify and just ran the patch
- - [ ] You read through the [known issues](https://github.com/mrpond/BlockTheSpot/blob/master/README.md#known-issues) section in the README.
- - [ ] You read through the [additional notes](https://github.com/mrpond/BlockTheSpot/blob/master/README.md#additional-notes) section in the README.
- - [ ] You enabled logging by editing config.ini `set log = 1`.
- - [ ] Make sure whether an issue related yours is already open or not.
- - [ ] Make sure you have completed everything in the above checklist.
+- [ ] You are using the Spotify `last tested version` mentioned in the [README](https://github.com/mrpond/BlockTheSpot/blob/master/README.md).
+- [ ] You are using the latest [BlockTheSpot](https://www.github.com/mrpond/BlockTheSpot/releases) from github.
+- [ ] You uninstalled Spotify and just ran the patch
+- [ ] You read through the [known issues](https://github.com/mrpond/BlockTheSpot/blob/master/README.md#known-issues) section in the README.
+- [ ] You read through the [additional notes](https://github.com/mrpond/BlockTheSpot/blob/master/README.md#additional-notes) section in the README.
+- [ ] You enabled logging by editing config.ini `set log = 1`.
+- [ ] Make sure whether an issue related yours is already open or not.
+- [ ] Make sure you have completed everything in the above checklist.
 
-## Note: 
+## Note
+
 - Antivirus detections are false positive. Please only open an issue if you find any vulnerability in the code. False reports will be closed without notice.
 - If we find that you have opened an issue without following the troubleshooting above, the issue will be closed without notice.
 
-<!-- Remove this line and 
+<!-- Remove this line and
 
-## Feature Request 
+## Feature Request
 Provide a detailed explanation of the requested feature and its use case. Feature should be present in the Premium version of Spotify.
 
 this line to enable feature request.--->

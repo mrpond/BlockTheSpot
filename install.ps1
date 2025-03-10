@@ -273,7 +273,7 @@ Remove-Item -LiteralPath (Join-Path -Path $spotifyDirectory -ChildPath 'blockthe
 #   $registryPath = "HKLM:\Software\Microsoft\VisualStudio\14.0\VC\Runtimes\$architecture"
 #   $installedVersion = [version]((Get-ItemProperty $registryPath -ErrorAction SilentlyContinue).Version).Substring(1)
 #   $latestVersion = [version]"14.40.33810.0"
-# 
+#
 #   if ($installedVersion -lt $latestVersion) {
 #       $vcRedistFile = Join-Path -Path $PWD -ChildPath "vc_redist.$architecture.exe"
 #       Write-Host "Downloading and installing vc_redist.$architecture.exe..."
@@ -281,7 +281,7 @@ Remove-Item -LiteralPath (Join-Path -Path $spotifyDirectory -ChildPath 'blockthe
 #       Start-Process -FilePath $vcRedistFile -ArgumentList "/install /quiet /norestart" -Wait
 #   }
 # }
-# 
+#
 # Install-VcRedist
 
 $tempDirectory = $PWD

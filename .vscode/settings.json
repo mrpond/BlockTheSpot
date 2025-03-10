@@ -1,0 +1,6 @@
+{
+    "C_Cpp.dimInactiveRegions": false,
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "master"
+    ]
+}

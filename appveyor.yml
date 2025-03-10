@@ -14,7 +14,7 @@ build:
   verbosity: minimal
 after_build:
 - pwsh: Get-ChildItem -Path C:\projects\blockthespot\src\x64\Release\*.dll, C:\projects\blockthespot\*.ini | Compress-Archive -DestinationPath C:\projects\blockthespot\chrome_elf.zip
-test: off
+test: false
 artifacts:
 - path: chrome_elf.zip
 deploy:
