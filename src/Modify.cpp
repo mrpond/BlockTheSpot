@@ -106,9 +106,9 @@ void* cef_zip_reader_create_hook(void* stream)
 DWORD WINAPI EnableDeveloper(LPVOID lpParam)
 {
 	auto& dev_data = SettingsManager::m_developer.at(SettingsManager::m_architecture);
-	auto scan = MemoryScanner::ScanResult(dev_data.at(L"Address").get_integer(), L"", true);
+	auto scan = MemoryScanner::ScanResult(dev_data.at(L"Address").get_integer(), L"Spotify.dll", true);
 	if (!scan.is_valid(dev_data.at(L"Signature").get_string())) {
-		scan = MemoryScanner::ScanFirst(dev_data.at(L"Signature").get_string());
+		scan = MemoryScanner::ScanFirst(dev_data.at(L"Signature").get_string(), L"Spotify.dll");
 		dev_data.at(L"Address") = static_cast<int>(scan.rva());
 	}
 
