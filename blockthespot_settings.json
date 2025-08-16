@@ -36,6 +36,20 @@
       }
     },
     "xpui-snapshot.js": {
+      "disable_metric_end": {
+        "Signature": ",LN(t)}o(57152)",
+        "Value": ",LN(*/}o(57152)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 371103
+      },
+      "disable_metric_begin": {
+        "Signature": "function VN(e){Gb.BrowserMetrics",
+        "Value": "function VN(e){/*Gb.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 368345
+      },
       "adsEnabled": {
         "Signature": "adsEnabled:!0",
         "Value": "1",
