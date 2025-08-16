@@ -23,7 +23,7 @@ void SettingsManager::Init()
 
 bool SettingsManager::Save()
 {
-    m_latest_release_date = L"2024-06-16"; // Update only when significant changes occur.
+    m_latest_release_date = L"2025-08-16"; // Update only when significant changes occur.
     
     m_block_list = { 
         L"/ads/",
@@ -41,7 +41,32 @@ bool SettingsManager::Save()
                 {L"Address", -1}
             }}
         }},
-        {L"xpui.js", {
+        {L"xpui-root-dialogs.js", {
+            {L"fix503", {
+                {L"Signature", L"{return e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").send()}"},
+                {L"Value", L"{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
+            }}
+        }},
+        {L"xpui-pip-mini-player.js", {
+            {L"miniplayer_end", {
+                {L"Signature", L".button.not-now\")})]})]})})"},
+                {L"Value", L".button.not-now\")})]})]})*/"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
+            }},
+            {L"miniplayer_begin", {
+                {L"Signature", L"return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)"},
+                {L"Value", L"return null;/*(0,R.jsx)(\"div\",{className:ze,children:(0"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
+            }}
+        }},
+        {L"xpui-snapshot.js", {
             {L"adsEnabled", {
                 {L"Signature", L"adsEnabled:!0"},
                 {L"Value", L"1"},
@@ -55,10 +80,17 @@ bool SettingsManager::Save()
                 {L"Offset", 5},
                 {L"Fill", 15},
                 {L"Address", -1}
+			}},
+            {L"skipsentry_begin", {
+                {L"Signature", L"function HN(){if(EE()"},
+                {L"Value", L"function HN(){/*(EE()"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
             }},
-            {L"skipsentry", {
-                {L"Signature", L"sentry.io"},
-                {L"Value", L"localhost"},
+            {L"skipsentry_end", {
+                {L"Signature", L"))}}Kw(\"playback_load_start\")"},
+                {L"Value", L")*/}Kw(\"playback_load_start\")"},
                 {L"Offset", 0},
                 {L"Fill", 0},
                 {L"Address", -1}
@@ -77,26 +109,33 @@ bool SettingsManager::Save()
                 {L"Fill", 0},
                 {L"Address", -1}
             }},
-            {L"sp_localhost", {
-                {L"Signature", L"sp://ads/v1/ads/"},
-                {L"Value", L"sp://localhost//"},
-                {L"Offset", 0},
-                {L"Fill", 0},
-                {L"Address", -1}
-            }},
             {L"premium_free", {
-                {L"Signature", L"\"free\"===e.session?.productState?.catalogue?.toLowerCase()"},
+                {L"Signature", L"\"free\"===e.session?"},
                 {L"Value", L"\""},
                 {L"Offset", 0},
                 {L"Fill", 4},
                 {L"Address", -1}
-            }}
+            }},
+            {L"premium_btn_start", {
+                {L"Signature", L"return(0,S.jsx)(Pr.$,{...e,style:{flexShrink:0"},
+                {L"Value", L"return null;/*(0,S.jsx)(Pr.$,{...e,style:{flex"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
+            }},
+            {L"premium_btn_end", {
+                {L"Signature", L"children:s.Ru.get(\"upgrade.button\")})"},
+                {L"Value", L"children:s.Ru.get(\"upgrade.button\")*/"},
+                {L"Offset", 0},
+                {L"Fill", 0},
+                {L"Address", -1}
+            }},
         }}
     };
 
     m_developer = {
         {L"x64", {
-            {L"Signature", L"80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 10"},
+            {L"Signature", L"80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F"},
             {L"Value", L"B3 01 90"},
             {L"Offset", 0},
             {L"Address", -1}
