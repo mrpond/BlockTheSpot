@@ -1,5 +1,5 @@
 {
-  "Latest Release Date": "2025-08-16",
+  "Latest Release Date": "2025-08-25",
   "Zip Reader": {
     "home-hpto.css": {
       "hptocss": {
@@ -16,7 +16,7 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 168314
+        "Address": 11162
       }
     },
     "xpui-pip-mini-player.js": {
@@ -25,79 +25,79 @@
         "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 10040
+        "Address": 9464
       },
       "miniplayer_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
         "Value": "return null;/*(0,R.jsx)(\"div\",{className:ze,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9327
+        "Address": 8751
       }
     },
     "xpui-snapshot.js": {
       "disable_metric_end": {
-        "Signature": ",LN(t)}o(57152)",
-        "Value": ",LN(*/}o(57152)",
+        "Signature": ",Sk(t)}o(72382)",
+        "Value": ",Sk(*/}o(72382)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 371103
+        "Address": 372801
       },
       "disable_metric_begin": {
-        "Signature": "function VN(e){Gb.BrowserMetrics",
-        "Value": "function VN(e){/*Gb.BrowserMetri",
+        "Signature": "function Mk(e){Ub.BrowserMetrics",
+        "Value": "function Mk(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 368345
+        "Address": 370036
       },
       "adsEnabled": {
         "Signature": "adsEnabled:!0",
         "Value": "1",
         "Offset": 12,
         "Fill": 0,
-        "Address": 311176
+        "Address": 313405
       },
       "ishptohidden": {
         "Signature": "isHptoHidden:!0",
         "Value": "1",
         "Offset": 14,
         "Fill": 0,
-        "Address": 311095
+        "Address": 313324
       },
       "premium_btn_start": {
-        "Signature": "return(0,S.jsx)(Pr.$,{...e,style:{flexShrink:0",
-        "Value": "return null;/*(0,S.jsx)(Pr.$,{...e,style:{flex",
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 74240
-      },
-      "sponsorship": {
-        "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
-        "Value": "\"",
-        "Offset": 5,
-        "Fill": 15,
-        "Address": 309760
+        "Address": 75807
       },
       "skipsentry_end": {
-        "Signature": "))}}Kw(\"playback_load_start\")",
-        "Value": ")*/}Kw(\"playback_load_start\")",
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372457
-      },
-      "skipsentry_begin": {
-        "Signature": "function HN(){if(EE()",
-        "Value": "function HN(){/*(EE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 371964
+        "Address": 374152
       },
       "hptoEnabled": {
         "Signature": "hptoEnabled:!0",
         "Value": "1",
         "Offset": 13,
         "Fill": 0,
-        "Address": 308730
+        "Address": 310959
+      },
+      "skipsentry_begin": {
+        "Signature": "function Dk(){if(xE()",
+        "Value": "function Dk(){/*(xE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 373659
+      },
+      "sponsorship": {
+        "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
+        "Value": "\"",
+        "Offset": 5,
+        "Fill": 15,
+        "Address": 311989
       },
       "premium_free": {
         "Signature": "\"free\"===e.session?",
@@ -111,7 +111,7 @@
         "Value": "children:s.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 74468
+        "Address": 76103
       }
     }
   },
@@ -120,7 +120,7 @@
       "Signature": "80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 0,
-      "Address": 522372
+      "Address": 529620
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
