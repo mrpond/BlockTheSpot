@@ -1,5 +1,30 @@
 {
-  "Latest Release Date": "2025-08-25",
+  "Cef Offsets": {
+    "x64": {
+      "cef_request_t_get_url": 48,
+      "cef_zip_reader_t_get_file_name": 72,
+      "cef_zip_reader_t_read_file": 112
+    },
+    "x32": {
+      "cef_request_t_get_url": 24,
+      "cef_zip_reader_t_get_file_name": 36,
+      "cef_zip_reader_t_read_file": 56
+    }
+  },
+  "Developer": {
+    "x64": {
+      "Signature": "80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "Value": "B3 01 90",
+      "Offset": 0,
+      "Address": 529620
+    },
+    "x32": {
+      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
+      "Value": "B8 03 00",
+      "Offset": 0,
+      "Address": -1
+    }
+  },
   "Zip Reader": {
     "home-hpto.css": {
       "hptocss": {
@@ -20,29 +45,22 @@
       }
     },
     "xpui-pip-mini-player.js": {
-      "miniplayer_end": {
-        "Signature": ".button.not-now\")})]})]})})",
-        "Value": ".button.not-now\")})]})]})*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 9464
-      },
       "miniplayer_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
         "Value": "return null;/*(0,R.jsx)(\"div\",{className:ze,children:(0",
         "Offset": 0,
         "Fill": 0,
         "Address": 8751
+      },
+      "miniplayer_end": {
+        "Signature": ".button.not-now\")})]})]})})",
+        "Value": ".button.not-now\")})]})]})*/",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 9464
       }
     },
     "xpui-snapshot.js": {
-      "disable_metric_end": {
-        "Signature": ",Sk(t)}o(72382)",
-        "Value": ",Sk(*/}o(72382)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 372801
-      },
       "disable_metric_begin": {
         "Signature": "function Mk(e){Ub.BrowserMetrics",
         "Value": "function Mk(e){/*Ub.BrowserMetri",
@@ -50,19 +68,33 @@
         "Fill": 0,
         "Address": 370036
       },
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
+      "disable_metric_end": {
+        "Signature": ",Sk(t)}o(72382)",
+        "Value": ",Sk(*/}o(72382)",
+        "Offset": 0,
         "Fill": 0,
-        "Address": 313405
+        "Address": 372801
       },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
+      "disable_metric_170_end": {
+        "Signature": ",LN(t)}o(57152)",
+        "Value": ",LN(*/}o(57152)",
+        "Offset": 0,
         "Fill": 0,
-        "Address": 313324
+        "Address": 371103
+      },
+      "disable_metric_170_begin": {
+        "Signature": "function VN(e){Gb.BrowserMetrics",
+        "Value": "function VN(e){/*Gb.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 368345
+      },
+      "premium_btn_170_start": {
+        "Signature": "return(0,S.jsx)(Pr.$,{...e,style:{flexShrink:0",
+        "Value": "return null;/*(0,S.jsx)(Pr.$,{...e,style:{flex",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 74240
       },
       "premium_btn_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -71,12 +103,19 @@
         "Fill": 0,
         "Address": 75807
       },
-      "skipsentry_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
-        "Offset": 0,
+      "ishptohidden": {
+        "Signature": "isHptoHidden:!0",
+        "Value": "1",
+        "Offset": 14,
         "Fill": 0,
-        "Address": 374152
+        "Address": 313324
+      },
+      "adsEnabled": {
+        "Signature": "adsEnabled:!0",
+        "Value": "1",
+        "Offset": 12,
+        "Fill": 0,
+        "Address": 313405
       },
       "hptoEnabled": {
         "Signature": "hptoEnabled:!0",
@@ -91,6 +130,27 @@
         "Offset": 0,
         "Fill": 0,
         "Address": 373659
+      },
+      "skipsentry_end": {
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 374152
+      },
+      "skipsentry_170_end": {
+        "Signature": "))}}Kw(\"playback_load_start\")",
+        "Value": ")*/}Kw(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372457
+      },
+      "skipsentry_170_begin": {
+        "Signature": "function HN(){if(EE()",
+        "Value": "function HN(){/*(EE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 371964
       },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
@@ -115,32 +175,7 @@
       }
     }
   },
-  "Developer": {
-    "x64": {
-      "Signature": "80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
-      "Value": "B3 01 90",
-      "Offset": 0,
-      "Address": 529620
-    },
-    "x32": {
-      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
-      "Value": "B8 03 00",
-      "Offset": 0,
-      "Address": -1
-    }
-  },
-  "Cef Offsets": {
-    "x64": {
-      "cef_request_t_get_url": 48,
-      "cef_zip_reader_t_get_file_name": 72,
-      "cef_zip_reader_t_read_file": 112
-    },
-    "x32": {
-      "cef_request_t_get_url": 24,
-      "cef_zip_reader_t_get_file_name": 36,
-      "cef_zip_reader_t_read_file": 56
-    }
-  },
+  "Latest Release Date": "2025-08-26",
   "Block List": [
     "/ads/",
     "/ad-logic/",
