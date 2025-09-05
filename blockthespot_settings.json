@@ -13,10 +13,10 @@
   },
   "Developer": {
     "x64": {
-      "Signature": "80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "Signature": "41 22 DE 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 0,
-      "Address": 529620
+      "Address": 468051
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
@@ -28,11 +28,18 @@
   "Zip Reader": {
     "home-hpto.css": {
       "hptocss": {
-        "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
+        "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
         "Value": "none",
         "Offset": 70,
         "Fill": 0,
         "Address": 0
+      },
+      "hptocss_171": {
+        "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
+        "Value": "none",
+        "Offset": 70,
+        "Fill": 0,
+        "Address": -1
       }
     },
     "xpui-root-dialogs.js": {
@@ -41,123 +48,130 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 11162
+        "Address": 15766
       }
     },
     "xpui-pip-mini-player.js": {
       "miniplayer_begin": {
+        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
+        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 9274
+      },
+      "miniplayer_171_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
         "Value": "return null;/*(0,R.jsx)(\"div\",{className:ze,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 8751
+        "Address": -1
       },
       "miniplayer_end": {
         "Signature": ".button.not-now\")})]})]})})",
         "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9464
+        "Address": 9987
       }
     },
     "xpui-snapshot.js": {
       "disable_metric_begin": {
+        "Signature": "function GN(e){Ub.BrowserMetrics",
+        "Value": "function GN(e){/*Ub.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_end": {
+        "Signature": ",zN(t)}o(72123)",
+        "Value": ",zN(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_171_begin": {
         "Signature": "function Mk(e){Ub.BrowserMetrics",
         "Value": "function Mk(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 370036
+        "Address": -1
       },
-      "disable_metric_end": {
+      "disable_metric_171_end": {
         "Signature": ",Sk(t)}o(72382)",
         "Value": ",Sk(*/}o(72382)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372801
-      },
-      "disable_metric_170_end": {
-        "Signature": ",LN(t)}o(57152)",
-        "Value": ",LN(*/}o(57152)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 371103
-      },
-      "disable_metric_170_begin": {
-        "Signature": "function VN(e){Gb.BrowserMetrics",
-        "Value": "function VN(e){/*Gb.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 368345
-      },
-      "premium_btn_170_start": {
-        "Signature": "return(0,S.jsx)(Pr.$,{...e,style:{flexShrink:0",
-        "Value": "return null;/*(0,S.jsx)(Pr.$,{...e,style:{flex",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 74240
-      },
-      "premium_btn_start": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 75807
-      },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
-        "Fill": 0,
-        "Address": 313324
-      },
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
-        "Fill": 0,
-        "Address": 313405
-      },
-      "hptoEnabled": {
-        "Signature": "hptoEnabled:!0",
-        "Value": "1",
-        "Offset": 13,
-        "Fill": 0,
-        "Address": 310959
-      },
-      "skipsentry_begin": {
-        "Signature": "function Dk(){if(xE()",
-        "Value": "function Dk(){/*(xE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 373659
-      },
-      "skipsentry_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 374152
-      },
-      "skipsentry_170_end": {
-        "Signature": "))}}Kw(\"playback_load_start\")",
-        "Value": ")*/}Kw(\"playback_load_start\")",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 372457
-      },
-      "skipsentry_170_begin": {
-        "Signature": "function HN(){if(EE()",
-        "Value": "function HN(){/*(EE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 371964
+        "Address": -1
       },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 311989
+        "Address": 315129
+      },
+      "premium_btn_start": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 73061
+      },
+      "premium_btn_171_start": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "ishptohidden": {
+        "Signature": "isHptoHidden:!0",
+        "Value": "1",
+        "Offset": 14,
+        "Fill": 0,
+        "Address": 316464
+      },
+      "adsEnabled": {
+        "Signature": "adsEnabled:!0",
+        "Value": "1",
+        "Offset": 12,
+        "Fill": 0,
+        "Address": 316545
+      },
+      "hptoEnabled": {
+        "Signature": "hptoEnabled:!0",
+        "Value": "1",
+        "Offset": 13,
+        "Fill": 0,
+        "Address": 314099
+      },
+      "skipsentry_begin": {
+        "Signature": "function ZN(){if(xE()",
+        "Value": "function ZN(){/*(xE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376532
+      },
+      "skipsentry_end": {
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 377025
+      },
+      "skipsentry_171_begin": {
+        "Signature": "function Dk(){if(xE()",
+        "Value": "function Dk(){/*(xE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "skipsentry_171_end": {
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
       },
       "premium_free": {
         "Signature": "\"free\"===e.session?",
@@ -171,11 +185,11 @@
         "Value": "children:s.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 76103
+        "Address": 73357
       }
     }
   },
-  "Latest Release Date": "2025-08-26",
+  "Latest Release Date": "2025-09-06",
   "Block List": [
     "/ads/",
     "/ad-logic/",
