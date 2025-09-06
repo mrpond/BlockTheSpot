@@ -75,6 +75,13 @@
       }
     },
     "xpui-snapshot.js": {
+      "disable_metric_171_begin": {
+        "Signature": "function Mk(e){Ub.BrowserMetrics",
+        "Value": "function Mk(e){/*Ub.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
       "disable_metric_begin": {
         "Signature": "function GN(e){Ub.BrowserMetrics",
         "Value": "function GN(e){/*Ub.BrowserMetri",
@@ -82,16 +89,16 @@
         "Fill": 0,
         "Address": -1
       },
+      "disable_metric_end_af82ef1": {
+        "Signature": ",VN(t)}o(72123)",
+        "Value": ",VN(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 375525
+      },
       "disable_metric_end": {
         "Signature": ",zN(t)}o(72123)",
         "Value": ",zN(*/}o(72123)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_171_begin": {
-        "Signature": "function Mk(e){Ub.BrowserMetrics",
-        "Value": "function Mk(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -103,12 +110,26 @@
         "Fill": 0,
         "Address": -1
       },
+      "disable_metric_begin_af82ef1": {
+        "Signature": "function GN(e){Ub.BrowserMetrics",
+        "Value": "function GN(e){/*Ub.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372760
+      },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
         "Address": 315129
+      },
+      "premium_btn_start_af82ef1": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 73061
       },
       "premium_btn_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -180,6 +201,13 @@
         "Fill": 4,
         "Address": -1
       },
+      "premium_btn_end_af82ef1": {
+        "Signature": "children:i.Ru.get(\"upgrade.button\")})",
+        "Value": "children:i.Ru.get(\"upgrade.button\")*/",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 73357
+      },
       "premium_btn_end": {
         "Signature": "children:s.Ru.get(\"upgrade.button\")})",
         "Value": "children:s.Ru.get(\"upgrade.button\")*/",
@@ -189,7 +217,7 @@
       }
     }
   },
-  "Latest Release Date": "2025-09-06",
+  "Latest Release Date": "2025-09-07",
   "Block List": [
     "/ads/",
     "/ad-logic/",
