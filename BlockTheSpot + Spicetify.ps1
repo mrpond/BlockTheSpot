@@ -33,7 +33,7 @@ Write-SectionHeader "Step 1: Installing BlockTheSpot"
 Invoke-SafeCommand -Command {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Write-Host "Downloading and running BlockTheSpot installer..." -ForegroundColor Green
-    $installScript = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/Othmane-ElAlami/BlockTheSpot/master/install.ps1" -UseBasicParsing
+    $installScript = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1" -UseBasicParsing
     Invoke-Expression "& { $installScript } -UninstallSpotifyStoreEdition"
 } -ErrorMessage "Error installing BlockTheSpot:"
 
