@@ -12,7 +12,8 @@ $PSDefaultParameterValues['Stop-Process:ErrorAction'] = [System.Management.Autom
 
 [System.Version] $minimalSupportedSpotifyVersion = '1.2.8.923'
 
-function Get-File {
+function Get-File
+{
   param (
     [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
     [ValidateNotNullOrEmpty()]
@@ -42,7 +43,8 @@ function Get-File {
 
   $useBitTransfer = $null -ne (Get-Module -Name BitsTransfer -ListAvailable) -and ($PSVersionTable.PSVersion.Major -le 5) -and ((Get-Service -Name BITS).StartType -ne [System.ServiceProcess.ServiceStartMode]::Disabled)
 
-  if ($useBitTransfer) {
+  if ($useBitTransfer)
+  {
     Write-Information -MessageData 'Using a fallback BitTransfer method since you are running Windows PowerShell'
     try {
       Start-BitsTransfer -Source $Uri -Destination "$($TargetFile.FullName)"
@@ -60,7 +62,8 @@ function Get-File {
     $totalLength = [System.Math]::Floor($response.get_ContentLength() / 1024)
     $responseStream = $response.GetResponseStream()
     $targetStream = New-Object -TypeName ([System.IO.FileStream]) -ArgumentList "$($TargetFile.FullName)", Create
-    switch ($BufferUnit) {
+    switch ($BufferUnit)
+    {
       'KB' { $BufferSize = $BufferSize * 1024 }
       'MB' { $BufferSize = $BufferSize * 1024 * 1024 }
       Default { $BufferSize = 1024 * 1024 }
@@ -70,7 +73,8 @@ function Get-File {
     $count = $responseStream.Read($buffer, 0, $buffer.length)
     $downloadedBytes = $count
     $downloadedFileName = $Uri -split '/' | Select-Object -Last 1
-    while ($count -gt 0) {
+    while ($count -gt 0)
+    {
       $targetStream.Write($buffer, 0, $count)
       $count = $responseStream.Read($buffer, 0, $buffer.length)
       $downloadedBytes = $downloadedBytes + $count
@@ -86,7 +90,8 @@ function Get-File {
   }
 }
 
-function Test-SpotifyVersion {
+function Test-SpotifyVersion
+{
   param (
     [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
     [ValidateNotNullOrEmpty()]
@@ -97,14 +102,15 @@ function Test-SpotifyVersion {
     $TestedVersion
   )
 
-  process {
+  process
+  {
     return ($MinimalSupportedVersion.CompareTo($TestedVersion) -le 0)
   }
 }
 
 Write-Host @'
 ========================================
-Authors: @mrpond, @Nuzair46, @KUTlime
+Authors: @Nuzair46, @KUTlime
 ========================================
 '@
 
@@ -117,31 +123,37 @@ Write-Host "Stopping Spotify...`n"
 Stop-Process -Name Spotify
 Stop-Process -Name SpotifyWebHelper
 
-if ($PSVersionTable.PSVersion.Major -ge 7) {
+if ($PSVersionTable.PSVersion.Major -ge 7)
+{
   Import-Module Appx -UseWindowsPowerShell -WarningAction:SilentlyContinue
 }
 
-if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic) {
+if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic)
+{
   Write-Host "The Microsoft Store version of Spotify has been detected which is not supported.`n"
 
-  if ($UninstallSpotifyStoreEdition) {
+  if ($UninstallSpotifyStoreEdition)
+  {
     Write-Host "Uninstalling Spotify.`n"
     Get-AppxPackage -Name SpotifyAB.SpotifyMusic | Remove-AppxPackage
   }
-  else {
+  else
+  {
     Read-Host "Exiting...`nPress any key to exit..."
     exit
   }
 }
 
 Push-Location -LiteralPath $env:TEMP
-try {
+try
+{
   # Unique directory name based on time
   New-Item -Type Directory -Name "BlockTheSpot-$(Get-Date -UFormat '%Y-%m-%d_%H-%M-%S')" |
   Convert-Path |
   Set-Location
 }
-catch {
+catch
+{
   Write-Output $_
   Read-Host 'Press any key to exit...'
   exit
@@ -151,31 +163,33 @@ $spotifyInstalled = Test-Path -LiteralPath $spotifyExecutable
 
 if (-not $spotifyInstalled) {
   $unsupportedClientVersion = $true
-}
-else {
+} else {
   $unsupportedClientVersion = ($actualSpotifyClientVersion | Test-SpotifyVersion -MinimalSupportedVersion $minimalSupportedSpotifyVersion) -eq $false
 }
 
-if (-not $UpdateSpotify -and $unsupportedClientVersion) {
-  if ((Read-Host -Prompt 'In order to install Block the Spot, your Spotify client must be updated. Do you want to continue? (Y/N)') -ne 'y') {
+if (-not $UpdateSpotify -and $unsupportedClientVersion)
+{
+  if ((Read-Host -Prompt 'In order to install Block the Spot, your Spotify client must be updated. Do you want to continue? (Y/N)') -ne 'y')
+  {
     exit
   }
 }
 
-if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion) {
+if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion)
+{
   Write-Host 'Downloading the latest Spotify full setup, please wait...'
   $spotifySetupFilePath = Join-Path -Path $PWD -ChildPath 'SpotifyFullSetup.exe'
-  try {
-    if ([Environment]::Is64BitOperatingSystem) {
-      # Check if the computer is running a 64-bit version of Windows
+  try
+  {
+    if ([Environment]::Is64BitOperatingSystem) { # Check if the computer is running a 64-bit version of Windows
       $uri = 'https://download.scdn.co/SpotifyFullSetupX64.exe'
-    }
-    else {
+    } else {
       $uri = 'https://download.scdn.co/SpotifyFullSetup.exe'
     }
     Get-File -Uri $uri -TargetFile "$spotifySetupFilePath"
   }
-  catch {
+  catch
+  {
     Write-Output $_
     Read-Host 'Press any key to exit...'
     exit
@@ -185,7 +199,8 @@ if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion) {
   [System.Security.Principal.WindowsPrincipal] $principal = [System.Security.Principal.WindowsIdentity]::GetCurrent()
   $isUserAdmin = $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
   Write-Host 'Running installation...'
-  if ($isUserAdmin) {
+  if ($isUserAdmin)
+  {
     Write-Host
     Write-Host 'Creating scheduled task...'
     $apppath = 'powershell.exe'
@@ -201,11 +216,13 @@ if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion) {
     Unregister-ScheduledTask -TaskName $taskname -Confirm:$false
     Start-Sleep -Seconds 2
   }
-  else {
+  else
+  {
     Start-Process -FilePath "$spotifySetupFilePath"
   }
 
-  while ($null -eq (Get-Process -Name Spotify -ErrorAction SilentlyContinue)) {
+  while ($null -eq (Get-Process -Name Spotify -ErrorAction SilentlyContinue))
+  {
     # Waiting until installation complete
     Start-Sleep -Milliseconds 100
   }
@@ -215,26 +232,24 @@ if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion) {
 
   Stop-Process -Name Spotify
   Stop-Process -Name SpotifyWebHelper
-  if ([Environment]::Is64BitOperatingSystem) {
-    # Check if the computer is running a 64-bit version of Windows
+  if ([Environment]::Is64BitOperatingSystem) { # Check if the computer is running a 64-bit version of Windows
     Stop-Process -Name SpotifyFullSetupX64
-  }
-  else {
-    Stop-Process -Name SpotifyFullSetup
+  } else {
+     Stop-Process -Name SpotifyFullSetup
   }
 }
 
 Write-Host "Downloading latest patch (chrome_elf.zip)...`n"
 $elfPath = Join-Path -Path $PWD -ChildPath 'chrome_elf.zip'
-try {
+try
+{
   $bytes = [System.IO.File]::ReadAllBytes($spotifyExecutable)
   $peHeader = [System.BitConverter]::ToUInt16($bytes[0x3C..0x3D], 0)
   $is64Bit = $bytes[$peHeader + 4] -eq 0x64
 
   if ($is64Bit) {
     $uri = 'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip'
-  }
-  else {
+  } else {
     Write-Host 'At the moment, the ad blocker may not work properly as the x86 architecture has not received a new update.'
     $uri = 'https://github.com/mrpond/BlockTheSpot/releases/download/2023.5.20.80/chrome_elf.zip'
   }
