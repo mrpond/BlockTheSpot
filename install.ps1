@@ -278,6 +278,7 @@ catch {
   }
   catch {
     Write-Output "Alternative download also failed: $_"
+    Write-Host "Note: This could be caused by antivirus software. Check your antivirus settings."
     Start-Sleep -Seconds 5
     Read-Host 'Press any key to exit...'
     exit
