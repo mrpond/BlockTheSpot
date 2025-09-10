@@ -16,7 +16,7 @@
       "Signature": "41 22 DE 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 0,
-      "Address": 468051
+      "Address": -1
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
