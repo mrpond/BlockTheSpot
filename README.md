@@ -5,8 +5,8 @@
     <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (64 bit)</strong> </h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
-        <strong>Last updated:</strong> 7 September 2025<br>
-        <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.72.437.gaf82ef12
+        <strong>Last updated:</strong> 11 September 2025<br>
+        <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.72.438.g8c88c31c
     </p> 
 </center>
 
@@ -45,7 +45,7 @@ or
 1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
 2. Download `chrome_elf.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 3. Unzip `dpapi.dll` and `config.ini` to Spotify directory. 
-4. Download latest [blockthespot_settings.json](https://github.com/mrpond/BlockTheSpot/master/blockthespot_settings.json) from github to Spotify directory. 
+4. Download latest [blockthespot_settings.json](https://github.com/mrpond/BlockTheSpot/blob/master/blockthespot_settings.json) from github to Spotify directory. 
 ### Uninstall:
 * Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/uninstall.bat)
 or

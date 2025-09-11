@@ -16,7 +16,7 @@
       "Signature": "41 22 DE 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 0,
-      "Address": 468051
+      "Address": -1
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
@@ -75,6 +75,13 @@
       }
     },
     "xpui-snapshot.js": {
+      "disable_metric_end_af82ef1": {
+        "Signature": ",VN(t)}o(72123)",
+        "Value": ",VN(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
       "disable_metric_171_begin": {
         "Signature": "function Mk(e){Ub.BrowserMetrics",
         "Value": "function Mk(e){/*Ub.BrowserMetri",
@@ -82,23 +89,16 @@
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_begin": {
-        "Signature": "function GN(e){Ub.BrowserMetrics",
-        "Value": "function GN(e){/*Ub.BrowserMetri",
+      "disable_metric_end": {
+        "Signature": ",zN(t)}o(72123)",
+        "Value": ",zN(*/}o(72123)",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_end_af82ef1": {
-        "Signature": ",VN(t)}o(72123)",
-        "Value": ",VN(*/}o(72123)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 375525
-      },
-      "disable_metric_end": {
-        "Signature": ",zN(t)}o(72123)",
-        "Value": ",zN(*/}o(72123)",
+      "disable_metric_begin": {
+        "Signature": "function GN(e){Ub.BrowserMetrics",
+        "Value": "function GN(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -115,7 +115,21 @@
         "Value": "function GN(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372760
+        "Address": -1
+      },
+      "disable_metric_end_8c88c31": {
+        "Signature": ",Vk(t)}o(72123)",
+        "Value": ",Vk(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 375039
+      },
+      "disable_metric_begin_8c88c31": {
+        "Signature": "function Gk(e){Ub.BrowserMetrics",
+        "Value": "function Gk(e){/*Ub.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372274
       },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
@@ -136,7 +150,7 @@
         "Value": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 73061
+        "Address": -1
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -171,14 +185,21 @@
         "Value": "function ZN(){/*(xE()",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376532
+        "Address": -1
+      },
+      "skipsentry_begin_8c88c31": {
+        "Signature": "function Zk(){if(xE()",
+        "Value": "function Zk(){/*(xE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 375897
       },
       "skipsentry_end": {
         "Signature": "))}}qw(\"playback_load_start\")",
         "Value": ")*/}qw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 377025
+        "Address": 376390
       },
       "skipsentry_171_begin": {
         "Signature": "function Dk(){if(xE()",
@@ -213,11 +234,11 @@
         "Value": "children:s.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 73357
+        "Address": -1
       }
     }
   },
-  "Latest Release Date": "2025-09-07",
+  "Latest Release Date": "2025-09-11",
   "Block List": [
     "/ads/",
     "/ad-logic/",
