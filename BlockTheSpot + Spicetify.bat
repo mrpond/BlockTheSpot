@@ -1,13 +1,17 @@
 @echo off
+echo ========================================
+echo  BlockTheSpot + Spicetify Installer
+echo ========================================
+echo.
 
-set /p UserInput= "Spicetify will be Installed. If you don't agree, use the BlockTheSpot script, else press 'y' to continue (y/n)? "
+set /p UserInput="Spicetify will be installed. If you don't agree, use the BlockTheSpot script. Do you want to continue with the installation? (y/n): "
 if /i "%UserInput%"=="y" (
-    powershell -Command "& {iwr -useb https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.ps1 | iex}"
-    powershell -Command "& {iwr -useb https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1 | iex}"
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1' | Invoke-Expression}"
-    pause
+    echo.
+    echo Installing BlockTheSpot with Spicetify...
+    powershell -ExecutionPolicy Bypass -Command "try { $installScript = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1' -UseBasicParsing; Invoke-Expression \"& { $installScript } -UninstallSpotifyStoreEdition -InstallSpicetify\" } catch { Write-Host 'Error downloading script:' $_.Exception.Message; Read-Host 'Press Enter to exit' }"
 ) else (
-    echo "Patch not installed."
+    echo.
+    echo Installation cancelled.
     pause
     exit /b
 )
