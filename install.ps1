@@ -138,6 +138,70 @@ function Install-Spicetify {
   }
 }
 
+function Install-BlockTheSpotPatch {
+  param (
+    [Parameter(Mandatory)]
+    [string]$SpotifyDirectory,
+    [Parameter(Mandatory)]
+    [bool]$Is64Bit,
+    [string]$WorkingDirectory = $PWD
+  )
+
+  Write-Host "Downloading and applying BlockTheSpot patch..." -ForegroundColor Green
+  
+  # Download chrome_elf.zip
+  $elfPath = Join-Path -Path $WorkingDirectory -ChildPath 'chrome_elf.zip'
+  try {
+    if ($Is64Bit) {
+      $uri = 'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip'
+    }
+    else {
+      $uri = 'https://github.com/mrpond/BlockTheSpot/releases/download/2023.5.20.80/chrome_elf.zip'
+    }
+
+    Write-Host "Attempting to download from: $uri"
+    Get-File -Uri $uri -TargetFile "$elfPath"
+    
+    if (-not (Test-Path "$elfPath")) {
+      throw "Download failed - file does not exist at $elfPath"
+    }
+    
+    Write-Host "Download successful: $elfPath"
+  }
+  catch {
+    Write-Output "Download error: $_"
+    Write-Host "Attempting alternative download method..."
+    try {
+      if ($Is64Bit) {
+        $uri = 'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip'
+      }
+      else {
+        $uri = 'https://github.com/mrpond/BlockTheSpot/releases/download/2023.5.20.80/chrome_elf.zip'
+      }
+      Invoke-WebRequest -Uri $uri -OutFile "$elfPath" -UseBasicParsing
+      Write-Host "Alternative download successful"
+    }
+    catch {
+      Write-Output "Alternative download also failed: $_"
+      Write-Host "Note: This could be caused by antivirus software. Check your antivirus settings."
+      Start-Sleep -Seconds 5
+      Read-Host 'Press any key to exit...'
+      exit
+    }
+  }
+
+  # Extract and apply patch
+  Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $WorkingDirectory
+  Remove-Item -LiteralPath "$elfPath" -Force
+
+  Write-Host 'Patching Spotify...'
+  $patchFiles = (Join-Path -Path $WorkingDirectory -ChildPath 'dpapi.dll'), (Join-Path -Path $WorkingDirectory -ChildPath 'config.ini')
+  Copy-Item -LiteralPath $patchFiles -Destination "$SpotifyDirectory" -Force
+  Remove-Item -LiteralPath (Join-Path -Path $SpotifyDirectory -ChildPath 'blockthespot_settings.json') -Force -ErrorAction SilentlyContinue
+  
+  Write-Host 'Patching Complete!' -ForegroundColor Green
+}
+
 Write-Host @'
 ========================================
 Authors: @Nuzair46, @KUTlime
@@ -278,60 +342,13 @@ if ($InstallSpicetify) {
   }
 }
 
-Write-Host "Downloading latest patch (chrome_elf.zip)...`n"
-$elfPath = Join-Path -Path $PWD -ChildPath 'chrome_elf.zip'
-try {
-  $bytes = [System.IO.File]::ReadAllBytes($spotifyExecutable)
-  $peHeader = [System.BitConverter]::ToUInt16($bytes[0x3C..0x3D], 0)
-  $is64Bit = $bytes[$peHeader + 4] -eq 0x64
+# Detect if Spotify is 64-bit
+$bytes = [System.IO.File]::ReadAllBytes($spotifyExecutable)
+$peHeader = [System.BitConverter]::ToUInt16($bytes[0x3C..0x3D], 0)
+$is64Bit = $bytes[$peHeader + 4] -eq 0x64
 
-  if ($is64Bit) {
-    $uri = 'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip'
-  }
-  else {
-    Write-Host 'At the moment, the ad blocker may not work properly as the x86 architecture has not received a new update.'
-    $uri = 'https://github.com/mrpond/BlockTheSpot/releases/download/2023.5.20.80/chrome_elf.zip'
-  }
-
-  Write-Host "Attempting to download from: $uri"
-  Get-File -Uri $uri -TargetFile "$elfPath"
-  
-  if (-not (Test-Path "$elfPath")) {
-    throw "Download failed - file does not exist at $elfPath"
-  }
-  
-  Write-Host "Download successful: $elfPath"
-}
-catch {
-  Write-Output "Download error: $_"
-  Write-Host "Attempting alternative download method..."
-  try {
-    if ($is64Bit) {
-      $uri = 'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip'
-    }
-    else {
-      $uri = 'https://github.com/mrpond/BlockTheSpot/releases/download/2023.5.20.80/chrome_elf.zip'
-    }
-    Invoke-WebRequest -Uri $uri -OutFile "$elfPath" -UseBasicParsing
-    Write-Host "Alternative download successful"
-  }
-  catch {
-    Write-Output "Alternative download also failed: $_"
-    Write-Host "Note: This could be caused by antivirus software. Check your antivirus settings."
-    Start-Sleep -Seconds 5
-    Read-Host 'Press any key to exit...'
-    exit
-  }
-}
-
-Expand-Archive -Force -LiteralPath "$elfPath" -DestinationPath $PWD
-Remove-Item -LiteralPath "$elfPath" -Force
-
-Write-Host 'Patching Spotify...'
-$patchFiles = (Join-Path -Path $PWD -ChildPath 'dpapi.dll'), (Join-Path -Path $PWD -ChildPath 'config.ini')
-
-Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory"
-Remove-Item -LiteralPath (Join-Path -Path $spotifyDirectory -ChildPath 'blockthespot_settings.json') -Force -ErrorAction SilentlyContinue
+# Apply BlockTheSpot patch
+Install-BlockTheSpotPatch -SpotifyDirectory $spotifyDirectory -Is64Bit $is64Bit
 
 $tempDirectory = $PWD
 Pop-Location
@@ -354,7 +371,16 @@ if ($InstallSpicetify -and $spicetifyInstalled) {
   Start-Sleep -Seconds 2
   
   try {
-    Copy-Item -LiteralPath $patchFiles -Destination "$spotifyDirectory" -Force
+    # Create a temporary directory for re-application
+    $reapplyTempDir = Join-Path $env:TEMP "BlockTheSpot-Reapply-$(Get-Date -UFormat '%Y-%m-%d_%H-%M-%S')"
+    New-Item -Type Directory -Path $reapplyTempDir | Out-Null
+    
+    # Use the function to re-apply BlockTheSpot patch
+    Install-BlockTheSpotPatch -SpotifyDirectory $spotifyDirectory -Is64Bit $is64Bit -WorkingDirectory $reapplyTempDir
+    
+    # Clean up temp directory
+    Remove-Item -LiteralPath $reapplyTempDir -Recurse -Force
+    
     Write-Host "BlockTheSpot re-applied successfully!" -ForegroundColor Green
     Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
   }
