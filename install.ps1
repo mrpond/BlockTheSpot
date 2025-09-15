@@ -106,9 +106,27 @@ function Test-SpotifyVersion {
 }
 
 function Install-Spicetify {
+  param (
+    [Parameter(Mandatory)]
+    [string]$SpotifyDirectory,
+    [Parameter(Mandatory)]
+    [string]$SpotifyExecutable
+  )
+
   Write-Host "`n========================================" -ForegroundColor Blue
   Write-Host " Installing Spicetify CLI" -ForegroundColor Cyan
   Write-Host "========================================" -ForegroundColor Blue
+
+  # First, ensure Spotify runs long enough for configuration files to be created
+  try {
+    Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable -WindowStyle Minimized
+    Start-Sleep -Seconds 5
+    Stop-Process -Name Spotify -Force -ErrorAction SilentlyContinue
+    Stop-Process -Name SpotifyWebHelper -Force -ErrorAction SilentlyContinue
+  }
+  catch {
+    Write-Warning "Could not initialize Spotify for configuration"
+  }
 
   try {
     Write-Host "Downloading and installing Spicetify CLI..." -ForegroundColor Green
@@ -131,6 +149,7 @@ function Install-Spicetify {
     $marketplaceScript = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1" -UseBasicParsing
     Invoke-Expression $marketplaceScript
     Write-Host "Spicetify Marketplace installed successfully!" -ForegroundColor Green
+    return $true
   }
   catch {
     Write-Warning "Failed to install Spicetify Marketplace: $($_.Exception.Message)"
@@ -332,7 +351,7 @@ if ($InstallSpicetify) {
   Stop-Process -Name SpotifyWebHelper -ErrorAction SilentlyContinue
   Start-Sleep -Seconds 2
 
-  $spicetifyInstalled = Install-Spicetify
+  $spicetifyInstalled = Install-Spicetify -SpotifyDirectory $spotifyDirectory -SpotifyExecutable $spotifyExecutable
   
   if ($spicetifyInstalled) {
     Write-Host "`nSpicetify installation completed successfully!" -ForegroundColor Green

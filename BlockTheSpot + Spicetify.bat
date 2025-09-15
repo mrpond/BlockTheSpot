@@ -8,8 +8,7 @@ set /p UserInput="Spicetify will be installed. If you don't agree, use the Block
 if /i "%UserInput%"=="y" (
     echo.
     echo Installing BlockTheSpot with Spicetify...
-    powershell -ExecutionPolicy Bypass -Command "try { $installScript = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1' -UseBasicParsing; Invoke-Expression \"& { $installScript } -UninstallSpotifyStoreEdition -InstallSpicetify\" } catch { Write-Host 'Error downloading script:' $_.Exception.Message; Read-Host 'Press Enter to exit' }"
-) else (
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $scriptContent = (Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1').Content; $scriptBlock = [ScriptBlock]::Create($scriptContent); & $scriptBlock -InstallSpicetify}") else (
     echo.
     echo Installation cancelled.
     pause
