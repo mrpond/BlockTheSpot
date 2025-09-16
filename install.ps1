@@ -223,7 +223,7 @@ function Install-BlockTheSpotPatch {
 
 Write-Host @'
 ========================================
-Authors: @Nuzair46, @KUTlime
+Authors: @Nuzair46, @KUTlime, @O-ElAlami
 ========================================
 '@
 
@@ -374,37 +374,66 @@ Pop-Location
 
 Remove-Item -LiteralPath $tempDirectory -Recurse
 
-Write-Host 'Patching Complete, starting Spotify...'
+Write-Host 'Patching Complete!' -ForegroundColor Green
 
-Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
+# Start Spotify only if Spicetify is not being installed (otherwise handle in re-application section)
+if (-not $InstallSpicetify) {
+  Write-Host 'Starting Spotify...'
+  Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
+}
 
 # Re-apply BlockTheSpot if Spicetify was installed (Spicetify can break BlockTheSpot)
 if ($InstallSpicetify -and $spicetifyInstalled) {
   Write-Host "`n========================================" -ForegroundColor Blue
   Write-Host " Re-applying BlockTheSpot" -ForegroundColor Cyan
   Write-Host "========================================" -ForegroundColor Blue
-  Write-Host "Spicetify can interfere with BlockTheSpot. Re-applying BlockTheSpot patches..." -ForegroundColor Yellow
+  Write-Host "Ensuring BlockTheSpot works with Spicetify..." -ForegroundColor Yellow
   
-  Start-Sleep -Seconds 3
-  Stop-Process -Name Spotify -ErrorAction SilentlyContinue
-  Start-Sleep -Seconds 2
+  # Ensure Spotify is completely stopped
+  Write-Host "Stopping Spotify processes..."
+  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
+  Start-Sleep -Seconds 5
+  
+  # Clear Spotify cache to prevent conflicts
+  try {
+    $cacheDir = Join-Path $spotifyDirectory "Cache"
+    if (Test-Path $cacheDir) {
+      Write-Host "Clearing Spotify cache..."
+      Remove-Item -Path $cacheDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+  }
+  catch {
+    Write-Warning "Could not clear cache: $($_.Exception.Message)"
+  }
   
   try {
     # Create a temporary directory for re-application
     $reapplyTempDir = Join-Path $env:TEMP "BlockTheSpot-Reapply-$(Get-Date -UFormat '%Y-%m-%d_%H-%M-%S')"
     New-Item -Type Directory -Path $reapplyTempDir | Out-Null
     
-    # Use the function to re-apply BlockTheSpot patch
+    # Force re-apply BlockTheSpot patch
     Install-BlockTheSpotPatch -SpotifyDirectory $spotifyDirectory -Is64Bit $is64Bit -WorkingDirectory $reapplyTempDir
     
     # Clean up temp directory
     Remove-Item -LiteralPath $reapplyTempDir -Recurse -Force
     
+    # Wait before starting Spotify to ensure all patches are applied
+    Start-Sleep -Seconds 2
+    
     Write-Host "BlockTheSpot re-applied successfully!" -ForegroundColor Green
+    Write-Host "Starting Spotify..." -ForegroundColor Green
     Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
   }
   catch {
     Write-Warning "Failed to re-apply BlockTheSpot: $($_.Exception.Message)"
+    Write-Host "Starting Spotify anyway..." -ForegroundColor Yellow
+    Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
+  }
+}
+else {
+  # Start Spotify normally if no Spicetify was installed
+  if (-not $InstallSpicetify) {
+    Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
   }
 }
 

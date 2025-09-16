@@ -8,7 +8,11 @@ set /p UserInput="Spicetify will be installed. If you don't agree, use the Block
 if /i "%UserInput%"=="y" (
     echo.
     echo Installing BlockTheSpot with Spicetify...
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $scriptContent = (Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1').Content; $scriptBlock = [ScriptBlock]::Create($scriptContent); & $scriptBlock -InstallSpicetify}") else (
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $scriptContent = (Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1').Content; $scriptBlock = [ScriptBlock]::Create($scriptContent); & $scriptBlock -InstallSpicetify}"
+    echo.
+    echo Installation completed. Press any key to exit...
+    pause
+) else (
     echo.
     echo Installation cancelled.
     pause
