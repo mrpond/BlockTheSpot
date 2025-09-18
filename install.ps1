@@ -269,6 +269,29 @@ function Stop-SpotifyProcesses {
   Write-Host "Spotify processes stopped successfully."
 }
 
+function Restart-SpotifyCleanly {
+  param (
+    [Parameter(Mandatory)]
+    [string]$SpotifyDirectory,
+    [Parameter(Mandatory)]
+    [string]$SpotifyExecutable,
+    [Parameter()]
+    [string]$Context = "Clean restart"
+  )
+  
+  Write-Host "Starting Spotify..." -ForegroundColor Green
+  Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable
+  Start-Sleep -Seconds 5
+  
+  Write-Host "Performing clean restart to ensure proper loading..." -ForegroundColor Yellow
+  Stop-SpotifyProcesses -Context $Context
+  Start-Sleep -Seconds 2
+  
+  Write-Host "Starting Spotify with fresh configuration..." -ForegroundColor Green
+  Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable
+  Write-Host "Spotify restarted successfully!" -ForegroundColor Green
+}
+
 Write-Host @'
 ========================================
 Authors: @Nuzair46, @KUTlime, @O-ElAlami
@@ -416,8 +439,6 @@ Pop-Location
 
 Remove-Item -LiteralPath $tempDirectory -Recurse
 
-Write-Host 'Patching Complete!' -ForegroundColor Green
-
 # Start Spotify only if Spicetify is not being installed
 if (-not $InstallSpicetify) {
   Write-Host 'Starting Spotify...'
@@ -473,21 +494,40 @@ if ($InstallSpicetify -and $spicetifyInstalled) {
     Remove-Item -LiteralPath $reapplyTempDir -Recurse -Force
     
     # Wait before starting Spotify to ensure all patches are applied
-    Start-Sleep -Seconds 2
+    Start-Sleep -Seconds 3
     
     Write-Host "BlockTheSpot re-applied successfully!" -ForegroundColor Green
-    Write-Host "Starting Spotify..." -ForegroundColor Green
-    Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
+    
+    # Clear any potential Spotify cache or temporary files that might interfere
+    $spotifyTempDirs = @(
+      (Join-Path $env:TEMP "spotify*"),
+      (Join-Path $spotifyDirectory "Update")
+    )
+    
+    foreach ($tempDir in $spotifyTempDirs) {
+      if (Test-Path $tempDir) {
+        try {
+          Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        catch {
+          # Ignore cleanup errors
+        }
+      }
+    }
+    
+    # Clean restart to ensure BlockTheSpot loads properly
+    Restart-SpotifyCleanly -SpotifyDirectory $spotifyDirectory -SpotifyExecutable $spotifyExecutable -Context "BlockTheSpot re-application"
   }
   catch {
     Write-Warning "Failed to re-apply BlockTheSpot: $($_.Exception.Message)"
-    Write-Host "Starting Spotify anyway..." -ForegroundColor Yellow
-    Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
+    Write-Host "Attempting recovery startup..." -ForegroundColor Yellow
+    Restart-SpotifyCleanly -SpotifyDirectory $spotifyDirectory -SpotifyExecutable $spotifyExecutable -Context "Error recovery"
   }
 }
 else {
   # Start Spotify normally if no Spicetify was installed
   if (-not $InstallSpicetify) {
+    Write-Host 'Starting Spotify...'
     Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
   }
 }
