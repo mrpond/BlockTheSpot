@@ -411,7 +411,22 @@ if ($InstallSpicetify -and $spicetifyInstalled) {
     $reapplyTempDir = Join-Path $env:TEMP "BlockTheSpot-Reapply-$(Get-Date -UFormat '%Y-%m-%d_%H-%M-%S')"
     New-Item -Type Directory -Path $reapplyTempDir | Out-Null
     
-    # Force re-apply BlockTheSpot patch
+    # Remove existing BlockTheSpot files from Spotify directory to ensure clean re-application
+    Write-Host "Removing existing BlockTheSpot files..." -ForegroundColor Yellow
+    $filesToRemove = @(
+      (Join-Path -Path $spotifyDirectory -ChildPath 'dpapi.dll'),
+      (Join-Path -Path $spotifyDirectory -ChildPath 'config.ini'),
+      (Join-Path -Path $spotifyDirectory -ChildPath 'blockthespot_settings.json')
+    )
+    
+    foreach ($file in $filesToRemove) {
+      if (Test-Path $file) {
+        Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
+        Write-Host "Removed: $(Split-Path $file -Leaf)" -ForegroundColor Yellow
+      }
+    }
+    
+    # Force re-apply BlockTheSpot patch with fresh files
     Install-BlockTheSpotPatch -SpotifyDirectory $spotifyDirectory -Is64Bit $is64Bit -WorkingDirectory $reapplyTempDir
     
     # Clean up temp directory
