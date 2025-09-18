@@ -244,6 +244,31 @@ function Install-BlockTheSpotPatch {
   Write-Host 'Patching Complete!' -ForegroundColor Green
 }
 
+function Stop-SpotifyProcesses {
+  param (
+    [Parameter()]
+    [string]$Context = "Stopping Spotify processes"
+  )
+  
+  Write-Host "$Context..."
+  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
+  Start-Sleep -Seconds 3
+  
+  # Wait for processes to fully terminate
+  $maxWait = 10
+  $waited = 0
+  while ((Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue) -and ($waited -lt $maxWait)) {
+    Write-Host "Waiting for Spotify to close completely..."
+    Start-Sleep -Seconds 1
+    $waited++
+  }
+  
+  # Force kill any remaining processes
+  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
+  Start-Sleep -Seconds 2
+  Write-Host "Spotify processes stopped successfully."
+}
+
 Write-Host @'
 ========================================
 Authors: @Nuzair46, @KUTlime, @O-ElAlami
@@ -255,9 +280,7 @@ $spotifyExecutable = Join-Path -Path $spotifyDirectory -ChildPath 'Spotify.exe'
 
 [System.Version] $actualSpotifyClientVersion = (Get-ChildItem -LiteralPath $spotifyExecutable -ErrorAction:SilentlyContinue).VersionInfo.ProductVersionRaw
 
-Write-Host "Stopping Spotify...`n"
-Stop-Process -Name Spotify
-Stop-Process -Name SpotifyWebHelper
+Stop-SpotifyProcesses -Context "Initial Spotify shutdown"
 
 if ($PSVersionTable.PSVersion.Major -ge 7) {
   Import-Module Appx -UseWindowsPowerShell -WarningAction:SilentlyContinue
@@ -352,26 +375,20 @@ if (-not $spotifyInstalled -or $UpdateSpotify -or $unsupportedClientVersion) {
     Start-Sleep -Milliseconds 100
   }
 
-
-  Write-Host 'Stopping Spotify...Again'
-
-  Stop-Process -Name Spotify
-  Stop-Process -Name SpotifyWebHelper
+  Stop-SpotifyProcesses -Context "After Spotify installation"
   if ([Environment]::Is64BitOperatingSystem) {
     # Check if the computer is running a 64-bit version of Windows
-    Stop-Process -Name SpotifyFullSetupX64
+    Stop-Process -Name SpotifyFullSetupX64 -ErrorAction SilentlyContinue
   }
   else {
-    Stop-Process -Name SpotifyFullSetup
+    Stop-Process -Name SpotifyFullSetup -ErrorAction SilentlyContinue
   }
 }
 
 # Install Spicetify if requested
 $spicetifyInstalled = $false
 if ($InstallSpicetify) {
-  Write-Host "`nStopping Spotify before Spicetify installation..."
-  Stop-Process -Name Spotify -ErrorAction SilentlyContinue
-  Stop-Process -Name SpotifyWebHelper -ErrorAction SilentlyContinue
+  Stop-SpotifyProcesses -Context "Preparing for Spicetify installation"
   Start-Sleep -Seconds 2
 
   $spicetifyInstalled = Install-Spicetify -SpotifyDirectory $spotifyDirectory -SpotifyExecutable $spotifyExecutable
@@ -389,6 +406,8 @@ $bytes = [System.IO.File]::ReadAllBytes($spotifyExecutable)
 $peHeader = [System.BitConverter]::ToUInt16($bytes[0x3C..0x3D], 0)
 $is64Bit = $bytes[$peHeader + 4] -eq 0x64
 
+Stop-SpotifyProcesses -Context "Preparing for BlockTheSpot patch"
+
 # Apply BlockTheSpot patch
 Install-BlockTheSpotPatch -SpotifyDirectory $spotifyDirectory -Is64Bit $is64Bit
 
@@ -399,7 +418,7 @@ Remove-Item -LiteralPath $tempDirectory -Recurse
 
 Write-Host 'Patching Complete!' -ForegroundColor Green
 
-# Start Spotify only if Spicetify is not being installed (otherwise handle in re-application section)
+# Start Spotify only if Spicetify is not being installed
 if (-not $InstallSpicetify) {
   Write-Host 'Starting Spotify...'
   Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable
@@ -413,22 +432,7 @@ if ($InstallSpicetify -and $spicetifyInstalled) {
   Write-Host "Ensuring BlockTheSpot works with Spicetify..." -ForegroundColor Yellow
   
   # Ensure Spotify is completely stopped
-  Write-Host "Stopping Spotify processes..."
-  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
-  Start-Sleep -Seconds 3
-  
-  # Wait for processes to fully terminate
-  $maxWait = 10
-  $waited = 0
-  while ((Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue) -and ($waited -lt $maxWait)) {
-    Write-Host "Waiting for Spotify to close completely..."
-    Start-Sleep -Seconds 1
-    $waited++
-  }
-  
-  # Force kill any remaining processes
-  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
-  Start-Sleep -Seconds 2
+  Stop-SpotifyProcesses -Context "Re-applying BlockTheSpot"
   
   # Clear Spotify cache to prevent conflicts
   try {
