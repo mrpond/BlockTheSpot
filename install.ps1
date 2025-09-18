@@ -131,9 +131,32 @@ function Install-Spicetify {
   try {
     Write-Host "Downloading and installing Spicetify CLI..." -ForegroundColor Green
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $spicetifyInstallScript = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.ps1" -UseBasicParsing
-    Invoke-Expression $spicetifyInstallScript
-    Write-Host "Spicetify CLI installed successfully!" -ForegroundColor Green
+    
+    # Check if Spicetify is already installed and get version
+    $currentVersion = $null
+    $spicetifyExists = $false
+    try {
+      $currentVersion = (spicetify -v 2>$null)
+      if ($currentVersion) {
+        $spicetifyExists = $true
+        Write-Host "Current Spicetify version: $currentVersion" -ForegroundColor Yellow
+        Write-Host "Updating Spicetify to latest version..." -ForegroundColor Yellow
+        spicetify update
+        $newVersion = (spicetify -v 2>$null)
+        Write-Host "Spicetify updated to version: $newVersion" -ForegroundColor Green
+      }
+    }
+    catch {
+      Write-Host "Spicetify not found, installing fresh..." -ForegroundColor Green
+    }
+    
+    # Only run the installer if Spicetify doesn't exist
+    if (-not $spicetifyExists) {
+      $spicetifyInstallScript = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.ps1" -UseBasicParsing
+      Invoke-Expression $spicetifyInstallScript
+    }
+    
+    Write-Host "Spicetify CLI installed/updated successfully!" -ForegroundColor Green
   }
   catch {
     Write-Warning "Failed to install Spicetify CLI: $($_.Exception.Message)"
@@ -392,7 +415,20 @@ if ($InstallSpicetify -and $spicetifyInstalled) {
   # Ensure Spotify is completely stopped
   Write-Host "Stopping Spotify processes..."
   Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
-  Start-Sleep -Seconds 5
+  Start-Sleep -Seconds 3
+  
+  # Wait for processes to fully terminate
+  $maxWait = 10
+  $waited = 0
+  while ((Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue) -and ($waited -lt $maxWait)) {
+    Write-Host "Waiting for Spotify to close completely..."
+    Start-Sleep -Seconds 1
+    $waited++
+  }
+  
+  # Force kill any remaining processes
+  Get-Process -Name "Spotify*" -ErrorAction SilentlyContinue | Stop-Process -Force
+  Start-Sleep -Seconds 2
   
   # Clear Spotify cache to prevent conflicts
   try {
