@@ -13,10 +13,10 @@
   },
   "Developer": {
     "x64": {
-      "Signature": "41 22 DE 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
-      "Offset": 0,
-      "Address": -1
+      "Offset": 2,
+      "Address": 465526
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
@@ -48,7 +48,7 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 15766
+        "Address": 181202
       }
     },
     "xpui-pip-mini-player.js": {
@@ -57,7 +57,7 @@
         "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9274
+        "Address": -1
       },
       "miniplayer_171_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
@@ -71,13 +71,48 @@
         "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9987
+        "Address": 10528
+      },
+      "miniplayer_begin_d9dcf25": {
+        "Signature": "return(0,D.jsx)(\"div\",{className:Ve,children:(0,D.jsxs)",
+        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Ve,children:(0",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 9815
       }
     },
     "xpui-snapshot.js": {
-      "disable_metric_end_af82ef1": {
-        "Signature": ",VN(t)}o(72123)",
-        "Value": ",VN(*/}o(72123)",
+      "adsEnabled": {
+        "Signature": "adsEnabled:!0",
+        "Value": "1",
+        "Offset": 12,
+        "Fill": 0,
+        "Address": 315792
+      },
+      "disable_metric_end_d9dcf25": {
+        "Signature": ",$N(t)}o(44333)",
+        "Value": ",$N(*/}o(44333)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 374913
+      },
+      "premium_btn_start_af82ef1": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_begin_d9dcf25": {
+        "Signature": "function rk(e){cy.BrowserMetrics",
+        "Value": "function rk(e){/*cy.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372148
+      },
+      "disable_metric_end": {
+        "Signature": ",zN(t)}o(72123)",
+        "Value": ",zN(*/}o(72123)",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -89,12 +124,12 @@
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_end": {
-        "Signature": ",zN(t)}o(72123)",
-        "Value": ",zN(*/}o(72123)",
+      "premium_btn_start_d9dcf25": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 117986
       },
       "disable_metric_begin": {
         "Signature": "function GN(e){Ub.BrowserMetrics",
@@ -117,40 +152,33 @@
         "Fill": 0,
         "Address": -1
       },
+      "disable_metric_end_af82ef1": {
+        "Signature": ",VN(t)}o(72123)",
+        "Value": ",VN(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
       "disable_metric_end_8c88c31": {
         "Signature": ",Vk(t)}o(72123)",
         "Value": ",Vk(*/}o(72123)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 375039
+        "Address": -1
       },
       "disable_metric_begin_8c88c31": {
         "Signature": "function Gk(e){Ub.BrowserMetrics",
         "Value": "function Gk(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372274
+        "Address": -1
       },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 315129
-      },
-      "premium_btn_start_af82ef1": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 73061
-      },
-      "premium_btn_start": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,ni.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
+        "Address": 314376
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -164,21 +192,14 @@
         "Value": "1",
         "Offset": 14,
         "Fill": 0,
-        "Address": 316464
-      },
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
-        "Fill": 0,
-        "Address": 316545
+        "Address": 315711
       },
       "hptoEnabled": {
         "Signature": "hptoEnabled:!0",
         "Value": "1",
         "Offset": 13,
         "Fill": 0,
-        "Address": 314099
+        "Address": 313346
       },
       "skipsentry_begin": {
         "Signature": "function ZN(){if(xE()",
@@ -192,14 +213,14 @@
         "Value": "function Zk(){/*(xE()",
         "Offset": 0,
         "Fill": 0,
-        "Address": 375897
+        "Address": -1
       },
       "skipsentry_end": {
         "Signature": "))}}qw(\"playback_load_start\")",
         "Value": ")*/}qw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376390
+        "Address": -1
       },
       "skipsentry_171_begin": {
         "Signature": "function Dk(){if(xE()",
@@ -227,7 +248,7 @@
         "Value": "children:i.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 73357
+        "Address": 118282
       },
       "premium_btn_end": {
         "Signature": "children:s.Ru.get(\"upgrade.button\")})",
@@ -235,6 +256,20 @@
         "Offset": 0,
         "Fill": 0,
         "Address": -1
+      },
+      "skipsentry_begin_d9dcf25": {
+        "Signature": "function sk(){if(LE()",
+        "Value": "function sk(){/*(LE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 375771
+      },
+      "skipsentry_end_d9dcf25": {
+        "Signature": "))}}Xw(\"playback_load_start\")",
+        "Value": ")*/}Xw(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376239
       }
     }
   },
