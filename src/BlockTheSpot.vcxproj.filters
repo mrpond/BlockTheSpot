@@ -18,87 +18,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Modify.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Utils.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Hooking.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Logger.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Memory.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\MemoryScanner.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicUtils\Json.h">
-      <Filter>BasicUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Debug.cpp">
+    <ClCompile Include="modify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="config_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Modify.cpp">
+    <ClCompile Include="dynamic_loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BlockTheSpot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\Utils.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\Hooking.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\Logger.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\Memory.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\MemoryScanner.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicUtils\Json.cpp">
-      <Filter>BasicUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="chrome_elf.def">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="dpapi.def">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="assembly_code.asm">
       <Filter>Source Files</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="modify.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\memory.hpp">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\utils.hpp">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\logger.hpp">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicUtils\json.hpp">
+      <Filter>BasicUtils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

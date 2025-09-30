@@ -82,38 +82,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BasicUtils\Hooking.h" />
-    <ClInclude Include="BasicUtils\Json.h" />
-    <ClInclude Include="BasicUtils\Logger.h" />
-    <ClInclude Include="BasicUtils\Memory.h" />
-    <ClInclude Include="BasicUtils\MemoryScanner.h" />
-    <ClInclude Include="BasicUtils\Utils.h" />
-    <ClInclude Include="Debug.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="Modify.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="SettingsManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="BasicUtils\Hooking.cpp" />
-    <ClCompile Include="BasicUtils\Json.cpp" />
-    <ClCompile Include="BasicUtils\Logger.cpp" />
-    <ClCompile Include="BasicUtils\Memory.cpp" />
-    <ClCompile Include="BasicUtils\MemoryScanner.cpp" />
-    <ClCompile Include="BasicUtils\Utils.cpp" />
-    <ClCompile Include="BlockTheSpot.cpp" />
-    <ClCompile Include="Debug.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Modify.cpp" />
-    <ClCompile Include="SettingsManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="chrome_elf.def" />
-    <None Include="dpapi.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="config_manager.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="dynamic_loader.cpp" />
+    <ClCompile Include="modify.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <MASM Include="assembly_code.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BasicUtils\json.hpp" />
+    <ClInclude Include="BasicUtils\logger.hpp" />
+    <ClInclude Include="BasicUtils\memory.hpp" />
+    <ClInclude Include="BasicUtils\utils.hpp" />
+    <ClInclude Include="config_manager.h" />
+    <ClInclude Include="modify.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

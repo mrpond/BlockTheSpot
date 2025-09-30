@@ -1,282 +1,75 @@
 {
-  "Cef Offsets": {
+  "BuildDate": "2025-09-30",
+  "Indices": {
+    "cef_request_get_url": 6,
+    "cef_zip_reader_read_file": 14,
+    "cef_zip_reader_get_file_name": 9,
+    "cef_zip_reader_get_file_size": 10,
+    "cef_zip_reader_open_file": 12,
+    "cef_zip_reader_close_file": 13
+  },
+  "DevMode": {
     "x64": {
-      "cef_request_t_get_url": 48,
-      "cef_zip_reader_t_get_file_name": 72,
-      "cef_zip_reader_t_read_file": 112
+      "pattern": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "value": "B3 01 90",
+      "offset": 2
     },
     "x32": {
-      "cef_request_t_get_url": 24,
-      "cef_zip_reader_t_get_file_name": 36,
-      "cef_zip_reader_t_read_file": 56
+      "pattern": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
+      "value": "B8 03 00"
     }
   },
-  "Developer": {
-    "x64": {
-      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
-      "Value": "B3 01 90",
-      "Offset": 2,
-      "Address": 465526
-    },
-    "x32": {
-      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
-      "Value": "B8 03 00",
-      "Offset": 0,
-      "Address": -1
-    }
-  },
-  "Zip Reader": {
-    "home-hpto.css": {
-      "hptocss": {
-        "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": "none",
-        "Offset": 70,
-        "Fill": 0,
-        "Address": 0
-      },
-      "hptocss_171": {
-        "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": "none",
-        "Offset": 70,
-        "Fill": 0,
-        "Address": -1
-      }
-    },
-    "xpui-root-dialogs.js": {
-      "fix503": {
-        "Signature": "{return e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").send()}",
-        "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 181202
-      }
-    },
-    "xpui-pip-mini-player.js": {
-      "miniplayer_begin": {
-        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
-        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "miniplayer_171_begin": {
-        "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
-        "Value": "return null;/*(0,R.jsx)(\"div\",{className:ze,children:(0",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "miniplayer_end": {
-        "Signature": ".button.not-now\")})]})]})})",
-        "Value": ".button.not-now\")})]})]})*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 10528
-      },
-      "miniplayer_begin_d9dcf25": {
-        "Signature": "return(0,D.jsx)(\"div\",{className:Ve,children:(0,D.jsxs)",
-        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Ve,children:(0",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 9815
-      }
-    },
-    "xpui-snapshot.js": {
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
-        "Fill": 0,
-        "Address": 315792
-      },
-      "disable_metric_end_d9dcf25": {
-        "Signature": ",$N(t)}o(44333)",
-        "Value": ",$N(*/}o(44333)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 374913
-      },
-      "premium_btn_start_af82ef1": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_begin_d9dcf25": {
-        "Signature": "function rk(e){cy.BrowserMetrics",
-        "Value": "function rk(e){/*cy.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 372148
-      },
-      "disable_metric_end": {
-        "Signature": ",zN(t)}o(72123)",
-        "Value": ",zN(*/}o(72123)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_171_begin": {
-        "Signature": "function Mk(e){Ub.BrowserMetrics",
-        "Value": "function Mk(e){/*Ub.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "premium_btn_start_d9dcf25": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 117986
-      },
-      "disable_metric_begin": {
-        "Signature": "function GN(e){Ub.BrowserMetrics",
-        "Value": "function GN(e){/*Ub.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_171_end": {
-        "Signature": ",Sk(t)}o(72382)",
-        "Value": ",Sk(*/}o(72382)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_begin_af82ef1": {
-        "Signature": "function GN(e){Ub.BrowserMetrics",
-        "Value": "function GN(e){/*Ub.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_end_af82ef1": {
-        "Signature": ",VN(t)}o(72123)",
-        "Value": ",VN(*/}o(72123)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_end_8c88c31": {
-        "Signature": ",Vk(t)}o(72123)",
-        "Value": ",Vk(*/}o(72123)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "disable_metric_begin_8c88c31": {
-        "Signature": "function Gk(e){Ub.BrowserMetrics",
-        "Value": "function Gk(e){/*Ub.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "sponsorship": {
-        "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
-        "Value": "\"",
-        "Offset": 5,
-        "Fill": 15,
-        "Address": 314376
-      },
-      "premium_btn_171_start": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
-        "Fill": 0,
-        "Address": 315711
-      },
-      "hptoEnabled": {
-        "Signature": "hptoEnabled:!0",
-        "Value": "1",
-        "Offset": 13,
-        "Fill": 0,
-        "Address": 313346
-      },
-      "skipsentry_begin": {
-        "Signature": "function ZN(){if(xE()",
-        "Value": "function ZN(){/*(xE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_begin_8c88c31": {
-        "Signature": "function Zk(){if(xE()",
-        "Value": "function Zk(){/*(xE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_171_begin": {
-        "Signature": "function Dk(){if(xE()",
-        "Value": "function Dk(){/*(xE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_171_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "premium_free": {
-        "Signature": "\"free\"===e.session?",
-        "Value": "\"",
-        "Offset": 0,
-        "Fill": 4,
-        "Address": -1
-      },
-      "premium_btn_end_af82ef1": {
-        "Signature": "children:i.Ru.get(\"upgrade.button\")})",
-        "Value": "children:i.Ru.get(\"upgrade.button\")*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 118282
-      },
-      "premium_btn_end": {
-        "Signature": "children:s.Ru.get(\"upgrade.button\")})",
-        "Value": "children:s.Ru.get(\"upgrade.button\")*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_begin_d9dcf25": {
-        "Signature": "function sk(){if(LE()",
-        "Value": "function sk(){/*(LE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 375771
-      },
-      "skipsentry_end_d9dcf25": {
-        "Signature": "))}}Xw(\"playback_load_start\")",
-        "Value": ")*/}Xw(\"playback_load_start\")",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 376239
-      }
-    }
-  },
-  "Latest Release Date": "2025-09-11",
-  "Block List": [
+  "BlockedUrls": [
     "/ads/",
     "/ad-logic/",
     "/gabo-receiver-service/"
-  ]
+  ],
+  "FilePatch": {
+    "home-hpto.css": {
+      "hide_hpto_banner": {
+        "pattern": "(\\.Mvhjv8IKLGjQx94MVOgP\\{display:-webkit-box;display:-ms-flexbox;display:)flex(;)",
+        "value": "$1none$2"
+      }
+    },
+    "xpui-root-dialogs.js": {
+      "disable_in_app_verification": {
+        "pattern": "(function[^{]*?\\{)[^}]*?\\.withPath\\(\\\"/verifications/\\\"\\)[^}]*?\\}",
+        "value": "$1return;}"
+      }
+    },
+    "xpui-snapshot.js": {
+      "ads_enabled": {
+        "pattern": "(adsEnabled:!)0",
+        "value": "${1}1"
+      },
+      "ads_hpto_hidden": {
+        "pattern": "(isHptoHidden:!)0",
+        "value": "${1}1"
+      },
+      "disable_browser_metrics": {
+        "pattern": "(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\w+\\.BrowserMetrics\\.getPageLoadTime\\(\\).*?\\})",
+        "value": "$1return;$2"
+      },
+      "disable_sentry_init": {
+        "pattern": "(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\.ingest\\.sentry\\.io.*?\\})",
+        "value": "$1return;$2"
+      },
+      "enable_premium_features": {
+        "pattern": "(await\\s+\\w+\\(\\s*([\\w.]+)\\.initialUser\\s*,\\s*\\2\\.initialProductState\\s*,.*?\\);)",
+        "value": "$2.initialProductState={...$2.initialProductState,product:'premium',catalogue:'premium',ads:'0'},$1"
+      },
+      "hpto_enabled": {
+        "pattern": "(hptoEnabled:!)(0)",
+        "value": "${1}1"
+      },
+      "skip_sentry": {
+        "pattern": "sentry\\.io",
+        "value": "localhost"
+      },
+      "sponsorships": {
+        "pattern": "(\\.set\\(\")allSponsorships(\",t\\.sponsorships\\)\\}\\}\\(e,t\\);)",
+        "value": "$1$2"
+      }
+    }
+  }
 }
