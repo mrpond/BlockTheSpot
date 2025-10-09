@@ -70,7 +70,7 @@ wjson ConfigManager::DefaultSettings()
         { L"BuildDate", std::format(L"{:%Y-%m-%d}", std::chrono::year_month_day{ std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now()) }) },
         //{L"Version", m_version},
 #else
-        {L"BuildDate", L"2025-09-30"}, // for dll
+        {L"BuildDate", L"2025-10-09"}, // for dll
         //{L"Version", L"1.2.73.474"}, // for json
 #endif
         {L"Indices", {
@@ -91,6 +91,9 @@ wjson ConfigManager::DefaultSettings()
             L"/gabo-receiver-service/"
         }},
         {L"FilePatch", {
+            {L"6256.css", {
+                {L"hide_home_recs", PatchInfo(L"(\\.Y89c1_2SAoZFkICK7WVp\\{)", L"$1display:none !important;")}
+            }},
             {L"home-hpto.css", {
                 {L"hide_hpto_banner", PatchInfo(L"(\\.Mvhjv8IKLGjQx94MVOgP\\{display:-webkit-box;display:-ms-flexbox;display:)flex(;)", L"$1none$2")}
             }},
@@ -98,51 +101,57 @@ wjson ConfigManager::DefaultSettings()
                 {L"disable_in_app_verification", PatchInfo(L"(function[^{]*?\\{)[^}]*?\\.withPath\\(\\\"/verifications/\\\"\\)[^}]*?\\}",
                     L"$1return;}")} // function n(e){return e.build().withHost(s.D8).withPath("/verifications/").withEndpointIdentifier("/verifications/").send()}
             }},
-        // {L"xpui-pip-mini-player.js", {
-        //     {L"disable_pip_upsell", PatchInfo(L"(return\\(0,D\\.jsx\\)\\(\"div\",\\{[^]*?\"web-player\\.pip-mini-player\\.upsell\\.title\"[^]*?\\)\\))", 
-        //         L"return null")} // return(0,D.jsx)("div",{className:Oe,children:(0,D.jsxs)
-        // }},
-        {L"xpui-snapshot.js", {
-            {L"ads_enabled", PatchInfo(L"(adsEnabled:!)0", L"${1}1")},
-            {L"ads_hpto_hidden", PatchInfo(L"(isHptoHidden:!)0", L"${1}1")},
-            {L"sponsorships", PatchInfo(L"(\\.set\\(\")allSponsorships(\",t\\.sponsorships\\)\\}\\}\\(e,t\\);)", L"$1$2")},
-            {L"skip_sentry", PatchInfo(L"sentry\\.io", L"localhost")},
-            {L"disable_sentry_init", PatchInfo(L"(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\.ingest\\.sentry\\.io.*?\\})", L"$1return;$2")}, // function Zk(){if(xE()){;
-            {L"disable_browser_metrics", PatchInfo(L"(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\w+\\.BrowserMetrics\\.getPageLoadTime\\(\\).*?\\})", L"$1return;$2")}, // function Gk(e){Ub.BrowserMetrics
-            {L"hpto_enabled", PatchInfo(L"(hptoEnabled:!)(0)", L"${1}1")},
-            {L"enable_premium_features", PatchInfo(L"(await\\s+\\w+\\(\\s*([\\w.]+)\\.initialUser\\s*,\\s*\\2\\.initialProductState\\s*,.*?\\);)",
-                L"$2.initialProductState={...$2.initialProductState,product:'premium',catalogue:'premium',ads:'0'},$1")} // await Kk(l.initialUser, l.initialProductState, z);
-        }}
+            // {L"xpui-pip-mini-player.js", {
+            //     {L"disable_pip_upsell", PatchInfo(L"(return\\(0,D\\.jsx\\)\\(\"div\",\\{[^]*?\"web-player\\.pip-mini-player\\.upsell\\.title\"[^]*?\\)\\))", 
+            //         L"return null")} // return(0,D.jsx)("div",{className:Oe,children:(0,D.jsxs)
+            // }},
+            {L"xpui-snapshot.js", {
+                {L"ads_enabled", PatchInfo(L"(adsEnabled:!)0", L"${1}1")},
+                {L"ads_hpto_hidden", PatchInfo(L"(isHptoHidden:!)0", L"${1}1")},
+                {L"sponsorships", PatchInfo(L"(\\.set\\(\")allSponsorships(\",t\\.sponsorships\\)\\}\\}\\(e,t\\);)", L"$1$2")},
+                {L"skip_sentry", PatchInfo(L"sentry\\.io", L"localhost")},
+                {L"disable_sentry_init", PatchInfo(L"(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\.ingest\\.sentry\\.io.*?\\})", L"$1return;$2")}, // function Zk(){if(xE()){;
+                {L"disable_browser_metrics", PatchInfo(L"(function\\s*\\w*\\s*\\([^)]*\\)\\s*\\{)([^}]*?\\w+\\.BrowserMetrics\\.getPageLoadTime\\(\\).*?\\})", L"$1return;$2")}, // function Gk(e){Ub.BrowserMetrics
+                {L"hpto_enabled", PatchInfo(L"(hptoEnabled:!)(0)", L"${1}1")},
+                {L"enable_premium_features", PatchInfo(L"(await\\s+\\w+\\(\\s*([\\w.]+)\\.initialUser\\s*,\\s*\\2\\.initialProductState\\s*,.*?\\);)",
+                    L"$2.initialProductState={...$2.initialProductState,product:'premium',catalogue:'premium',ads:'0'},$1")} // await Kk(l.initialUser, l.initialProductState, z);
+            }}
     }}
     };
 }
 
 void ConfigManager::SyncIni()
 {
-    static constexpr std::pair<const wchar_t*, bool> defaults[] = {
-        {L"enable_ads_block", true},
-        {L"enable_banner_block", true},
-        {L"enable_dev_mode", true},
-        {L"enable_auto_update", true},
-        {L"enable_logging", false}
+    const wchar_t* path = L".\\config.ini";
+
+    struct Entry { const wchar_t* section; const wchar_t* key; bool def; };
+    static constexpr Entry entries[] = {
+        {L"Config", L"enable_ads_block", true},
+        {L"Config", L"enable_banner_block", true},
+        {L"Config", L"enable_dev_mode", true},
+        {L"Config", L"enable_auto_update", true},
+        {L"Config", L"enable_logging", false},
+        
+        {L"UI", L"hide_home_recs", false},
     };
 
-    const wchar_t* path = L".\\config.ini";
-    for (const auto& [key, def] : defaults) {
-        auto val = FileUtilsW::ReadIni(path, L"Config", key);
-        if (val.empty()) FileUtilsW::WriteIni(path, L"Config", key, def ? L"1" : L"0");
-        m_config[key] = !_wcsicmp(val.c_str(), L"1") || (val.empty() && def);
+    for (const auto& e : entries) {
+        std::wstring val = FileUtilsW::ReadIni(path, e.section, e.key);
+        if (val.empty())
+            FileUtilsW::WriteIni(path, e.section, e.key, e.def ? L"1" : L"0");
+
+        bool enabled = val.empty() ? e.def : (!_wcsicmp(val.c_str(), L"1"));
+        m_config[e.section][e.key] = enabled;
     }
 }
 
-bool ConfigManager::IsFeatureEnabled(const std::wstring& config)
+bool ConfigManager::IsFeatureEnabled(const std::wstring& key, const std::wstring& section, bool fallback)
 {
-    try {
-        return m_config.at(config);
-    } catch (...) {
-        WLOG_WARN(L"[ConfigManager] Missing config '{}'", config.c_str());
-        return false;
-    }
+    auto sit = m_config.find(section);
+    if (sit == m_config.end()) return fallback;
+    auto kit = sit->second.find(key);
+    if (kit == sit->second.end()) return fallback;
+    return kit->second;
 }
 
 size_t ConfigManager::GetIndex(const std::wstring& key)

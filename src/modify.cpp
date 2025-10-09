@@ -156,6 +156,11 @@ bool apply_patches(std::string& s, CMgr::PatchInfoMap& patches, const std::wstri
     bool any = false;
 
     for (auto& [key, p] : patches) {
+        if (!CMgr::IsFeatureEnabled(key, L"UI", true)) {
+            WLOG_WARN(L"[BannerBlock] '{}' skipped because feature '{}' is disabled.", key.c_str(), key.c_str());
+            continue;
+        }
+
         std::regex re(EncodingUtils::WStringToUTF8(p.pattern));
         std::string val = EncodingUtils::WStringToUTF8(p.value), rep;
         std::smatch m; std::vector<intptr_t> fr;

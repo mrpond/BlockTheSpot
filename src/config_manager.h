@@ -43,6 +43,7 @@ public:
     using FilePatchMap = std::map<std::wstring, PatchInfoMap>;
     static void Initialize();
     static bool FlushToJson();
+    static bool IsFeatureEnabled(const std::wstring& key, const std::wstring& section = L"Config", bool fallback = false);
 
     inline static size_t get_url_index;
     inline static size_t get_file_name_index;
@@ -59,7 +60,6 @@ private:
     static bool Load();
     static bool Save();
     static wjson DefaultSettings();
-    static bool IsFeatureEnabled(const std::wstring& key);
 
     static size_t GetIndex(const std::wstring& key);
     static std::vector<std::wstring> GetBlockedUrls();
@@ -71,7 +71,7 @@ private:
     static bool SyncRemote(const wjson& remote);
     static DWORD WINAPI AutoUpdate(LPVOID lpParam);
 
-    inline static std::map<std::wstring, bool> m_config;
+    inline static std::map<std::wstring, std::map<std::wstring, bool>> m_config;
     inline static wjson m_settings;
     inline static std::mutex m_mutex;
     inline static const std::wstring m_path = L"blockthespot_settings.json";

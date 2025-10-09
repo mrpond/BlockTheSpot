@@ -1,12 +1,12 @@
 {
-  "BuildDate": "2025-09-30",
+  "BuildDate": "2025-10-09",
   "Indices": {
     "cef_request_get_url": 6,
-    "cef_zip_reader_read_file": 14,
     "cef_zip_reader_get_file_name": 9,
     "cef_zip_reader_get_file_size": 10,
     "cef_zip_reader_open_file": 12,
-    "cef_zip_reader_close_file": 13
+    "cef_zip_reader_close_file": 13,
+    "cef_zip_reader_read_file": 14
   },
   "DevMode": {
     "x64": {
@@ -25,6 +25,15 @@
     "/gabo-receiver-service/"
   ],
   "FilePatch": {
+    "6256.css": {
+      "hide_home_recs": {
+        "pattern": "(\\.Y89c1_2SAoZFkICK7WVp\\{)",
+        "value": "$1display:none !important;",
+        "rvas": [
+          0
+        ]
+      }
+    },
     "home-hpto.css": {
       "hide_hpto_banner": {
         "pattern": "(\\.Mvhjv8IKLGjQx94MVOgP\\{display:-webkit-box;display:-ms-flexbox;display:)flex(;)",
