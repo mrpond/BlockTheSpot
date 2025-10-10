@@ -156,8 +156,8 @@ bool apply_patches(std::string& s, CMgr::PatchInfoMap& patches, const std::wstri
     bool any = false;
 
     for (auto& [key, p] : patches) {
-        if (!CMgr::IsFeatureEnabled(key, L"UI", true)) {
-            WLOG_WARN(L"[BannerBlock] '{}' skipped because feature '{}' is disabled.", key.c_str(), key.c_str());
+        if (!CMgr::IsFeatureEnabled(key, L"FilePatch", true)) {
+            WLOG_WARN(L"[BannerBlock] '{}' skipped. FilePatch disabled in 'config.ini'", key.c_str());
             continue;
         }
 

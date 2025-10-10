@@ -94,6 +94,9 @@ wjson ConfigManager::DefaultSettings()
             {L"6256.css", {
                 {L"hide_home_recs", PatchInfo(L"(\\.Y89c1_2SAoZFkICK7WVp\\{)", L"$1display:none !important;")}
             }},
+            {L"dwp-home-chips-row.css", {
+                {L"hide_home_chips_row", PatchInfo(L"(\\.c8Z2jJUocJTdV9g741cp\\b[^\\{]*\\{)", L"$1display:none !important;")}
+            }},
             {L"home-hpto.css", {
                 {L"hide_hpto_banner", PatchInfo(L"(\\.Mvhjv8IKLGjQx94MVOgP\\{display:-webkit-box;display:-ms-flexbox;display:)flex(;)", L"$1none$2")}
             }},
@@ -132,7 +135,8 @@ void ConfigManager::SyncIni()
         {L"Config", L"enable_auto_update", true},
         {L"Config", L"enable_logging", false},
         
-        {L"UI", L"hide_home_recs", false},
+        {L"FilePatch", L"hide_home_recs", false},
+        {L"FilePatch", L"hide_home_chips_row", false}
     };
 
     for (const auto& e : entries) {

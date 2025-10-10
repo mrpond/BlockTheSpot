@@ -28,10 +28,13 @@
     "6256.css": {
       "hide_home_recs": {
         "pattern": "(\\.Y89c1_2SAoZFkICK7WVp\\{)",
-        "value": "$1display:none !important;",
-        "rvas": [
-          0
-        ]
+        "value": "$1display:none !important;"
+      }
+    },
+    "dwp-home-chips-row.css": {
+      "hide_home_chips_row": {
+        "pattern": "(\\.c8Z2jJUocJTdV9g741cp\\b[^\\{]*\\{)",
+        "value": "$1display:none !important;"
       }
     },
     "home-hpto.css": {

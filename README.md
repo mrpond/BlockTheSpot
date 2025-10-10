@@ -73,10 +73,45 @@ The automatic update feature is enabled by default. To disable it:
 
 1. Navigate to the directory where Spotify is installed: `%APPDATA%\Spotify`.
 2. Open the `config.ini` file.
-3. Set `Enable_Auto_Update` to `0` under the `[Config]` section.
+3. Set `enable_auto_update` to `0` under the `[Config]` section.
 4. Save your changes and close the file.
 
 Automatic updates will now be disabled. If you wish to update, you'll need to do so manually.
+
+### FilePatch Usage Guide
+
+`FilePatch` is a configuration that applies **runtime, regex-based** modifications to packaged resource files (CSS/JS, etc.) read by the application. Patches are defined in `blockthespot_settings.json`; which patches are active is controlled via the `[FilePatch]` section in `config.ini`.
+
+`blockthespot_settings.json` example format
+
+```json
+{
+  "6256.css": {
+    "hide_home_recs": {
+      "pattern": "(\.Y89c1_2SAoZFkICK7WVp\{)",
+      "value": "$1display:none !important;",
+      "replace_all": false,
+      "rvas": []
+    }
+  }
+}
+```
+
+* `pattern`: The regex to search for.
+* `value`: The replacement content to insert when a match is found.
+* `replace_all` (optional): If `true`, replace all matches; otherwise replace the first match only.
+* `rvas` (optional): Previously discovered file positions (used to speed up subsequent patches).
+
+`config.ini` example
+
+```ini
+[FilePatch]
+hide_home_recs=1
+hide_home_chips_row=1
+disable_in_app_verification=0 ; added setting
+```
+
+* `1` = enabled, `0` = disabled.
 
 ### Additional Notes:
 
