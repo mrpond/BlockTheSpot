@@ -1,45 +1,20 @@
 {
-  "Cef Offsets": {
-    "x64": {
-      "cef_request_t_get_url": 48,
-      "cef_zip_reader_t_get_file_name": 72,
-      "cef_zip_reader_t_read_file": 112
-    },
-    "x32": {
-      "cef_request_t_get_url": 24,
-      "cef_zip_reader_t_get_file_name": 36,
-      "cef_zip_reader_t_read_file": 56
-    }
-  },
-  "Developer": {
-    "x64": {
-      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
-      "Value": "B3 01 90",
-      "Offset": 2,
-      "Address": 465526
-    },
-    "x32": {
-      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
-      "Value": "B8 03 00",
-      "Offset": 0,
-      "Address": -1
-    }
-  },
+  "Latest Release Date": "2025-10-10",
   "Zip Reader": {
     "home-hpto.css": {
-      "hptocss": {
-        "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": "none",
-        "Offset": 70,
-        "Fill": 0,
-        "Address": 0
-      },
       "hptocss_171": {
         "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
         "Value": "none",
         "Offset": 70,
         "Fill": 0,
         "Address": -1
+      },
+      "hptocss": {
+        "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
+        "Value": "none",
+        "Offset": 70,
+        "Fill": 0,
+        "Address": 0
       }
     },
     "xpui-root-dialogs.js": {
@@ -48,16 +23,16 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 181202
+        "Address": 178457
       }
     },
     "xpui-pip-mini-player.js": {
-      "miniplayer_begin": {
-        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
-        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
+      "miniplayer_end": {
+        "Signature": ".button.not-now\")})]})]})})",
+        "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 9514
       },
       "miniplayer_171_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
@@ -66,36 +41,22 @@
         "Fill": 0,
         "Address": -1
       },
-      "miniplayer_end": {
-        "Signature": ".button.not-now\")})]})]})})",
-        "Value": ".button.not-now\")})]})]})*/",
+      "miniplayer_begin": {
+        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
+        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 10528
+        "Address": -1
       },
       "miniplayer_begin_d9dcf25": {
         "Signature": "return(0,D.jsx)(\"div\",{className:Ve,children:(0,D.jsxs)",
         "Value": "return null;/*(0,D.jsx)(\"div\",{className:Ve,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9815
+        "Address": 8801
       }
     },
     "xpui-snapshot.js": {
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
-        "Fill": 0,
-        "Address": 315792
-      },
-      "disable_metric_end_d9dcf25": {
-        "Signature": ",$N(t)}o(44333)",
-        "Value": ",$N(*/}o(44333)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 374913
-      },
       "premium_btn_start_af82ef1": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
         "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
@@ -108,7 +69,35 @@
         "Value": "function rk(e){/*cy.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372148
+        "Address": -1
+      },
+      "adsEnabled": {
+        "Signature": "adsEnabled:!0",
+        "Value": "1",
+        "Offset": 12,
+        "Fill": 0,
+        "Address": 315662
+      },
+      "disable_metric_end_d9dcf25": {
+        "Signature": ",$N(t)}o(44333)",
+        "Value": ",$N(*/}o(44333)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "premium_btn_start_3be53af": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,tu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,tu.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 117783
+      },
+      "premium_btn_start_d9dcf25": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
       },
       "disable_metric_end": {
         "Signature": ",zN(t)}o(72123)",
@@ -123,13 +112,6 @@
         "Offset": 0,
         "Fill": 0,
         "Address": -1
-      },
-      "premium_btn_start_d9dcf25": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 117986
       },
       "disable_metric_begin": {
         "Signature": "function GN(e){Ub.BrowserMetrics",
@@ -173,12 +155,33 @@
         "Fill": 0,
         "Address": -1
       },
+      "disable_metric_end_3be53af": {
+        "Signature": ",ZN(t)}o(80843)",
+        "Value": ",ZN(*/}o(80843)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 375168
+      },
+      "disable_metric_begin_3be53af": {
+        "Signature": "function sk(e){cy.BrowserMetrics",
+        "Value": "function sk(e){/*cy.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372403
+      },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 314376
+        "Address": 314246
+      },
+      "ishptohidden": {
+        "Signature": "isHptoHidden:!0",
+        "Value": "1",
+        "Offset": 14,
+        "Fill": 0,
+        "Address": 315581
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -187,26 +190,19 @@
         "Fill": 0,
         "Address": -1
       },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
-        "Fill": 0,
-        "Address": 315711
-      },
-      "hptoEnabled": {
-        "Signature": "hptoEnabled:!0",
-        "Value": "1",
-        "Offset": 13,
-        "Fill": 0,
-        "Address": 313346
-      },
       "skipsentry_begin": {
         "Signature": "function ZN(){if(xE()",
         "Value": "function ZN(){/*(xE()",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
+      },
+      "hptoEnabled": {
+        "Signature": "hptoEnabled:!0",
+        "Value": "1",
+        "Offset": 13,
+        "Fill": 0,
+        "Address": 313180
       },
       "skipsentry_begin_8c88c31": {
         "Signature": "function Zk(){if(xE()",
@@ -215,16 +211,16 @@
         "Fill": 0,
         "Address": -1
       },
-      "skipsentry_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
+      "skipsentry_171_begin": {
+        "Signature": "function Dk(){if(xE()",
+        "Value": "function Dk(){/*(xE()",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
       },
-      "skipsentry_171_begin": {
-        "Signature": "function Dk(){if(xE()",
-        "Value": "function Dk(){/*(xE()",
+      "skipsentry_end": {
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -248,7 +244,7 @@
         "Value": "children:i.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 118282
+        "Address": 118079
       },
       "premium_btn_end": {
         "Signature": "children:s.Ru.get(\"upgrade.button\")})",
@@ -257,23 +253,55 @@
         "Fill": 0,
         "Address": -1
       },
+      "skipsentry_begin_3be53af": {
+        "Signature": "function ck(){if(IE()",
+        "Value": "function ck(){/*(IE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376026
+      },
       "skipsentry_begin_d9dcf25": {
         "Signature": "function sk(){if(LE()",
         "Value": "function sk(){/*(LE()",
         "Offset": 0,
         "Fill": 0,
-        "Address": 375771
+        "Address": -1
       },
       "skipsentry_end_d9dcf25": {
         "Signature": "))}}Xw(\"playback_load_start\")",
         "Value": ")*/}Xw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376239
+        "Address": 376494
       }
     }
   },
-  "Latest Release Date": "2025-09-11",
+  "Developer": {
+    "x64": {
+      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "Value": "B3 01 90",
+      "Offset": 2,
+      "Address": 470211
+    },
+    "x32": {
+      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
+      "Value": "B8 03 00",
+      "Offset": 0,
+      "Address": -1
+    }
+  },
+  "Cef Offsets": {
+    "x64": {
+      "cef_request_t_get_url": 48,
+      "cef_zip_reader_t_get_file_name": 72,
+      "cef_zip_reader_t_read_file": 112
+    },
+    "x32": {
+      "cef_request_t_get_url": 24,
+      "cef_zip_reader_t_get_file_name": 36,
+      "cef_zip_reader_t_read_file": 56
+    }
+  },
   "Block List": [
     "/ads/",
     "/ad-logic/",
