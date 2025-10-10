@@ -95,7 +95,7 @@ wjson ConfigManager::DefaultSettings()
                 {L"hide_home_recs", PatchInfo(L"(\\.Y89c1_2SAoZFkICK7WVp\\{)", L"$1display:none !important;")}
             }},
             {L"dwp-home-chips-row.css", {
-                {L"hide_home_chips_row", PatchInfo(L"(\\.c8Z2jJUocJTdV9g741cp\\b[^\\{]*\\{)", L"$1display:none !important;")}
+                {L"hide_home_chips_row", PatchInfo(L"(\\.c8Z2jJUocJTdV9g741cp\\{)", L"$1display:none !important;")}
             }},
             {L"home-hpto.css", {
                 {L"hide_hpto_banner", PatchInfo(L"(\\.Mvhjv8IKLGjQx94MVOgP\\{display:-webkit-box;display:-ms-flexbox;display:)flex(;)", L"$1none$2")}
@@ -397,4 +397,5 @@ DWORD WINAPI ConfigManager::AutoUpdate(LPVOID)
         std::this_thread::sleep_for(std::chrono::hours(1));
     }
     return 0;
+
 }
