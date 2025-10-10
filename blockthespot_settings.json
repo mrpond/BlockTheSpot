@@ -33,7 +33,7 @@
     },
     "dwp-home-chips-row.css": {
       "hide_home_chips_row": {
-        "pattern": "(\\.c8Z2jJUocJTdV9g741cp\\b[^\\{]*\\{)",
+        "pattern": "(\\.c8Z2jJUocJTdV9g741cp\\{)",
         "value": "$1display:none !important;"
       }
     },
