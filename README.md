@@ -88,7 +88,7 @@ Automatic updates will now be disabled. If you wish to update, you'll need to do
 {
   "6256.css": {
     "hide_home_recs": {
-      "pattern": "(\.Y89c1_2SAoZFkICK7WVp\{)",
+      "pattern": "(\\.Y89c1_2SAoZFkICK7WVp\\{)",
       "value": "$1display:none !important;",
       "replace_all": false,
       "rvas": []
