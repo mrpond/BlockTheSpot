@@ -70,7 +70,7 @@ wjson ConfigManager::DefaultSettings()
         { L"BuildDate", std::format(L"{:%Y-%m-%d}", std::chrono::year_month_day{ std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now()) }) },
         //{L"Version", m_version},
 #else
-        {L"BuildDate", L"2025-10-09"}, // for dll
+        {L"BuildDate", L"2025-10-12"}, // for dll
         //{L"Version", L"1.2.73.474"}, // for json
 #endif
         {L"Indices", {
@@ -127,25 +127,26 @@ void ConfigManager::SyncIni()
 {
     const wchar_t* path = L".\\config.ini";
 
-    struct Entry { const wchar_t* section; const wchar_t* key; bool def; };
+    struct Entry { const wchar_t* sec; const wchar_t* key; bool def; };
     static constexpr Entry entries[] = {
         {L"Config", L"enable_ads_block", true},
         {L"Config", L"enable_banner_block", true},
         {L"Config", L"enable_dev_mode", true},
         {L"Config", L"enable_auto_update", true},
         {L"Config", L"enable_logging", false},
-        
+
         {L"FilePatch", L"hide_home_recs", false},
         {L"FilePatch", L"hide_home_chips_row", false}
     };
 
     for (const auto& e : entries) {
-        std::wstring val = FileUtilsW::ReadIni(path, e.section, e.key);
-        if (val.empty())
-            FileUtilsW::WriteIni(path, e.section, e.key, e.def ? L"1" : L"0");
+        std::wstring v = FileUtilsW::ReadIni(path, e.sec, e.key);
+        if (v.empty()) FileUtilsW::WriteIni(path, e.sec, e.key, e.def ? L"1" : L"0");
+        m_config[e.sec][e.key] = v.empty() ? e.def : (_wcsicmp(v.c_str(), L"1") == 0);
+    }
 
-        bool enabled = val.empty() ? e.def : (!_wcsicmp(val.c_str(), L"1"));
-        m_config[e.section][e.key] = enabled;
+    for (const auto& [k, v] : FileUtilsW::ReadSection(path, L"FilePatch")) {
+        m_config[L"FilePatch"].emplace(k, _wcsicmp(v.c_str(), L"1") == 0);
     }
 }
 

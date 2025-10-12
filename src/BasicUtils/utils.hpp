@@ -199,6 +199,29 @@ namespace utils
             }
         }
 
+        static inline std::vector<std::pair<string_t, string_t>> ReadSection(const string_t& path, const string_t& section) noexcept {
+            constexpr DWORD BUF = 32767;
+            std::vector<CharT> buf(BUF);
+            std::vector<std::pair<string_t, string_t>> out;
+            
+            DWORD copied = 0;
+            if constexpr (std::is_same_v<CharT, char>) {
+                copied = GetPrivateProfileSectionA(section.c_str(), buf.data(), BUF, path.c_str());
+            } else {
+                copied = GetPrivateProfileSectionW(section.c_str(), buf.data(), BUF, path.c_str());
+            }
+
+            if (copied == 0) return out;
+
+            for (const CharT* p = buf.data(); *p; p += std::char_traits<CharT>::length(p) + 1) {
+                string_t s(p);
+                auto pos = s.find((CharT)'=');
+                out.emplace_back(s.substr(0, pos), pos == string_t::npos ? string_t{} : s.substr(pos + 1));
+            }
+
+            return out;
+        }
+        
         static inline bool FileExists(const std::filesystem::path& p) noexcept { return std::filesystem::exists(p); }
         static inline bool DeleteFile(const std::filesystem::path& p) noexcept { return std::filesystem::remove(p); }
         static inline std::vector<std::filesystem::path> ListFiles(const std::filesystem::path& d) {
