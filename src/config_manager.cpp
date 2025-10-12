@@ -91,7 +91,7 @@ wjson ConfigManager::DefaultSettings()
             L"/gabo-receiver-service/"
         }},
         {L"FilePatch", {
-            {L"6256.css", {
+            {L"6256.css", { // Fix: add hide_home_recs & hide_home_chips_row options (see https://github.com/mrpond/BlockTheSpot/issues/627)
                 {L"hide_home_recs", PatchInfo(L"(\\.Y89c1_2SAoZFkICK7WVp\\{)", L"$1display:none !important;")}
             }},
             {L"dwp-home-chips-row.css", {
@@ -400,3 +400,4 @@ DWORD WINAPI ConfigManager::AutoUpdate(LPVOID)
     return 0;
 
 }
+
