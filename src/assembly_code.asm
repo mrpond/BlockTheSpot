@@ -1,6 +1,6 @@
 IFDEF RAX ; # 64-bit
 
-    PUSH_ALL MACRO
+    SAVE_ALL MACRO
         push rax
         push rbx
         push rcx
@@ -19,7 +19,7 @@ IFDEF RAX ; # 64-bit
         push r15
     ENDM
 
-    POP_ALL MACRO
+    RESTORE_ALL MACRO
         pop r15
         pop r14
         pop r13
@@ -38,57 +38,58 @@ IFDEF RAX ; # 64-bit
         pop rax
     ENDM
 
-    EXTERNDEF LoadAPI:PROC
+    EXTERNDEF GetFunction:PROC
 
-    API_EXPORT_ORIG MACRO API_NAME:REQ
+    PROXY_API MACRO API_NAME:REQ
         .DATA
             _&API_NAME QWORD 0
             S_&API_NAME DB '&API_NAME', 0
         .CODE
         &API_NAME PROC
-            PUSH_ALL
+            SAVE_ALL
             sub rsp, 8
             mov rcx, OFFSET S_&API_NAME
-            call LoadAPI
+            call GetFunction
             mov _&API_NAME, rax
             add rsp, 8
-            POP_ALL
+            RESTORE_ALL
             jmp QWORD PTR [_&API_NAME]
         &API_NAME ENDP
     ENDM
 
-    API_EXPORT_ORIG CryptProtectData
-    API_EXPORT_ORIG CryptProtectMemory
-    API_EXPORT_ORIG CryptUnprotectData
-    API_EXPORT_ORIG CryptUnprotectMemory
-    API_EXPORT_ORIG CryptUpdateProtectedState
+    PROXY_API CryptProtectData
+    PROXY_API CryptProtectMemory
+    PROXY_API CryptUnprotectData
+    PROXY_API CryptUnprotectMemory
+    PROXY_API CryptUpdateProtectedState
     
-    ; API_EXPORT_ORIG ClearReportsBetween_ExportThunk
-    ; API_EXPORT_ORIG CrashForException_ExportThunk
-    ; API_EXPORT_ORIG DisableHook
-    ; API_EXPORT_ORIG DrainLog
-    ; API_EXPORT_ORIG DumpHungProcessWithPtype_ExportThunk
-    ; API_EXPORT_ORIG DumpProcessWithoutCrash
-    ; API_EXPORT_ORIG GetApplyHookResult
-    ; API_EXPORT_ORIG GetBlockedModulesCount
-    ; API_EXPORT_ORIG GetCrashReports_ExportThunk
-    ; API_EXPORT_ORIG GetCrashpadDatabasePath_ExportThunk
-    ; API_EXPORT_ORIG GetHandleVerifier
-    ; API_EXPORT_ORIG GetInstallDetailsPayload
-    ; API_EXPORT_ORIG GetUniqueBlockedModulesCount
-    ; API_EXPORT_ORIG GetUserDataDirectoryThunk
-    ; API_EXPORT_ORIG InjectDumpForHungInput_ExportThunk
-    ; API_EXPORT_ORIG IsBrowserProcess
-    ; API_EXPORT_ORIG IsCrashReportingEnabledImpl
-    ; API_EXPORT_ORIG IsExtensionPointDisableSet
-    ; API_EXPORT_ORIG IsThirdPartyInitialized
-    ; API_EXPORT_ORIG RegisterLogNotification
-    ; API_EXPORT_ORIG RequestSingleCrashUpload_ExportThunk
-    ; API_EXPORT_ORIG SetCrashKeyValueImpl
-    ; API_EXPORT_ORIG SetMetricsClientId
-    ; API_EXPORT_ORIG SetUploadConsent_ExportThunk
-    ; API_EXPORT_ORIG SignalChromeElf
-    ; API_EXPORT_ORIG SignalInitializeCrashReporting
+    ; PROXY_API ClearReportsBetween_ExportThunk
+    ; PROXY_API CrashForException_ExportThunk
+    ; PROXY_API DisableHook
+    ; PROXY_API DrainLog
+    ; PROXY_API DumpHungProcessWithPtype_ExportThunk
+    ; PROXY_API DumpProcessWithoutCrash
+    ; PROXY_API GetApplyHookResult
+    ; PROXY_API GetBlockedModulesCount
+    ; PROXY_API GetCrashReports_ExportThunk
+    ; PROXY_API GetCrashpadDatabasePath_ExportThunk
+    ; PROXY_API GetHandleVerifier
+    ; PROXY_API GetInstallDetailsPayload
+    ; PROXY_API GetUniqueBlockedModulesCount
+    ; PROXY_API GetUserDataDirectoryThunk
+    ; PROXY_API InjectDumpForHungInput_ExportThunk
+    ; PROXY_API IsBrowserProcess
+    ; PROXY_API IsCrashReportingEnabledImpl
+    ; PROXY_API IsExtensionPointDisableSet
+    ; PROXY_API IsTemporaryUserDataDirectoryCreatedForHeadless
+    ; PROXY_API IsThirdPartyInitialized
+    ; PROXY_API RegisterLogNotification
+    ; PROXY_API RequestSingleCrashUpload_ExportThunk
+    ; PROXY_API SetCrashKeyValueImpl
+    ; PROXY_API SetMetricsClientId
+    ; PROXY_API SetUploadConsent_ExportThunk
+    ; PROXY_API SignalChromeElf
+    ; PROXY_API SignalInitializeCrashReporting
 
 ENDIF
 
