@@ -1,5 +1,5 @@
 {
-  "Latest Release Date": "2025-10-10",
+  "Latest Release Date": "2025-10-25",
   "Zip Reader": {
     "home-hpto.css": {
       "hptocss_171": {
@@ -23,7 +23,7 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 178457
+        "Address": 13133
       }
     },
     "xpui-pip-mini-player.js": {
@@ -32,7 +32,7 @@
         "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9514
+        "Address": 9461
       },
       "miniplayer_171_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
@@ -53,7 +53,14 @@
         "Value": "return null;/*(0,D.jsx)(\"div\",{className:Ve,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 8801
+        "Address": -1
+      },
+      "miniplayer_begin_8f74890": {
+        "Signature": "return(0,B.jsx)(\"div\",{className:Ve,children:(0,B.jsxs)",
+        "Value": "return null;/*(0,B.jsx)(\"div\",{className:Ve,children:(0",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 8748
       }
     },
     "xpui-snapshot.js": {
@@ -76,7 +83,7 @@
         "Value": "1",
         "Offset": 12,
         "Fill": 0,
-        "Address": 315662
+        "Address": 317993
       },
       "disable_metric_end_d9dcf25": {
         "Signature": ",$N(t)}o(44333)",
@@ -90,14 +97,14 @@
         "Value": ".upgradeButtonFactory()),[t]),a=(0,tu.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 117783
+        "Address": -1
       },
       "premium_btn_start_d9dcf25": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
         "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 118113
       },
       "disable_metric_end": {
         "Signature": ",zN(t)}o(72123)",
@@ -155,33 +162,75 @@
         "Fill": 0,
         "Address": -1
       },
+      "skipsentry_end_8f74890": {
+        "Signature": "))}}oA(\"playback_load_start\")",
+        "Value": ")*/}oA(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 377361
+      },
       "disable_metric_end_3be53af": {
         "Signature": ",ZN(t)}o(80843)",
         "Value": ",ZN(*/}o(80843)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 375168
+        "Address": -1
+      },
+      "skipsentry_begin_8f74890": {
+        "Signature": "function gN(){if(ME()",
+        "Value": "function gN(){/*(ME()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376893
       },
       "disable_metric_begin_3be53af": {
         "Signature": "function sk(e){cy.BrowserMetrics",
         "Value": "function sk(e){/*cy.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372403
+        "Address": -1
+      },
+      "premium_btn_end": {
+        "Signature": "children:s.Ru.get(\"upgrade.button\")})",
+        "Value": "children:s.Ru.get(\"upgrade.button\")*/",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_end_8f74890": {
+        "Signature": ",aN(t)}o(80843)",
+        "Value": ",aN(*/}o(80843)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376035
+      },
+      "skipsentry_begin_3be53af": {
+        "Signature": "function ck(){if(IE()",
+        "Value": "function ck(){/*(IE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_begin_8f74890": {
+        "Signature": "function pN(e){hy.BrowserMetrics",
+        "Value": "function pN(e){/*hy.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 373270
       },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 314246
+        "Address": 316577
       },
       "ishptohidden": {
         "Signature": "isHptoHidden:!0",
         "Value": "1",
         "Offset": 14,
         "Fill": 0,
-        "Address": 315581
+        "Address": 317912
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -202,7 +251,7 @@
         "Value": "1",
         "Offset": 13,
         "Fill": 0,
-        "Address": 313180
+        "Address": 315511
       },
       "skipsentry_begin_8c88c31": {
         "Signature": "function Zk(){if(xE()",
@@ -244,21 +293,7 @@
         "Value": "children:i.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 118079
-      },
-      "premium_btn_end": {
-        "Signature": "children:s.Ru.get(\"upgrade.button\")})",
-        "Value": "children:s.Ru.get(\"upgrade.button\")*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": -1
-      },
-      "skipsentry_begin_3be53af": {
-        "Signature": "function ck(){if(IE()",
-        "Value": "function ck(){/*(IE()",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 376026
+        "Address": 118409
       },
       "skipsentry_begin_d9dcf25": {
         "Signature": "function sk(){if(LE()",
@@ -272,7 +307,7 @@
         "Value": ")*/}Xw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376494
+        "Address": -1
       }
     }
   },
@@ -281,7 +316,7 @@
       "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 2,
-      "Address": 470211
+      "Address": 472044
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
