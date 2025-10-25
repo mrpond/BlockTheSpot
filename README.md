@@ -2,7 +2,6 @@
 [🖤 :thailand: ](https://www.bangkokpost.com/thailand/general/3126230/her-majesty-queen-sirikit-the-queen-mother-passes-away-at-bangkok-hospital)
 <center>
     <h1 align="center">BlockTheSpot</h1>  
-    
     <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (64 bit)</strong> </h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
