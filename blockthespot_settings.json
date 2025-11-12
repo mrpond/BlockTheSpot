@@ -1,20 +1,45 @@
 {
-  "Latest Release Date": "2025-10-25",
+  "Cef Offsets": {
+    "x64": {
+      "cef_request_t_get_url": 48,
+      "cef_zip_reader_t_get_file_name": 72,
+      "cef_zip_reader_t_read_file": 112
+    },
+    "x32": {
+      "cef_request_t_get_url": 24,
+      "cef_zip_reader_t_get_file_name": 36,
+      "cef_zip_reader_t_read_file": 56
+    }
+  },
+  "Developer": {
+    "x64": {
+      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
+      "Value": "B3 01 90",
+      "Offset": 2,
+      "Address": 470464
+    },
+    "x32": {
+      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
+      "Value": "B8 03 00",
+      "Offset": 0,
+      "Address": -1
+    }
+  },
   "Zip Reader": {
     "home-hpto.css": {
-      "hptocss_171": {
-        "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": "none",
-        "Offset": 70,
-        "Fill": 0,
-        "Address": -1
-      },
       "hptocss": {
         "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
         "Value": "none",
         "Offset": 70,
         "Fill": 0,
         "Address": 0
+      },
+      "hptocss_171": {
+        "Signature": ".utUDWsORU96S7boXm2Aq{display:-webkit-box;display:-ms-flexbox;display:flex;",
+        "Value": "none",
+        "Offset": 70,
+        "Fill": 0,
+        "Address": -1
       }
     },
     "xpui-root-dialogs.js": {
@@ -23,16 +48,16 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 13133
+        "Address": 181131
       }
     },
     "xpui-pip-mini-player.js": {
-      "miniplayer_end": {
-        "Signature": ".button.not-now\")})]})]})})",
-        "Value": ".button.not-now\")})]})]})*/",
+      "miniplayer_begin": {
+        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
+        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9461
+        "Address": -1
       },
       "miniplayer_171_begin": {
         "Signature": "return(0,R.jsx)(\"div\",{className:ze,children:(0,R.jsxs)",
@@ -41,12 +66,12 @@
         "Fill": 0,
         "Address": -1
       },
-      "miniplayer_begin": {
-        "Signature": "return(0,D.jsx)(\"div\",{className:Oe,children:(0,D.jsxs)",
-        "Value": "return null;/*(0,D.jsx)(\"div\",{className:Oe,children:(0",
+      "miniplayer_end": {
+        "Signature": ".button.not-now\")})]})]})})",
+        "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 9461
       },
       "miniplayer_begin_d9dcf25": {
         "Signature": "return(0,D.jsx)(\"div\",{className:Ve,children:(0,D.jsxs)",
@@ -64,6 +89,20 @@
       }
     },
     "xpui-snapshot.js": {
+      "adsEnabled": {
+        "Signature": "adsEnabled:!0",
+        "Value": "1",
+        "Offset": 12,
+        "Fill": 0,
+        "Address": 318106
+      },
+      "disable_metric_end_d9dcf25": {
+        "Signature": ",$N(t)}o(44333)",
+        "Value": ",$N(*/}o(44333)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
       "premium_btn_start_af82ef1": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
         "Value": ".upgradeButtonFactory()),[t]),a=(0,ns.n)(n.getAbsoluteLocation(),n);return null;/*)",
@@ -78,19 +117,19 @@
         "Fill": 0,
         "Address": -1
       },
-      "adsEnabled": {
-        "Signature": "adsEnabled:!0",
-        "Value": "1",
-        "Offset": 12,
-        "Fill": 0,
-        "Address": 317993
-      },
-      "disable_metric_end_d9dcf25": {
-        "Signature": ",$N(t)}o(44333)",
-        "Value": ",$N(*/}o(44333)",
+      "disable_metric_end_2316a87": {
+        "Signature": ",iN(t)}o(80843)",
+        "Value": ",iN(*/}o(80843)",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 375345
+      },
+      "disable_metric_begin_2316a87": {
+        "Signature": "function gN(e){my.BrowserMetrics",
+        "Value": "function gN(e){/*my.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 372580
       },
       "premium_btn_start_3be53af": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,tu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -99,16 +138,16 @@
         "Fill": 0,
         "Address": -1
       },
-      "premium_btn_start_d9dcf25": {
-        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
-        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 118113
-      },
       "disable_metric_end": {
         "Signature": ",zN(t)}o(72123)",
         "Value": ",zN(*/}o(72123)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "premium_btn_start_d9dcf25": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,eu.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -120,16 +159,23 @@
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_begin": {
-        "Signature": "function GN(e){Ub.BrowserMetrics",
-        "Value": "function GN(e){/*Ub.BrowserMetri",
+      "premium_btn_start_2316a87": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,Xl.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,Xl.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": -1
+        "Address": 118172
       },
       "disable_metric_171_end": {
         "Signature": ",Sk(t)}o(72382)",
         "Value": ",Sk(*/}o(72382)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
+      "disable_metric_begin": {
+        "Signature": "function GN(e){Ub.BrowserMetrics",
+        "Value": "function GN(e){/*Ub.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -162,16 +208,23 @@
         "Fill": 0,
         "Address": -1
       },
+      "disable_metric_end_3be53af": {
+        "Signature": ",ZN(t)}o(80843)",
+        "Value": ",ZN(*/}o(80843)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
+      },
       "skipsentry_end_8f74890": {
         "Signature": "))}}oA(\"playback_load_start\")",
         "Value": ")*/}oA(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 377361
+        "Address": -1
       },
-      "disable_metric_end_3be53af": {
-        "Signature": ",ZN(t)}o(80843)",
-        "Value": ",ZN(*/}o(80843)",
+      "disable_metric_begin_3be53af": {
+        "Signature": "function sk(e){cy.BrowserMetrics",
+        "Value": "function sk(e){/*cy.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -181,11 +234,11 @@
         "Value": "function gN(){/*(ME()",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376893
+        "Address": -1
       },
-      "disable_metric_begin_3be53af": {
-        "Signature": "function sk(e){cy.BrowserMetrics",
-        "Value": "function sk(e){/*cy.BrowserMetri",
+      "disable_metric_end_8f74890": {
+        "Signature": ",aN(t)}o(80843)",
+        "Value": ",aN(*/}o(80843)",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -197,12 +250,12 @@
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_end_8f74890": {
-        "Signature": ",aN(t)}o(80843)",
-        "Value": ",aN(*/}o(80843)",
+      "disable_metric_begin_8f74890": {
+        "Signature": "function pN(e){hy.BrowserMetrics",
+        "Value": "function pN(e){/*hy.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376035
+        "Address": -1
       },
       "skipsentry_begin_3be53af": {
         "Signature": "function ck(){if(IE()",
@@ -211,26 +264,12 @@
         "Fill": 0,
         "Address": -1
       },
-      "disable_metric_begin_8f74890": {
-        "Signature": "function pN(e){hy.BrowserMetrics",
-        "Value": "function pN(e){/*hy.BrowserMetri",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 373270
-      },
       "sponsorship": {
         "Signature": ".set(\"allSponsorships\",t.sponsorships)}}(e,t);",
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 316577
-      },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
-        "Fill": 0,
-        "Address": 317912
+        "Address": 316690
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -239,19 +278,26 @@
         "Fill": 0,
         "Address": -1
       },
-      "skipsentry_begin": {
-        "Signature": "function ZN(){if(xE()",
-        "Value": "function ZN(){/*(xE()",
-        "Offset": 0,
+      "ishptohidden": {
+        "Signature": "isHptoHidden:!0",
+        "Value": "1",
+        "Offset": 14,
         "Fill": 0,
-        "Address": -1
+        "Address": 318025
       },
       "hptoEnabled": {
         "Signature": "hptoEnabled:!0",
         "Value": "1",
         "Offset": 13,
         "Fill": 0,
-        "Address": 315511
+        "Address": 315624
+      },
+      "skipsentry_begin": {
+        "Signature": "function ZN(){if(xE()",
+        "Value": "function ZN(){/*(xE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": -1
       },
       "skipsentry_begin_8c88c31": {
         "Signature": "function Zk(){if(xE()",
@@ -260,16 +306,16 @@
         "Fill": 0,
         "Address": -1
       },
-      "skipsentry_171_begin": {
-        "Signature": "function Dk(){if(xE()",
-        "Value": "function Dk(){/*(xE()",
+      "skipsentry_end": {
+        "Signature": "))}}qw(\"playback_load_start\")",
+        "Value": ")*/}qw(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
       },
-      "skipsentry_end": {
-        "Signature": "))}}qw(\"playback_load_start\")",
-        "Value": ")*/}qw(\"playback_load_start\")",
+      "skipsentry_171_begin": {
+        "Signature": "function Dk(){if(xE()",
+        "Value": "function Dk(){/*(xE()",
         "Offset": 0,
         "Fill": 0,
         "Address": -1
@@ -293,7 +339,7 @@
         "Value": "children:i.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 118409
+        "Address": 118468
       },
       "skipsentry_begin_d9dcf25": {
         "Signature": "function sk(){if(LE()",
@@ -308,35 +354,24 @@
         "Offset": 0,
         "Fill": 0,
         "Address": -1
+      },
+      "skipsentry_begin_2316a87": {
+        "Signature": "function vN(){if(VE()",
+        "Value": "function vN(){/*(VE()",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376203
+      },
+      "skipsentry_end_2316a87": {
+        "Signature": "))}}lA(\"playback_load_start\")",
+        "Value": ")*/}lA(\"playback_load_start\")",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 376671
       }
     }
   },
-  "Developer": {
-    "x64": {
-      "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
-      "Value": "B3 01 90",
-      "Offset": 2,
-      "Address": 472044
-    },
-    "x32": {
-      "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
-      "Value": "B8 03 00",
-      "Offset": 0,
-      "Address": -1
-    }
-  },
-  "Cef Offsets": {
-    "x64": {
-      "cef_request_t_get_url": 48,
-      "cef_zip_reader_t_get_file_name": 72,
-      "cef_zip_reader_t_read_file": 112
-    },
-    "x32": {
-      "cef_request_t_get_url": 24,
-      "cef_zip_reader_t_get_file_name": 36,
-      "cef_zip_reader_t_read_file": 56
-    }
-  },
+  "Latest Release Date": "2025-11-13",
   "Block List": [
     "/ads/",
     "/ad-logic/",

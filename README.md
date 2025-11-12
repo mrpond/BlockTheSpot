@@ -5,8 +5,8 @@
     <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (64 bit)</strong> </h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
-        <strong>Last updated:</strong> 25 October 2025<br>
-        <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.75.510.g8f748905
+        <strong>Last updated:</strong> 13 November 2025<br>
+        <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.76.298.g2316a870
     </p> 
 </center>
 
