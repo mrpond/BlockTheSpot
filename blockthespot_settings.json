@@ -16,7 +16,7 @@
       "Signature": "D1 EB ?? ?? ?? 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F",
       "Value": "B3 01 90",
       "Offset": 2,
-      "Address": 470464
+      "Address": 481989
     },
     "x32": {
       "Signature": "25 01 FF FF FF 89 ?? ?? ?? FF FF",
@@ -48,7 +48,7 @@
         "Value": "{return;/*e.build().withHost(s.D8).withPath(\"/verifications/\").withEndpointIdentifier(\"/verifications/\").se*/}",
         "Offset": 0,
         "Fill": 0,
-        "Address": 181131
+        "Address": -1
       }
     },
     "xpui-pip-mini-player.js": {
@@ -71,7 +71,7 @@
         "Value": ".button.not-now\")})]})]})*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 9461
+        "Address": 9652
       },
       "miniplayer_begin_d9dcf25": {
         "Signature": "return(0,D.jsx)(\"div\",{className:Ve,children:(0,D.jsxs)",
@@ -85,7 +85,7 @@
         "Value": "return null;/*(0,B.jsx)(\"div\",{className:Ve,children:(0",
         "Offset": 0,
         "Fill": 0,
-        "Address": 8748
+        "Address": 8939
       }
     },
     "xpui-snapshot.js": {
@@ -94,7 +94,7 @@
         "Value": "1",
         "Offset": 12,
         "Fill": 0,
-        "Address": 318106
+        "Address": 326932
       },
       "disable_metric_end_d9dcf25": {
         "Signature": ",$N(t)}o(44333)",
@@ -122,14 +122,35 @@
         "Value": ",iN(*/}o(80843)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 375345
+        "Address": -1
       },
       "disable_metric_begin_2316a87": {
         "Signature": "function gN(e){my.BrowserMetrics",
         "Value": "function gN(e){/*my.BrowserMetri",
         "Offset": 0,
         "Fill": 0,
-        "Address": 372580
+        "Address": -1
+      },
+      "disable_metric_end_4339a63": {
+        "Signature": ",Kk(t)}o(77113)",
+        "Value": ",Kk(*/}o(77113)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 385824
+      },
+      "disable_metric_begin_4339a63": {
+        "Signature": "function sN(e){Wv.BrowserMetrics",
+        "Value": "function sN(e){/*Wv.BrowserMetri",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 383059
+      },
+      "premium_btn_start_4339a63": {
+        "Signature": ".upgradeButtonFactory()),[t]),a=(0,Rl.n)(n.getAbsoluteLocation(),n);return(0,E.jsx)",
+        "Value": ".upgradeButtonFactory()),[t]),a=(0,Rl.n)(n.getAbsoluteLocation(),n);return null;/*)",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 117688
       },
       "premium_btn_start_3be53af": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,tu.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -164,7 +185,7 @@
         "Value": ".upgradeButtonFactory()),[t]),a=(0,Xl.n)(n.getAbsoluteLocation(),n);return null;/*)",
         "Offset": 0,
         "Fill": 0,
-        "Address": 118172
+        "Address": -1
       },
       "disable_metric_171_end": {
         "Signature": ",Sk(t)}o(72382)",
@@ -250,6 +271,20 @@
         "Fill": 0,
         "Address": -1
       },
+      "skipsentry_4339a63": {
+        "Signature": "function cN(){if(LS()",
+        "Value": "function cN(){if(0!=0",
+        "Offset": 0,
+        "Fill": 0,
+        "Address": 386682
+      },
+      "premium_free": {
+        "Signature": "\"free\"===e.session?",
+        "Value": "\"",
+        "Offset": 0,
+        "Fill": 4,
+        "Address": -1
+      },
       "disable_metric_begin_8f74890": {
         "Signature": "function pN(e){hy.BrowserMetrics",
         "Value": "function pN(e){/*hy.BrowserMetri",
@@ -269,7 +304,7 @@
         "Value": "\"",
         "Offset": 5,
         "Fill": 15,
-        "Address": 316690
+        "Address": 325516
       },
       "premium_btn_171_start": {
         "Signature": ".upgradeButtonFactory()),[t]),a=(0,vi.n)(n.getAbsoluteLocation(),n);return(0,S.jsx)",
@@ -283,14 +318,14 @@
         "Value": "1",
         "Offset": 14,
         "Fill": 0,
-        "Address": 318025
+        "Address": 326851
       },
       "hptoEnabled": {
         "Signature": "hptoEnabled:!0",
         "Value": "1",
         "Offset": 13,
         "Fill": 0,
-        "Address": 315624
+        "Address": 324450
       },
       "skipsentry_begin": {
         "Signature": "function ZN(){if(xE()",
@@ -327,19 +362,12 @@
         "Fill": 0,
         "Address": -1
       },
-      "premium_free": {
-        "Signature": "\"free\"===e.session?",
-        "Value": "\"",
-        "Offset": 0,
-        "Fill": 4,
-        "Address": -1
-      },
       "premium_btn_end_af82ef1": {
         "Signature": "children:i.Ru.get(\"upgrade.button\")})",
         "Value": "children:i.Ru.get(\"upgrade.button\")*/",
         "Offset": 0,
         "Fill": 0,
-        "Address": 118468
+        "Address": 117984
       },
       "skipsentry_begin_d9dcf25": {
         "Signature": "function sk(){if(LE()",
@@ -360,18 +388,18 @@
         "Value": "function vN(){/*(VE()",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376203
+        "Address": -1
       },
       "skipsentry_end_2316a87": {
         "Signature": "))}}lA(\"playback_load_start\")",
         "Value": ")*/}lA(\"playback_load_start\")",
         "Offset": 0,
         "Fill": 0,
-        "Address": 376671
+        "Address": -1
       }
     }
   },
-  "Latest Release Date": "2025-11-13",
+  "Latest Release Date": "2025-11-21",
   "Block List": [
     "/ads/",
     "/ad-logic/",
