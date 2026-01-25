@@ -1,8 +1,8 @@
-LIBRARY	"dpapi"
+LIBRARY	"dpapi.dll";
 
 EXPORTS
-CryptProtectData
-CryptProtectMemory
-CryptUnprotectData
-CryptUnprotectMemory
-CryptUpdateProtectedState
+    CryptProtectData
+    CryptProtectMemory
+    CryptUnprotectData
+    CryptUnprotectMemory
+    CryptUpdateProtectedState

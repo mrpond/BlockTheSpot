@@ -38,7 +38,7 @@ IFDEF RAX ; # 64-bit
         pop rax
     ENDM
 
-    EXTERNDEF LoadAPI:PROC
+    EXTERNDEF load_api:PROC
 
     API_EXPORT_ORIG MACRO API_NAME:REQ
         .DATA
@@ -49,7 +49,7 @@ IFDEF RAX ; # 64-bit
             PUSH_ALL
             sub rsp, 8
             mov rcx, OFFSET S_&API_NAME
-            call LoadAPI
+            call load_api
             mov _&API_NAME, rax
             add rsp, 8
             POP_ALL
@@ -62,33 +62,6 @@ IFDEF RAX ; # 64-bit
     API_EXPORT_ORIG CryptUnprotectData
     API_EXPORT_ORIG CryptUnprotectMemory
     API_EXPORT_ORIG CryptUpdateProtectedState
-    
-    ; API_EXPORT_ORIG ClearReportsBetween_ExportThunk
-    ; API_EXPORT_ORIG CrashForException_ExportThunk
-    ; API_EXPORT_ORIG DisableHook
-    ; API_EXPORT_ORIG DrainLog
-    ; API_EXPORT_ORIG DumpHungProcessWithPtype_ExportThunk
-    ; API_EXPORT_ORIG DumpProcessWithoutCrash
-    ; API_EXPORT_ORIG GetApplyHookResult
-    ; API_EXPORT_ORIG GetBlockedModulesCount
-    ; API_EXPORT_ORIG GetCrashReports_ExportThunk
-    ; API_EXPORT_ORIG GetCrashpadDatabasePath_ExportThunk
-    ; API_EXPORT_ORIG GetHandleVerifier
-    ; API_EXPORT_ORIG GetInstallDetailsPayload
-    ; API_EXPORT_ORIG GetUniqueBlockedModulesCount
-    ; API_EXPORT_ORIG GetUserDataDirectoryThunk
-    ; API_EXPORT_ORIG InjectDumpForHungInput_ExportThunk
-    ; API_EXPORT_ORIG IsBrowserProcess
-    ; API_EXPORT_ORIG IsCrashReportingEnabledImpl
-    ; API_EXPORT_ORIG IsExtensionPointDisableSet
-    ; API_EXPORT_ORIG IsThirdPartyInitialized
-    ; API_EXPORT_ORIG RegisterLogNotification
-    ; API_EXPORT_ORIG RequestSingleCrashUpload_ExportThunk
-    ; API_EXPORT_ORIG SetCrashKeyValueImpl
-    ; API_EXPORT_ORIG SetMetricsClientId
-    ; API_EXPORT_ORIG SetUploadConsent_ExportThunk
-    ; API_EXPORT_ORIG SignalChromeElf
-    ; API_EXPORT_ORIG SignalInitializeCrashReporting
 
 ENDIF
 

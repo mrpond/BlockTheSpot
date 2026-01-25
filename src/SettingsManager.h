@@ -7,7 +7,6 @@ public:
 
     static std::unordered_map<std::wstring, bool> m_config;
     static std::vector<std::wstring> m_block_list;
-    static Json m_developer;
     static Json m_zip_reader;
     static Json m_cef_offsets;
 

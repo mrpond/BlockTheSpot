@@ -103,30 +103,6 @@ void* cef_zip_reader_create_hook(void* stream)
 	return zip_reader;
 }
 
-DWORD WINAPI EnableDeveloper(LPVOID lpParam)
-{
-	auto& dev_data = SettingsManager::m_developer.at(SettingsManager::m_architecture);
-	auto scan = MemoryScanner::ScanResult(dev_data.at(L"Address").get_integer(), L"Spotify.dll", true);
-	if (!scan.is_valid(dev_data.at(L"Signature").get_string())) {
-		scan = MemoryScanner::ScanFirst(dev_data.at(L"Signature").get_string(), L"Spotify.dll");
-		dev_data.at(L"Address") = static_cast<int>(scan.rva());
-	}
-
-	if (scan.is_valid()) {
-		if (scan.offset(dev_data.at(L"Offset").get_integer()).write(Utils::ToHexBytes(dev_data.at(L"Value").get_string()))) {
-			LogInfo(L"Developer - successfully patched!");
-		}
-		else {
-			LogError(L"Developer - failed to patch!");
-		}
-	}
-	else {
-		LogError(L"Developer - unable to find signature in memory!");
-	}
-
-	return 0;
-}
-
 DWORD WINAPI BlockAds(LPVOID lpParam)
 {
 	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_string_userfree_utf16_free").data();

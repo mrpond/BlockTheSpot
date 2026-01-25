@@ -62,9 +62,6 @@
     <ClCompile Include="Modify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BlockTheSpot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BasicUtils\Utils.cpp">
       <Filter>BasicUtils</Filter>
     </ClCompile>
@@ -86,11 +83,11 @@
     <ClCompile Include="SettingsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BlockTheSpot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="chrome_elf.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="dpapi.def">
       <Filter>Source Files</Filter>
     </None>

@@ -6,7 +6,7 @@
 void SettingsManager::Init()
 {
     SyncConfigFile();
-    Logger::Init(L"blockthespot.log", SettingsManager::m_config.at(L"Enable_Log"));
+    Logger::Init(L".\\Users\\blockthespot.log", SettingsManager::m_config.at(L"Enable_Log"));
 
     m_app_settings_file = L"blockthespot_settings.json";
     if (!Load()) {
@@ -133,21 +133,6 @@ bool SettingsManager::Save()
         }}
     };
 
-    m_developer = {
-        {L"x64", {
-            {L"Signature", L"80 E3 01 48 8B 95 ?? ?? ?? ?? 48 83 FA 0F"},
-            {L"Value", L"B3 01 90"},
-            {L"Offset", 0},
-            {L"Address", -1}
-        }},
-        {L"x32", {
-            {L"Signature", L"25 01 FF FF FF 89 ?? ?? ?? FF FF"},
-            {L"Value", L"B8 03 00"},
-            {L"Offset", 0},
-            {L"Address", -1}
-        }}
-    };
-
     m_cef_offsets = {
         {L"x64", {
             {L"cef_request_t_get_url", 48},
@@ -169,7 +154,6 @@ bool SettingsManager::Save()
         {L"Latest Release Date", m_latest_release_date},
         {L"Block List", m_block_list},
         {L"Zip Reader", m_zip_reader},
-        {L"Developer", m_developer},
         {L"Cef Offsets", m_cef_offsets}
     };
 
@@ -202,7 +186,6 @@ bool SettingsManager::Load(const Json& settings)
     m_app_settings.at(L"Latest Release Date").get_to(m_latest_release_date);
     m_app_settings.at(L"Block List").get_to(m_block_list);
     m_app_settings.at(L"Zip Reader").get_to(m_zip_reader);
-    m_app_settings.at(L"Developer").get_to(m_developer);
     m_app_settings.at(L"Cef Offsets").get_to(m_cef_offsets);
 
     m_app_settings.at(L"Cef Offsets").at(m_architecture).at(L"cef_request_t_get_url").get_to(m_cef_request_t_get_url_offset);
@@ -225,14 +208,12 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
             m_app_settings.at(L"Latest Release Date") != m_latest_release_date ||
             m_app_settings.at(L"Block List") != m_block_list ||
             m_app_settings.at(L"Zip Reader") != m_zip_reader ||
-            m_app_settings.at(L"Developer") != m_developer ||
             m_app_settings.at(L"Cef Offsets") != m_cef_offsets);
 
         if (m_settings_changed) {
             m_app_settings.at(L"Latest Release Date") = m_latest_release_date;
             m_app_settings.at(L"Block List") = m_block_list;
             m_app_settings.at(L"Zip Reader") = m_zip_reader;
-            m_app_settings.at(L"Developer") = m_developer;
             m_app_settings.at(L"Cef Offsets") = m_cef_offsets;
 
             if (!Utils::WriteFile(m_app_settings_file, m_app_settings.dump(2))) {
@@ -416,7 +397,7 @@ bool SettingsManager::CompareSettings(const Json& current_settings, const Json& 
 
 void SettingsManager::SyncConfigFile()
 {
-    std::wstring ini_path = L".\\config.ini";
+    std::wstring ini_path = L".\\Users\\config.ini";
     m_config = {
         {L"Block_Ads", true},
         {L"Block_Banner", true},
@@ -439,7 +420,6 @@ void SettingsManager::SyncConfigFile()
 
 std::vector<std::wstring> SettingsManager::m_block_list;
 Json SettingsManager::m_zip_reader;
-Json SettingsManager::m_developer;
 Json SettingsManager::m_cef_offsets;
 
 Json SettingsManager::m_app_settings;
