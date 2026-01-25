@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Hook/Hook.vcxproj" />
+  <Project Path="Loader/Loader.vcxproj" />
+</Solution>
