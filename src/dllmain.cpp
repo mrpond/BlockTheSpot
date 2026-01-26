@@ -32,9 +32,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 						}
 #endif
 						SettingsManager::Init();
-						//if (SettingsManager::m_config.at(L"Enable_Developer")) {
-						//	EnableDeveloper(nullptr);
-						//}
 						if (SettingsManager::m_config.at(L"Block_Ads")) {
 							BlockAds(nullptr);
 						}

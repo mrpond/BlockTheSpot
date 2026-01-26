@@ -8,17 +8,17 @@ void SettingsManager::Init()
     SyncConfigFile();
     Logger::Init(L".\\Users\\blockthespot.log", SettingsManager::m_config.at(L"Enable_Log"));
 
-    m_app_settings_file = L"blockthespot_settings.json";
+    m_app_settings_file = L".\\Users\\blockthespot_settings.json";
     if (!Load()) {
         if (!Save()) {
             LogError(L"Failed to open settings file: {}", m_app_settings_file);
         }
     }
 
-    auto thread = CreateThread(NULL, 0, Update, NULL, 0, NULL);
-    if (thread != nullptr) {
-        CloseHandle(thread);
-    }
+    //auto thread = CreateThread(NULL, 0, Update, NULL, 0, NULL);
+    //if (thread != nullptr) {
+    //    CloseHandle(thread);
+    //}
 }
 
 bool SettingsManager::Save()
@@ -273,7 +273,6 @@ bool SettingsManager::ValidateSettings(const Json& settings)
         {L"Latest Release Date", Json::ValueType::String},
         {L"Block List", Json::ValueType::Array},
         {L"Zip Reader", Json::ValueType::Object},
-        {L"Developer", Json::ValueType::Object},
         {L"Cef Offsets", Json::ValueType::Object}
     };
 
@@ -303,28 +302,6 @@ bool SettingsManager::ValidateSettings(const Json& settings)
         for (const auto& key : offset_keys) {
             if (!offset_data.contains(key) || !offset_data.at(key).is_integer()) {
                 LogError(L"Invalid or missing key '{}' in Cef Offsets settings.", key);
-                return false;
-            }
-        }
-    }
-
-    // Developer
-    for (const auto& [arch, dev_data] : settings.at(L"Developer")) {
-        if (arch != L"x64" && arch != L"x32") {
-            LogError(L"Invalid architecture in Developer settings.");
-            return false;
-        }
-
-        static const std::unordered_map<std::wstring, Json::ValueType> dev_keys = { 
-            {L"Signature", Json::ValueType::String},
-            {L"Value", Json::ValueType::String},
-            {L"Offset", Json::ValueType::Integer},
-            {L"Address", Json::ValueType::Integer}
-        };
-
-        for (const auto& key : dev_keys) {
-            if (!dev_data.contains(key.first) || dev_data.at(key.first).type() != key.second) {
-                LogError(L"Invalid or missing data for key '{}' in Developer settings.", key.first);
                 return false;
             }
         }
@@ -401,9 +378,8 @@ void SettingsManager::SyncConfigFile()
     m_config = {
         {L"Block_Ads", true},
         {L"Block_Banner", true},
-        {L"Enable_Developer", true},
         {L"Enable_Log", false},
-        {L"Enable_Auto_Update", true},
+        {L"Enable_Auto_Update", false},
     };
 
     for (const auto& [key, value] : m_config) {
