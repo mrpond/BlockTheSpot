@@ -1,12 +1,10 @@
 {
   "Cef Offsets": {
     "x64": {
-      "cef_request_t_get_url": 48,
       "cef_zip_reader_t_get_file_name": 72,
       "cef_zip_reader_t_read_file": 112
     },
     "x32": {
-      "cef_request_t_get_url": 24,
       "cef_zip_reader_t_get_file_name": 36,
       "cef_zip_reader_t_read_file": 56
     }
@@ -28,43 +26,13 @@
         "Address": 9493
       }
     },
-    "6059.css": {
-      "canvas_test": {
-        "Signature": ".Y89c1_2SAoZFkICK7WVp{container-type:inline-size;display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": ".Y89c1_2SAoZFkICK7WVp{container-type:inline-size;display:-webkit-box;display:-ms-flexbox;display:none;",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 0
-      }
-    },
     "xpui-snapshot.js": {
-	  "isPremium": {
-        "Signature": "isPremium:!1",
-        "Value": "0",
-        "Offset": 11,
-        "Fill": 0,
-        "Address": 330654
-      },
-      "80eb4a0_sponsorship": {
-        "Signature": "a=e.sponsoredPlaylist.get(n);if(Array.isArray(a)",
-        "Value": "a=e.sponsoredPlaylist.get(n);if(false/*sArray(*/",
-        "Offset": 0,
-        "Fill": 0,
-        "Address": 328221
-      },
       "adsEnabled": {
         "Signature": "adsEnabled:!0",
         "Value": "1",
         "Offset": 12,
         "Fill": 0,
         "Address": 330748
-      },
-      "ishptohidden": {
-        "Signature": "isHptoHidden:!0",
-        "Value": "1",
-        "Offset": 14,
-        "Fill": 0,
-        "Address": 330667
       },
       "80eb4a0_skipsentry": {
         "Signature": "function $L(){if(uE()",
@@ -93,13 +61,6 @@
         "Offset": 0,
         "Fill": 0,
         "Address": -1
-      },
-      "hptoEnabled": {
-        "Signature": "hptoEnabled:!0",
-        "Value": "1",
-        "Offset": 13,
-        "Fill": 0,
-        "Address": 328900
       },
       "80eb4a0_disable_metric_end": {
         "Signature": ",DL(t)}const QL=[];",
@@ -151,20 +112,6 @@
         "Address": -1
       }
     },
-    "home-hpto.css": {
-      "hptocss": {
-        "Signature": ".Mvhjv8IKLGjQx94MVOgP{display:-webkit-box;display:-ms-flexbox;display:flex;",
-        "Value": "none",
-        "Offset": 70,
-        "Fill": 0,
-        "Address": 0
-      }
-    }
   },
   "Latest Release Date": "2026-01-20",
-  "Block List": [
-    "/ads/",
-    "/ad-logic/",
-    "/gabo-receiver-service/"
-  ]
 }

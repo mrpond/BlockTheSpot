@@ -91,7 +91,6 @@
     <ClInclude Include="BasicUtils\Memory.h" />
     <ClInclude Include="BasicUtils\MemoryScanner.h" />
     <ClInclude Include="BasicUtils\Utils.h" />
-    <ClInclude Include="Debug.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="pch.h" />
@@ -105,7 +104,6 @@
     <ClCompile Include="BasicUtils\MemoryScanner.cpp" />
     <ClCompile Include="BasicUtils\Utils.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
-    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="SettingsManager.cpp" />

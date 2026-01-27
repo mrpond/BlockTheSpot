@@ -25,12 +25,6 @@ bool SettingsManager::Save()
 {
     m_latest_release_date = L"2025-08-16"; // Update only when significant changes occur.
     
-    m_block_list = { 
-        L"/ads/",
-        L"/ad-logic/",
-        L"/gabo-receiver-service/"
-    };
-
     m_zip_reader = {
         {L"home-hpto.css", {
             {L"hptocss", {
@@ -135,24 +129,20 @@ bool SettingsManager::Save()
 
     m_cef_offsets = {
         {L"x64", {
-            {L"cef_request_t_get_url", 48},
             {L"cef_zip_reader_t_get_file_name", 72},
             {L"cef_zip_reader_t_read_file", 112},
         }},
         {L"x32", {
-            {L"cef_request_t_get_url", 24},
             {L"cef_zip_reader_t_get_file_name", 36},
             {L"cef_zip_reader_t_read_file", 56},
         }}
     };
 
-    m_cef_offsets.at(m_architecture).at(L"cef_request_t_get_url").get_to(m_cef_request_t_get_url_offset);
     m_cef_offsets.at(m_architecture).at(L"cef_zip_reader_t_get_file_name").get_to(m_cef_zip_reader_t_get_file_name_offset);
     m_cef_offsets.at(m_architecture).at(L"cef_zip_reader_t_read_file").get_to(m_cef_zip_reader_t_read_file_offset);
 
     m_app_settings = {
         {L"Latest Release Date", m_latest_release_date},
-        {L"Block List", m_block_list},
         {L"Zip Reader", m_zip_reader},
         {L"Cef Offsets", m_cef_offsets}
     };
@@ -184,15 +174,13 @@ bool SettingsManager::Load(const Json& settings)
     }
 
     m_app_settings.at(L"Latest Release Date").get_to(m_latest_release_date);
-    m_app_settings.at(L"Block List").get_to(m_block_list);
     m_app_settings.at(L"Zip Reader").get_to(m_zip_reader);
     m_app_settings.at(L"Cef Offsets").get_to(m_cef_offsets);
 
-    m_app_settings.at(L"Cef Offsets").at(m_architecture).at(L"cef_request_t_get_url").get_to(m_cef_request_t_get_url_offset);
     m_app_settings.at(L"Cef Offsets").at(m_architecture).at(L"cef_zip_reader_t_get_file_name").get_to(m_cef_zip_reader_t_get_file_name_offset);
     m_app_settings.at(L"Cef Offsets").at(m_architecture).at(L"cef_zip_reader_t_read_file").get_to(m_cef_zip_reader_t_read_file_offset);
 
-    if (!m_cef_request_t_get_url_offset || !m_cef_zip_reader_t_get_file_name_offset || !m_cef_zip_reader_t_read_file_offset) {
+    if (!m_cef_zip_reader_t_get_file_name_offset || !m_cef_zip_reader_t_read_file_offset) {
         LogError(L"Failed to load cef offsets from settings file.");
         return false;
     }
@@ -206,13 +194,11 @@ DWORD WINAPI SettingsManager::Update(LPVOID lpParam)
     while (std::chrono::steady_clock::now() < end_time) {
         m_settings_changed = (
             m_app_settings.at(L"Latest Release Date") != m_latest_release_date ||
-            m_app_settings.at(L"Block List") != m_block_list ||
             m_app_settings.at(L"Zip Reader") != m_zip_reader ||
             m_app_settings.at(L"Cef Offsets") != m_cef_offsets);
 
         if (m_settings_changed) {
             m_app_settings.at(L"Latest Release Date") = m_latest_release_date;
-            m_app_settings.at(L"Block List") = m_block_list;
             m_app_settings.at(L"Zip Reader") = m_zip_reader;
             m_app_settings.at(L"Cef Offsets") = m_cef_offsets;
 
@@ -271,7 +257,6 @@ bool SettingsManager::ValidateSettings(const Json& settings)
 
     static const std::unordered_map<std::wstring, Json::ValueType> keys = { 
         {L"Latest Release Date", Json::ValueType::String},
-        {L"Block List", Json::ValueType::Array},
         {L"Zip Reader", Json::ValueType::Object},
         {L"Cef Offsets", Json::ValueType::Object}
     };
@@ -283,14 +268,6 @@ bool SettingsManager::ValidateSettings(const Json& settings)
         }
     }
 
-    // Block List
-    for (const auto& item : settings.at(L"Block List").get_array()) {
-        if (!item.is_string()) {
-            LogError(L"Invalid data type in Block List.");
-            return false;
-        }
-    }
-
     // Cef Offsets
     for (const auto& [arch, offset_data] : settings.at(L"Cef Offsets")) {
         if (arch != L"x64" && arch != L"x32") {
@@ -298,7 +275,7 @@ bool SettingsManager::ValidateSettings(const Json& settings)
             return false;
         }
 
-        static const std::vector<std::wstring> offset_keys = { L"cef_request_t_get_url", L"cef_zip_reader_t_get_file_name", L"cef_zip_reader_t_read_file" };
+        static const std::vector<std::wstring> offset_keys = {  L"cef_zip_reader_t_get_file_name", L"cef_zip_reader_t_read_file" };
         for (const auto& key : offset_keys) {
             if (!offset_data.contains(key) || !offset_data.at(key).is_integer()) {
                 LogError(L"Invalid or missing key '{}' in Cef Offsets settings.", key);
@@ -376,7 +353,6 @@ void SettingsManager::SyncConfigFile()
 {
     std::wstring ini_path = L".\\Users\\config.ini";
     m_config = {
-        {L"Block_Ads", true},
         {L"Block_Banner", true},
         {L"Enable_Log", false},
         {L"Enable_Auto_Update", false},
@@ -394,7 +370,6 @@ void SettingsManager::SyncConfigFile()
     }
 }
 
-std::vector<std::wstring> SettingsManager::m_block_list;
 Json SettingsManager::m_zip_reader;
 Json SettingsManager::m_cef_offsets;
 
@@ -404,7 +379,6 @@ std::wstring SettingsManager::m_app_settings_file;
 bool SettingsManager::m_settings_changed;
 std::unordered_map<std::wstring, bool> SettingsManager::m_config;
 
-int SettingsManager::m_cef_request_t_get_url_offset;
 int SettingsManager::m_cef_zip_reader_t_get_file_name_offset;
 int SettingsManager::m_cef_zip_reader_t_read_file_offset;
 

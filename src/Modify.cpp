@@ -1,43 +1,10 @@
 ﻿#include "pch.h"
 
-using _cef_urlrequest_create = void* (*)(void* request, void* client, void* request_context);
-static _cef_urlrequest_create cef_urlrequest_create_orig = nullptr;
-
-using _cef_string_userfree_utf16_free = void (*)(void* str);
-static _cef_string_userfree_utf16_free cef_string_userfree_utf16_free_orig = nullptr;
-
 using _cef_zip_reader_create = void* (*)(void* stream);
 static _cef_zip_reader_create cef_zip_reader_create_orig = nullptr;
 
 using _cef_zip_reader_t_read_file = int(__stdcall*)(void* self, void* buffer, size_t bufferSize);
 static _cef_zip_reader_t_read_file cef_zip_reader_t_read_file_orig = nullptr;
-
-#ifndef NDEBUG
-void* cef_urlrequest_create_hook(struct _cef_request_t* request, void* client, void* request_context)
-#else
-void* cef_urlrequest_create_hook(void* request, void* client, void* request_context)
-#endif
-{
-#ifndef NDEBUG
-	cef_string_utf16_t* url_utf16 = request->get_url(request);
-	std::wstring url = Utils::ToString(url_utf16->str);
-#else
-	const auto get_url = *(void* (__stdcall**)(void*))((uintptr_t)request + SettingsManager::m_cef_request_t_get_url_offset);
-	auto url_utf16 = get_url(request);
-	std::wstring url = *reinterpret_cast<wchar_t**>(url_utf16);
-#endif
-	for (const auto& block_url : SettingsManager::m_block_list) {
-		if (std::wstring_view::npos != url.find(block_url)) {
-			LogInfo(L"blocked - {}", url);
-			cef_string_userfree_utf16_free_orig((void*)url_utf16);
-			return nullptr;
-		}
-	}
-
-	cef_string_userfree_utf16_free_orig((void*)url_utf16);
-	LogInfo(L"allow - {}", url);
-	return cef_urlrequest_create_orig(request, client, request_context);
-}
 
 #ifndef NDEBUG
 int cef_zip_reader_t_read_file_hook(struct _cef_zip_reader_t* self, void* buffer, size_t bufferSize)
@@ -103,18 +70,6 @@ void* cef_zip_reader_create_hook(void* stream)
 	return zip_reader;
 }
 
-DWORD WINAPI BlockAds(LPVOID lpParam)
-{
-	cef_string_userfree_utf16_free_orig = (_cef_string_userfree_utf16_free)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_string_userfree_utf16_free").data();
-	if (!cef_string_userfree_utf16_free_orig) {
-		LogError(L"BlockAds - patch failed!");
-		return 0;
-	}
-
-	cef_urlrequest_create_orig = (_cef_urlrequest_create)MemoryScanner::GetFunctionAddress("libcef.dll", "cef_urlrequest_create").hook((PVOID)cef_urlrequest_create_hook);
-	cef_urlrequest_create_orig ? LogInfo(L"BlockAds - patch success!") : LogError(L"BlockAds - patch failed!");
-	return 0;
-}
 
 DWORD WINAPI BlockBanner(LPVOID lpParam)
 {

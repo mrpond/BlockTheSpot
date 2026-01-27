@@ -6,11 +6,9 @@ public:
     static void Init();
 
     static std::unordered_map<std::wstring, bool> m_config;
-    static std::vector<std::wstring> m_block_list;
     static Json m_zip_reader;
     static Json m_cef_offsets;
 
-    static int m_cef_request_t_get_url_offset;
     static int m_cef_zip_reader_t_get_file_name_offset;
     static int m_cef_zip_reader_t_read_file_offset;
 

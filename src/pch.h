@@ -11,6 +11,5 @@
 #include "framework.h"
 #include "SettingsManager.h"
 #include "Modify.h"
-#include "Debug.h"
 
 #endif //PCH_H
