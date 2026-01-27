@@ -5,7 +5,7 @@ struct Hex_table
 	BYTE data[256];
 };
 
-inline constexpr BYTE hexchar_to_byte(char c)
+static inline constexpr BYTE hexchar_to_byte(char c)
 {
 	if (c >= '0' && c <= '9')
 		return static_cast<BYTE>(c - '0');
@@ -17,7 +17,7 @@ inline constexpr BYTE hexchar_to_byte(char c)
 		return 0xFF;
 }
 
-consteval Hex_table make_hex_table()
+static consteval Hex_table make_hex_table()
 {
 	Hex_table t{};
 
@@ -27,14 +27,14 @@ consteval Hex_table make_hex_table()
 	return t;
 }
 
-inline constexpr Hex_table lookup_hex = make_hex_table();
+static inline constexpr Hex_table lookup_hex = make_hex_table();
 
-inline constexpr BYTE hexchar(char c)
+static inline constexpr BYTE hexchar(char c)
 {
 	return lookup_hex.data[(unsigned char)c];
 }
 
-constexpr BYTE hex_pair(char hi, char lo)
+static constexpr BYTE hex_pair(char hi, char lo)
 {
 	BYTE h = hexchar(hi);
 	BYTE l = hexchar(lo);
@@ -84,7 +84,7 @@ bool DataCompare(BYTE* pData, BYTE* bSig, char* szMask) noexcept
 
 BYTE* FindPattern(BYTE* dwAddress, DWORD dwSize, BYTE* pbSig, char* szMask) noexcept
 {
-	for (DWORD i = NULL; i < dwSize; i++)
+	for (DWORD i = NULL; i < dwSize; ++i)
 	{
 		if (DataCompare(dwAddress + i, pbSig, szMask))
 			return dwAddress + i;
@@ -99,7 +99,7 @@ size_t parse_signaure(
 	BYTE* out_bytes,
 	char* out_mask,
 	size_t limit
-)
+) noexcept
 {
 	size_t i = 0;
 	size_t out = 0;
@@ -152,7 +152,7 @@ size_t parse_hex(
 	size_t src_len,
 	BYTE* out_bytes,
 	size_t out_cap
-)
+) noexcept
 {
 	size_t i = 0;
 	size_t out = 0;
@@ -178,7 +178,8 @@ size_t parse_hex(
 		if (out >= out_cap)
 			return SIZE_MAX;  // overflow
 
-		out_bytes[out++] = b;
+		out_bytes[out] = b;
+		++out;
 		i += 2;
 	}
 

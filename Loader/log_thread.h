@@ -1,7 +1,7 @@
 #pragma once
 #include "loader.h"
 
-void init_log_thread();
+void init_log_thread() noexcept;
 
 enum class Log_level : uint8_t {
 	NONE = 0,
@@ -9,16 +9,10 @@ enum class Log_level : uint8_t {
 	DEBUG
 };
 
-void log_message(Log_level level, const char* message);
+using log_debug_t = void (*)(const char*) noexcept;
+inline log_debug_t log_debug = nullptr;
 
-// Inline wrapper for debug logging
-inline void log_debug(const char* message)
-{
-	log_message(Log_level::DEBUG, message);
-}
+using log_info_t = void (*)(const char*) noexcept;
+inline log_info_t log_info = nullptr;
 
-// Inline wrapper for debug logging
-inline void log_info(const char* message)
-{
-	log_message(Log_level::INFORMATION, message);
-}
+void stop_log() noexcept;

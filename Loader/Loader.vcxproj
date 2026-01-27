@@ -48,11 +48,13 @@
     <TargetName>chrome_elf</TargetName>
     <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)out\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>chrome_elf</TargetName>
     <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)out\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,9 +74,9 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <MASM>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
@@ -103,7 +105,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
     </Link>
@@ -115,6 +116,7 @@
     </MASM>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cef_url_hook.cpp" />
     <ClCompile Include="chrome_elf.cpp" />
     <ClCompile Include="developer_mode.cpp" />
     <ClCompile Include="IAT_hook.cpp" />
@@ -127,7 +129,9 @@
     <ClCompile Include="WinTrust_hook.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cef_url_hook.h" />
     <ClInclude Include="developer_mode.h" />
+    <ClInclude Include="funct_pointer.h" />
     <ClInclude Include="IAT_hook.h" />
     <ClInclude Include="kill_crashpad.h" />
     <ClInclude Include="loader.h" />

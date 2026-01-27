@@ -1,5 +1,6 @@
 #include "loader.h"
 #include "kill_crashpad.h"
+#include "log_thread.h"
 
 // QueueUserAPC via DLL Main instead of CreateThread
 // Ready for loader in the future.
@@ -29,6 +30,13 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		// Crashpad process
 		if (NULL != wcsstr(cmd, L"--url=")) {
 			kill_crashpad();
+		}
+	}
+	if (DLL_PROCESS_DETACH == ul_reason_for_call) {
+		LPWSTR cmd = GetCommandLineW();
+		if (NULL == wcsstr(cmd, L"--type=") &&
+			NULL == wcsstr(cmd, L"--url=")) {
+			stop_log();
 		}
 	}
 	return TRUE;

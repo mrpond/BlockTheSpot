@@ -26,11 +26,11 @@ size_t parse_signaure(
 	BYTE* out_bytes,
 	char* out_mask,
 	size_t out_cap
-);
+) noexcept;
 
 size_t parse_hex(
 	const char* src,
 	size_t src_len,
 	BYTE* out_bytes,
 	size_t out_cap
-);
+) noexcept;

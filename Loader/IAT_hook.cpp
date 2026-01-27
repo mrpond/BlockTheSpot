@@ -33,7 +33,7 @@ bool IAT_hook_GetProcAddress() noexcept
 		reinterpret_cast<BYTE*>(module) + dir.VirtualAddress
 		);
 
-	for (; imports->Name; imports++) {
+	for (; imports->Name; ++imports) {
 		LPCSTR dll_name = reinterpret_cast<LPCSTR>(
 			reinterpret_cast<BYTE*>(module) + imports->Name
 			);
@@ -45,7 +45,7 @@ bool IAT_hook_GetProcAddress() noexcept
 				reinterpret_cast<BYTE*>(module) + imports->FirstThunk
 				);
 
-			for (; thunk->u1.Function; thunk++) {
+			for (; thunk->u1.Function; ++thunk) {
 				PROC* func = reinterpret_cast<PROC*>(&thunk->u1.Function);
 
 				if (*func == reinterpret_cast<PROC>(GetProcAddress)) {
@@ -80,7 +80,7 @@ bool IAT_unhook_GetProcAddress() noexcept
 		reinterpret_cast<BYTE*>(module) + dir.VirtualAddress
 		);
 
-	for (; imports->Name; imports++) {
+	for (; imports->Name; ++imports) {
 		LPCSTR dll_name = reinterpret_cast<LPCSTR>(
 			reinterpret_cast<BYTE*>(module) + imports->Name
 			);
@@ -92,7 +92,7 @@ bool IAT_unhook_GetProcAddress() noexcept
 				reinterpret_cast<BYTE*>(module) + imports->FirstThunk
 				);
 
-			for (; thunk->u1.Function; thunk++) {
+			for (; thunk->u1.Function; ++thunk) {
 				PROC* func = reinterpret_cast<PROC*>(&thunk->u1.Function);
 
 				if (*func == reinterpret_cast<PROC>(GetProcAddress_hook)) {

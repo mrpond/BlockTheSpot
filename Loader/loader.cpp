@@ -3,6 +3,7 @@
 #include "IAT_hook.h"
 #include "kill_crashpad.h"
 #include "log_thread.h"
+#include "cef_url_hook.h"
 
 bool remove_unused_dll() noexcept
 {
@@ -28,7 +29,7 @@ const wchar_t* filename_from_path(const wchar_t* path) noexcept
 	return last;
 }
 
-void CALLBACK bts_main(ULONG_PTR param)
+VOID CALLBACK bts_main(ULONG_PTR param)
 {
 	IAT_hook_GetProcAddress();
 	const wchar_t* cmd =
@@ -38,11 +39,12 @@ void CALLBACK bts_main(ULONG_PTR param)
 		NULL == wcsstr(cmd, L"--url=")) {
 		init_log_thread();
 
-		hook_developer_mode();
 		remove_unused_dll();
-		//hook_developer_mode();
+		hook_developer_mode();
+		hook_cef_url();
 		LoadLibraryW(L".\\Users\\dpapi.dll");
-		log_debug("dpapi loaded.");
+		//log_debug("dpapi loaded.");
+		// FlushInstructionCache(GetCurrentProcess(), nullptr, 0);
 		log_info("Loader initialized successfully.");
 	}
 }
