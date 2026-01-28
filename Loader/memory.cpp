@@ -1,9 +1,9 @@
 #include "memory.h"
 
-void patch_instruction(LPVOID* lpAddress,SIZE_T size, void* value)
+void patch_instruction(LPVOID* lpAddress, void* value, SIZE_T patch_size)
 {
 	DWORD oldProtect;
-	VirtualProtect(lpAddress, size, PAGE_EXECUTE_READWRITE, &oldProtect);
-	memcpy(lpAddress, value, size);
-	VirtualProtect(lpAddress, size, oldProtect, &oldProtect);
+	VirtualProtect(lpAddress, patch_size, PAGE_EXECUTE_READWRITE, &oldProtect);
+	memcpy(lpAddress, value, patch_size);
+	VirtualProtect(lpAddress, patch_size, oldProtect, &oldProtect);
 }

@@ -71,12 +71,14 @@
       <ErrorReporting>None</ErrorReporting>
       <ControlFlowGuard>false</ControlFlowGuard>
       <GuardEHContMetadata>false</GuardEHContMetadata>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <MASM>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
@@ -102,11 +104,13 @@
       <ErrorReporting>None</ErrorReporting>
       <ControlFlowGuard>false</ControlFlowGuard>
       <GuardEHContMetadata>false</GuardEHContMetadata>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <MASM>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
@@ -117,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cef_url_hook.cpp" />
+    <ClCompile Include="cef_zip_reader_hook.cpp" />
     <ClCompile Include="chrome_elf.cpp" />
     <ClCompile Include="developer_mode.cpp" />
     <ClCompile Include="IAT_hook.cpp" />
@@ -130,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cef_url_hook.h" />
+    <ClInclude Include="cef_zip_reader_hook.h" />
     <ClInclude Include="developer_mode.h" />
     <ClInclude Include="funct_pointer.h" />
     <ClInclude Include="IAT_hook.h" />

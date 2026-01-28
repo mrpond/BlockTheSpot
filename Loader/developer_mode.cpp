@@ -103,7 +103,7 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 	}
 
 	if (address) {
-		patch_instruction(reinterpret_cast<LPVOID*>(address + offset), patch_size, modify.value);
+		patch_instruction(reinterpret_cast<LPVOID*>(address + offset), modify.value, patch_size);
 		log_info("do_hook_developer: patch applied.");
 		return;
 	}

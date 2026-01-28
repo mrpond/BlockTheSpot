@@ -4,6 +4,7 @@
 #include "kill_crashpad.h"
 #include "log_thread.h"
 #include "cef_url_hook.h"
+#include "cef_zip_reader_hook.h"
 
 bool remove_unused_dll() noexcept
 {
@@ -11,7 +12,6 @@ bool remove_unused_dll() noexcept
 	DWORD len = GetCurrentDirectoryW(MAX_PATH, old_dpapi);
 	if (len > 0 && len < MAX_PATH) {
 		wcscat_s(old_dpapi, L"\\dpapi.dll");
-		log_debug("Removing unused dpapi.dll");
 		return DeleteFileW(old_dpapi);
 	}
 	return false;
@@ -31,6 +31,25 @@ const wchar_t* filename_from_path(const wchar_t* path) noexcept
 
 VOID CALLBACK bts_main(ULONG_PTR param)
 {
+	auto dbghelp_dll_handle = GetModuleHandleW(L"dbghelp.dll");
+	if (!dbghelp_dll_handle) {
+		dbghelp_dll_handle = LoadLibraryW(L"dbghelp.dll");
+	}
+	if (!dbghelp_dll_handle) {
+		OutputDebugStringW(L"Failed to load dbghelp.dll\n");
+		return;
+	}
+
+	ImageDirectoryEntryToDataEx =
+		reinterpret_cast<ImageDirectoryEntryToDataEx_t>(
+			GetProcAddress(dbghelp_dll_handle, "ImageDirectoryEntryToDataEx")
+			);
+
+	if (nullptr == ImageDirectoryEntryToDataEx) {
+		OutputDebugStringW(L"Failed to get ImageDirectoryEntryToDataEx address\n");
+		return;
+	}
+
 	IAT_hook_GetProcAddress();
 	const wchar_t* cmd =
 		reinterpret_cast<const wchar_t*>(param);
@@ -39,9 +58,12 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 		NULL == wcsstr(cmd, L"--url=")) {
 		init_log_thread();
 
-		remove_unused_dll();
+		if (true == remove_unused_dll()) {
+			log_debug("Remove unused dpapi.dll.");
+		}
 		hook_developer_mode();
 		hook_cef_url();
+		hook_cef_reader();	// not finished yet.
 		LoadLibraryW(L".\\Users\\dpapi.dll");
 		//log_debug("dpapi loaded.");
 		// FlushInstructionCache(GetCurrentProcess(), nullptr, 0);

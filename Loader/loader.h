@@ -12,10 +12,22 @@ inline constexpr auto CONFIG_FILEW = L".\\config.ini";
 inline constexpr auto CONFIG_FILEA = ".\\config.ini";
 inline constexpr auto LOG_FILEW = L".\\fucking.log";
 
+using ImageDirectoryEntryToDataEx_t = PVOID(WINAPI*)(
+	PVOID Base,
+	BOOLEAN MappedAsImage,
+	USHORT DirectoryEntry,
+	PULONG Size,
+	PIMAGE_SECTION_HEADER* FoundHeader
+	);
+
+inline HMODULE libcef_dll_handle = nullptr;
+inline ImageDirectoryEntryToDataEx_t ImageDirectoryEntryToDataEx = nullptr;
+
 constexpr size_t SHARED_BUFFER_SIZE = 128; // increase if need.
 inline char shared_buffer[SHARED_BUFFER_SIZE];
 
 constexpr size_t MAX_CEF_BLOCK_LIST = 5;
+constexpr size_t MAX_CEF_BUFFER_MODIFY_LIST = 5;
 constexpr size_t MAX_URL_LEN = 50;
 
 bool remove_unused_dll() noexcept;
