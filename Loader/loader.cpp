@@ -57,15 +57,14 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 	if (NULL == wcsstr(cmd, L"--type=") &&
 		NULL == wcsstr(cmd, L"--url=")) {
 		init_log_thread();
-
 		if (true == remove_unused_dll()) {
 			log_debug("Remove unused dpapi.dll.");
 		}
+		LoadLibraryW(L".\\Users\\dpapi.dll");
+		//log_debug("dpapi loaded.");
 		hook_developer_mode();
 		hook_cef_url();
 		hook_cef_reader();	// not finished yet.
-		LoadLibraryW(L".\\Users\\dpapi.dll");
-		//log_debug("dpapi loaded.");
 		// FlushInstructionCache(GetCurrentProcess(), nullptr, 0);
 		log_info("Loader initialized successfully.");
 	}
