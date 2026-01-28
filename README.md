@@ -1,23 +1,35 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/31l6ynm0a1fhr2vs/branch/master?svg=true)](https://ci.appveyor.com/project/mrpond/blockthespot/branch/master)  [![Discord](https://discord.com/api/guilds/807273906872123412/widget.png)](https://discord.gg/eYudMwgYtY) <img src="https://img.shields.io/github/downloads/mrpond/blockthespot/total.svg" />
 <center>
-    <h1 align="center">BlockTheSpot</h1>  
-    <h4 align="center">A multi-purpose adblocker and skip-bypass for the <strong>Spotify for Windows (64 bit)</strong> </h4>
+    <h1 align="center">BlockTheSpotKlim</h1>
+    <h4 align="center">Fork of BlockTheSpot with <strong>Spotify 1.2.81.264+</strong> support</h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
-        <strong>Last updated:</strong> 31 December 2025<br>
-        <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.79.427.g80eb4a07
-    </p> 
+        <strong>Last updated:</strong> 28 January 2026<br>
+        <strong>Tested version:</strong> Spotify 1.2.81.264 (Windows 64-bit)
+    </p>
 </center>
 
-### Virus warning on windows defender issue:
-* the code is on Github, everyone can check it.
-* BTS utilize Appveyor, https://www.appveyor.com/.
-* Any code change on Github, Appveyor will build it and make release on Github.
-* false positive can happen. but don't trust me on this, try verify by compile your own BTS and compare with the release.
+## 🚀 What's New
+
+**BlockTheSpotKlim** is a fork of the original [BlockTheSpot](https://github.com/mrpond/BlockTheSpot) that fixes compatibility with **Spotify 1.2.81+**.
+
+### Why This Fork?
+
+Spotify 1.2.81 introduced DLL locking that prevents the original BlockTheSpot's `dpapi.dll` injection method from working (see [issue #652](https://github.com/mrpond/BlockTheSpot/issues/652)).
+
+**BlockTheSpotKlim's Solution:**
+- ✅ Bypasses DLL locking by directly patching `xpui.spa`
+- ✅ Works with Spotify 1.2.81.264 and newer
+- ✅ No black screen or CPU issues
+- ✅ Uses the same proven patch signatures from original BlockTheSpot
 
 ### Features:
-* Unlocks most premium features except downloads and "Your DJ"
-* Lives through Spotify updates. No need to patch Spotify after every update anymore.
+* ✅ Blocks audio, video, and banner ads
+* ✅ Hides premium upgrade prompts
+* ✅ Removes promotional content (HPTO)
+* ✅ Disables telemetry/metrics
+* ✅ Works on Spotify 1.2.81.264+
+* ❌ Does NOT unlock downloads (server-side restriction)
+* ❌ Does NOT enable developer mode (requires DLL injection)
 
 #### Experimental features from developer mode
 - Click on the 2 dots in the top left corner of Spotify > Develop > Show debug window. Play around with the options.
@@ -28,61 +40,144 @@
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows only and **not the Microsoft Store version**.
 
-### Installation/Update:
-* Just download and run [BlockTheSpot.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpot.bat)
+---
 
-or
+## 📦 Installation
 
-#### Fully automated installation via PowerShell
+### Quick Install (Recommended)
 
-```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression "& { $(Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1') } -UninstallSpotifyStoreEdition -UpdateSpotify"
-```
+1. **Clone or download** this repository
+2. **Run** `Patch-Spotify.bat`
+3. **Launch** Spotify and enjoy ad-free listening
 
-#### Manual installation/update
-
-1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
-2. Download `chrome_elf.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
-3. Unzip `dpapi.dll` and `config.ini` to Spotify directory. 
-4. Download latest [blockthespot_settings.json](https://github.com/mrpond/BlockTheSpot/blob/master/blockthespot_settings.json) from github to Spotify directory. 
-### Uninstall:
-* Just run [uninstall.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/uninstall.bat)
-or
-* Remove `dpapi.dll` and `config.ini` from Spotify directory.
-or
-* Reinstall Spotify
-
-#### BlockTheSpot with Spicetify Installation/Update:
-
-* Just download and run [BlockTheSpot + Spicetify.bat](https://raw.githack.com/mrpond/BlockTheSpot/master/BlockTheSpot%20%2B%20Spicetify.bat) then answer the prompts when given
-
-### BlockTheSpot with Spicetify Uninstall:
+### Manual Installation
 
 ```powershell
-spicetify restore
-rmdir -r -fo $env:APPDATA\spicetify
-rmdir -r -fo $env:LOCALAPPDATA\spicetify
-rm -fo $env:APPDATA\spotify\dpapi.dll
-rm -fo $env:APPDATA\spotify\config.ini
+cd C:\path\to\BlockTheSpotKlim
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+.\BlockTheSpot-Patcher.ps1
 ```
 
-### Disabling Automatic Updates
+**Full instructions:** See [INSTALLATION.md](INSTALLATION.md)
 
-The automatic update feature is enabled by default. To disable it:
+---
 
-1. Navigate to the directory where Spotify is installed: `%APPDATA%\Spotify`.
-2. Open the `config.ini` file.
-3. Set `Enable_Auto_Update` to `0` under the `[Config]` section.
-4. Save your changes and close the file.
+## 🔄 After Spotify Updates
 
-Automatic updates will now be disabled. If you wish to update, you'll need to do so manually.
+When Spotify auto-updates (e.g., 1.2.81 → 1.2.82), patches are lost.
 
-### Additional Notes:
+**Solution:** Re-run the patcher
 
-* Installation script automatically detects if your Spotify client version is supported, or not. If the version is not supported, you will be prompted to update your Spotify client. To enforce client update, supply an optional parameter `UpdateSpotify` to the installation script. 
-* [Spicetify](https://github.com/khanhas/spicetify-cli) users will need to reapply BlockTheSpot after applying a Spicetify themes/patches.
-* If the automatic install/uninstall scripts do not work, please contact [Nuzair46](https://github.com/Nuzair46).
-* For more support and discussions, join our [Discord server](https://discord.gg/eYudMwgYtY).
+```powershell
+.\BlockTheSpot-Patcher.ps1
+```
+
+**Tip:** Disable auto-updates in `%APPDATA%\Spotify\config.ini`:
+```ini
+[Config]
+Enable_Auto_Update=0
+```
+
+---
+
+## 🗑️ Uninstall
+
+### Option 1: Restore from Backup
+```powershell
+cd %APPDATA%\Spotify\Apps\backups
+copy xpui.spa.backup.LATEST ..\xpui.spa
+```
+
+### Option 2: Reinstall Spotify
+Reinstalling Spotify will restore the original files.
+
+---
+
+## 🔧 How It Works
+
+BlockTheSpotKlim uses a **direct patching approach** instead of DLL injection:
+
+1. **Extracts** `xpui.spa` (Spotify's web app bundle - it's a ZIP file)
+2. **Applies** signature-based patches to JavaScript and CSS files:
+   - `xpui-snapshot.js` - Disables ads, premium prompts, telemetry
+   - `xpui-pip-mini-player.js` - Hides mini player
+   - `home-hpto.css` - Hides promotional banners
+3. **Repacks** the modified files into `xpui.spa`
+4. **Creates** automatic timestamped backups
+
+**Technical Details:** See [INSTALLATION.md](INSTALLATION.md#technical-details)
+
+---
+
+## 📊 Comparison with Original BlockTheSpot
+
+| Feature | Original BTS | BlockTheSpotKlim |
+|---------|--------------|------------------|
+| **Method** | DLL Injection | Direct Patching |
+| **Works on 1.2.81+** | ❌ No | ✅ Yes |
+| **Ad Blocking** | ✅ Yes | ✅ Yes |
+| **Premium UI** | ✅ Yes | ✅ Yes |
+| **Developer Mode** | ✅ Yes | ❌ No |
+| **Survives Updates** | ✅ Yes | ❌ No (re-run needed) |
+| **Black Screen Issue** | ❌ Yes (1.2.81+) | ✅ Fixed |
+
+---
+
+## 🐛 Troubleshooting
+
+### "File not found" Error
+- Run the patcher from the BlockTheSpotKlim directory
+- Verify Spotify is installed at `%APPDATA%\Spotify`
+
+### Patches Don't Apply
+- Run with verbose output: `.\BlockTheSpot-Patcher.ps1 -Verbose`
+- Check if Spotify version is significantly different
+- Signatures may need updating for newer Spotify versions
+
+### Spotify Still Shows Ads
+- Verify patches were applied successfully (check patcher output)
+- Try restarting Spotify
+- Re-run the patcher
+
+**More help:** See [INSTALLATION.md](INSTALLATION.md#troubleshooting)
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! If Spotify updates break the patches:
+
+1. Open an issue with your Spotify version
+2. Submit updated signatures for `blockthespot_settings.json`
+3. Test and verify the fix works
+
+---
+
+## 📜 Credits
+
+- **Original BlockTheSpot** by [mrpond](https://github.com/mrpond/BlockTheSpot)
+- **BlockTheSpotKlim** adaptation for Spotify 1.2.81+ by Klim
+- Community contributors and testers
+
+---
+
+## ⚖️ Legal Disclaimer
+
+This tool is for **educational purposes only**.
+
+**Please support Spotify** by purchasing Premium if you enjoy the service and can afford it. This project is not affiliated with or endorsed by Spotify AB.
+
+---
+
+## 🔗 Links
+
+- [Original BlockTheSpot](https://github.com/mrpond/BlockTheSpot)
+- [Issue #652 - Spotify 1.2.81 DLL Locking](https://github.com/mrpond/BlockTheSpot/issues/652)
+- [Installation Guide](INSTALLATION.md)
+
+---
+
+**Star ⭐ this repo if it helped you!**
 
 
 
