@@ -1,16 +1,24 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# Claude Code files
+.claude/
+*.claude.md
+CLAUDE.md
 
+# Build artifacts
+*.spa.tmp
+xpui-test/
+xpui-extracted/
 
-/src/x64
-/x64
-*.exp
-*.iobj
-*.ipdb
-*.pdb
-*.dll
-*.aps
-*.zip
-/.vs
-/src/.vs
+# Backups
+*.backup
+*.bak
+*.old
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
