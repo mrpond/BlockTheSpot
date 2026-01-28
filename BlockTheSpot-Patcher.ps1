@@ -88,6 +88,15 @@ if ($spotifyProcesses) {
     Write-Success "[OK] Spotify not running"
 }
 
+# Remove old dpapi.dll if exists (causes black screen on 1.2.81+)
+$dpapiPath = "$SpotifyPath\dpapi.dll"
+if (Test-Path $dpapiPath) {
+    Write-Warning "Found old dpapi.dll (causes black screen on Spotify 1.2.81+)"
+    $dpapiBackup = "$SpotifyPath\dpapi.dll.old-backup"
+    Move-Item $dpapiPath $dpapiBackup -Force
+    Write-Success "[OK] Removed dpapi.dll (backed up as dpapi.dll.old-backup)"
+}
+
 # Create backup
 if (-not $SkipBackup) {
     Write-Info "[3/8] Creating backup..."
