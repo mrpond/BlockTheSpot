@@ -6,7 +6,7 @@
 #include "cef_url_hook.h"
 #include "cef_zip_reader_hook.h"
 
-bool remove_unused_dll() noexcept
+static inline bool remove_unused_dll() noexcept
 {
 	wchar_t old_dpapi[MAX_PATH];
 	DWORD len = GetCurrentDirectoryW(MAX_PATH, old_dpapi);
@@ -29,7 +29,7 @@ const wchar_t* filename_from_path(const wchar_t* path) noexcept
 	return last;
 }
 
-VOID CALLBACK bts_main(ULONG_PTR param)
+static inline void get_ImageDirectoryEntryToDataEx() noexcept
 {
 	auto dbghelp_dll_handle = GetModuleHandleW(L"dbghelp.dll");
 	if (!dbghelp_dll_handle) {
@@ -49,7 +49,11 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 		OutputDebugStringW(L"Failed to get ImageDirectoryEntryToDataEx address\n");
 		return;
 	}
+}
 
+VOID CALLBACK bts_main(ULONG_PTR param)
+{
+	get_ImageDirectoryEntryToDataEx();
 	IAT_hook_GetProcAddress();
 	const wchar_t* cmd =
 		reinterpret_cast<const wchar_t*>(param);
@@ -60,7 +64,7 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 		if (true == remove_unused_dll()) {
 			log_debug("Remove unused dpapi.dll.");
 		}
-		LoadLibraryW(L".\\Users\\dpapi.dll");
+		//LoadLibraryW(L".\\Users\\dpapi.dll");
 		//log_debug("dpapi loaded.");
 		hook_developer_mode();
 		hook_cef_url();

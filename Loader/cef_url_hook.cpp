@@ -2,6 +2,7 @@
 #include "loader.h"
 #include "funct_pointer.h"
 #include "log_thread.h"
+#include "IAT_hook.h"
 
 static inline size_t cef_block_count = 0;
 static inline char cef_block_list[MAX_CEF_BLOCK_LIST][MAX_URL_LEN] = {};
@@ -34,7 +35,9 @@ static inline void* cef_urlrequest_create_hook(void* request, void* client, void
 	const wchar_t* url = url_utf16->str;
 #else
 	using cef_request_get_url_t = void* (__stdcall*)(void*);
-	cef_request_get_url_t get_url = get_funct_t<cef_request_get_url_t>(request, 48);
+	cef_request_get_url_t get_url = get_funct_t<cef_request_get_url_t>(
+		request, CEF_REQUEST_GET_URL_OFFSET);
+
 	const auto url_utf16 = get_url(request);
 	const wchar_t* url = *reinterpret_cast<wchar_t**>(url_utf16);
 #endif
@@ -85,18 +88,15 @@ static inline bool is_cef_url_hook() noexcept
 	return 0 != cef_block_count;
 }
 
-// https://www.ired.team/offensive-security/code-injection-process-injection/import-adress-table-iat-hooking
 static inline bool EAT_hook_cef_url(HMODULE libcef_dll_handle) noexcept
 {
 	HMODULE module = libcef_dll_handle;
 	if (!module) return false;
 
-	HMODULE dbghelp_dll = GetModuleHandleW(L"dbghelp.dll");
-	if (!dbghelp_dll) {
-		dbghelp_dll = LoadLibraryW(L"dbghelp.dll");
-	}
-	if (!dbghelp_dll)
+	if (nullptr == ImageDirectoryEntryToDataEx) {
+		log_debug("EAT_hook_cef_url: ImageDirectoryEntryToDataEx is null.");
 		return false;
+	}
 
 	ULONG size = 0;
 	PIMAGE_EXPORT_DIRECTORY export_dir =
@@ -126,7 +126,6 @@ static inline bool EAT_hook_cef_url(HMODULE libcef_dll_handle) noexcept
 		const char* name = reinterpret_cast<const char*>(
 			reinterpret_cast<BYTE*>(module) + names[i]
 			);
-
 
 		if (0 == lstrcmpiA(name, "cef_urlrequest_create")) {
 			DWORD* func_rva = &function[ordinal[i]];
@@ -165,6 +164,14 @@ static inline void do_hook_cef_url(HMODULE libcef_dll_handle) noexcept
 
 static inline void load_cef_url_config()
 {
+	CEF_REQUEST_GET_URL_OFFSET
+		= GetPrivateProfileIntA(
+			"LIBCEF",
+			"CEF_REQUEST_GET_URL_OFFSET",
+			static_cast<INT>(CEF_REQUEST_GET_URL_OFFSET),
+			CONFIG_FILEA
+		);
+
 	for (size_t i = 0; i < cef_block_count; ++i) {
 		const size_t display_idx = i + 1;
 		_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "%zu", display_idx);

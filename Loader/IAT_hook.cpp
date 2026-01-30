@@ -21,6 +21,11 @@ bool IAT_hook_GetProcAddress() noexcept
 	HMODULE module = GetModuleHandleW(nullptr);
 	if (!module) return false;
 
+	if (nullptr == ImageDirectoryEntryToDataEx) {
+		OutputDebugStringW(L"IAT_hook_GetProcAddress: ImageDirectoryEntryToDataEx is null.");
+		return false;
+	}
+
 	ULONG size = 0;
 	PIMAGE_IMPORT_DESCRIPTOR imports =
 		reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(ImageDirectoryEntryToDataEx(

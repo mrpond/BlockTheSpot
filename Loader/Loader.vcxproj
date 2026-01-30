@@ -105,6 +105,7 @@
       <ControlFlowGuard>false</ControlFlowGuard>
       <GuardEHContMetadata>false</GuardEHContMetadata>
       <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

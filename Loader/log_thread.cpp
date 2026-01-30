@@ -1,8 +1,10 @@
 #include "log_thread.h"
 
-constexpr size_t LOG_RING_SIZE = 64;   // number of messages
+constexpr size_t LOG_RING_SIZE = 512;   // number of messages
 constexpr size_t LOG_MSG_SIZE = 256;   // bytes per message
 constexpr Log_level MAX_LOG_LEVEL = Log_level::DEBUG;
+
+constexpr size_t LOG_BULK_BUFFER_SIZE = 32 * 1024; // 32 KB
 
 struct Log_entry
 {
@@ -99,7 +101,7 @@ static inline HANDLE reopen_log_file() noexcept
 VOID CALLBACK log_work(ULONG_PTR param)
 {
 	static HANDLE log_file = INVALID_HANDLE_VALUE;
-
+	static char bulk_buffer[LOG_BULK_BUFFER_SIZE];
 	if (INVALID_HANDLE_VALUE == log_file ||
 		INVALID_FILE_ATTRIBUTES == GetFileAttributesW(LOG_FILEW)) {
 		if (INVALID_HANDLE_VALUE != log_file) {
@@ -115,11 +117,11 @@ VOID CALLBACK log_work(ULONG_PTR param)
 		}
 	}
 
-
+	size_t bulk_used = 0;
 	for (; logger.read != logger.write; )
 	{
 		const auto& entry = logger.buffer[logger.read];
-		char line[LOG_MSG_SIZE + 32]{};
+		//char line[LOG_MSG_SIZE + 32]{};
 		const char* prefix = "";
 
 		switch (entry.level)
@@ -128,27 +130,39 @@ VOID CALLBACK log_work(ULONG_PTR param)
 		case Log_level::INFORMATION:  prefix = "[INFO ] "; break;
 		default: break;
 		}
+		constexpr size_t worst =
+			8 + LOG_MSG_SIZE + 2; // prefix + msg + CRLF
+
+		if (bulk_used + worst >= LOG_BULK_BUFFER_SIZE)
+			break;
 
 		const int len = _snprintf_s(
-			line,
-			sizeof(line),
+			bulk_buffer + bulk_used,
+			LOG_BULK_BUFFER_SIZE - bulk_used,
 			_TRUNCATE,
 			"%s%s\r\n",
 			prefix,
 			entry.msg
 		);
 
-		DWORD written = 0;
-		if (FALSE == WriteFile(log_file, line, static_cast<DWORD>(len), &written, nullptr))
-		{
-			// File may have been deleted -> reopen
-			CloseHandle(log_file);
-			log_file = INVALID_HANDLE_VALUE;
+		if (len <= 0)
 			break;
-		}
 
+		bulk_used += static_cast<size_t>(len);
 		logger.read = ring_next(logger.read);
 	}
+
+	if (0 == bulk_used)
+		return;
+
+	DWORD written = 0;
+	if (FALSE == WriteFile(log_file, bulk_buffer, static_cast<DWORD>(bulk_used), &written, nullptr))
+	{
+		// File may have been deleted -> reopen
+		CloseHandle(log_file);
+		log_file = INVALID_HANDLE_VALUE;
+		//break;
+	}	
 }
 
 static inline void log_message(Log_level level, const char* message) noexcept

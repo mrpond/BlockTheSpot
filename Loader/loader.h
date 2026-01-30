@@ -30,6 +30,9 @@ constexpr size_t MAX_CEF_BLOCK_LIST = 5;
 constexpr size_t MAX_CEF_BUFFER_MODIFY_LIST = 5;
 constexpr size_t MAX_URL_LEN = 50;
 
-bool remove_unused_dll() noexcept;
+inline size_t CEF_REQUEST_GET_URL_OFFSET = 0x30;
+inline size_t CEF_ZIP_READER_GET_FILE_NAME_OFFSET = 0x48;
+inline size_t CEF_ZIP_READER_GET_READ_FILE_OFFSET = 0x70;
+
 const wchar_t* filename_from_path(const wchar_t* path) noexcept;
 VOID CALLBACK bts_main(ULONG_PTR param);
