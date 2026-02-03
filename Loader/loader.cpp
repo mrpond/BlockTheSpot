@@ -66,9 +66,23 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 		}
 		//LoadLibraryW(L".\\Users\\dpapi.dll");
 		//log_debug("dpapi loaded.");
-		hook_developer_mode();
-		hook_cef_url();
-		hook_cef_reader();	// not finished yet.
+		HMODULE spotify_dll_handle =
+			LoadLibraryW(L"spotify.dll");
+		HMODULE libcef_dll_handle =
+			LoadLibraryW(L"libcef.dll");
+
+		if (!spotify_dll_handle) {
+			log_debug("Failed to load spotify.dll for developer mode hooking.");
+			return;
+		}
+		if (!libcef_dll_handle) {
+			log_debug("Failed to load libcef.dll.");
+			return;
+		}
+		hook_developer_mode(spotify_dll_handle);
+		IAT_hook_GetProcAddress(spotify_dll_handle);
+		hook_cef_url(libcef_dll_handle);
+		hook_cef_reader(libcef_dll_handle);	// not finished yet.
 		// FlushInstructionCache(GetCurrentProcess(), nullptr, 0);
 		log_info("Loader initialized successfully.");
 	}

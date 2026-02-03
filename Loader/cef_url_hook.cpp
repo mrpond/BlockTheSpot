@@ -9,6 +9,7 @@ static inline char cef_block_list[MAX_CEF_BLOCK_LIST][MAX_URL_LEN] = {};
 
 using cef_urlrequest_create_t = void* (*)(void* request, void* client, void* request_context);
 static inline cef_urlrequest_create_t cef_urlrequest_create_orig = nullptr;
+static inline cef_urlrequest_create_t cef_urlrequest_create_impl = nullptr;
 
 using cef_string_userfree_utf16_free_t = void (*)(void* str);
 static inline cef_string_userfree_utf16_free_t cef_string_userfree_utf16_free_orig = nullptr;
@@ -22,6 +23,11 @@ static inline bool is_blocked(const char* in_url) noexcept {
 		}
 	}
 	return false;
+}
+
+void* cef_urlrequest_create_stub(void* request, void* client, void* request_context)
+{
+	return cef_urlrequest_create_impl(request, client, request_context);
 }
 
 #ifdef USE_LIBCEF
@@ -88,74 +94,13 @@ static inline bool is_cef_url_hook() noexcept
 	return 0 != cef_block_count;
 }
 
-static inline bool EAT_hook_cef_url(HMODULE libcef_dll_handle) noexcept
-{
-	HMODULE module = libcef_dll_handle;
-	if (!module) return false;
-
-	if (nullptr == ImageDirectoryEntryToDataEx) {
-		log_debug("EAT_hook_cef_url: ImageDirectoryEntryToDataEx is null.");
-		return false;
-	}
-
-	ULONG size = 0;
-	PIMAGE_EXPORT_DIRECTORY export_dir =
-		reinterpret_cast<PIMAGE_EXPORT_DIRECTORY>(ImageDirectoryEntryToDataEx(
-			module,
-			TRUE, // image is loaded in memory
-			IMAGE_DIRECTORY_ENTRY_EXPORT,
-			&size,
-			NULL
-		));
-
-	if (nullptr == export_dir) {
-		return false;
-	}
-
-	auto names = reinterpret_cast<DWORD*>(
-		reinterpret_cast<BYTE*>(module) + export_dir->AddressOfNames
-		);
-	auto ordinal = reinterpret_cast<WORD*>(reinterpret_cast<BYTE*>(module) +
-		export_dir->AddressOfNameOrdinals
-		);
-	auto function = reinterpret_cast<DWORD*>(
-		reinterpret_cast<BYTE*>(module) + export_dir->AddressOfFunctions
-		);
-
-	for (DWORD i = 0; i < export_dir->NumberOfNames; ++i) {
-		const char* name = reinterpret_cast<const char*>(
-			reinterpret_cast<BYTE*>(module) + names[i]
-			);
-
-		if (0 == lstrcmpiA(name, "cef_urlrequest_create")) {
-			DWORD* func_rva = &function[ordinal[i]];
-			DWORD rva = *func_rva;
-
-			cef_urlrequest_create_orig =
-				reinterpret_cast<cef_urlrequest_create_t>(
-					reinterpret_cast<BYTE*>(module) + rva);
-
-			DWORD oldProtect;
-			VirtualProtect(func_rva, sizeof(DWORD), PAGE_READWRITE, &oldProtect);
-			*func_rva = static_cast<DWORD>(
-				reinterpret_cast<BYTE*>(cef_urlrequest_create_hook) -
-				reinterpret_cast<BYTE*>(module));
-			VirtualProtect(func_rva, sizeof(DWORD), oldProtect, &oldProtect);
-			return true;
-		}
-	}
-	return false;
-}
-
 static inline void do_hook_cef_url(HMODULE libcef_dll_handle) noexcept
 {
-	if (false == EAT_hook_cef_url(libcef_dll_handle)) {
-		log_debug("do_hook_cef_url: EAT_hook_cef_url failed.");
-		return;
-	}
-	log_debug("do_hook_cef_url: EAT_hook_cef_url done.");
+	cef_urlrequest_create_impl = cef_urlrequest_create_hook;
+	log_debug("do_hook_cef_url: cef_urlrequest_create_impl = cef_urlrequest_create_hook.");
+
 	cef_string_userfree_utf16_free_orig = reinterpret_cast<cef_string_userfree_utf16_free_t>(
-		GetProcAddress(
+		GetProcAddress_orig(
 			libcef_dll_handle,
 			"cef_string_userfree_utf16_free"
 		));
@@ -194,17 +139,13 @@ static inline void load_cef_url_config()
 	}
 }
 
-void hook_cef_url() noexcept
+void hook_cef_url(HMODULE libcef_dll_handle) noexcept
 {
+	cef_urlrequest_create_orig = reinterpret_cast<cef_urlrequest_create_t>(
+		GetProcAddress_orig(libcef_dll_handle, "cef_urlrequest_create"));
+	cef_urlrequest_create_impl = cef_urlrequest_create_orig;
+
 	if (true == is_cef_url_hook()) {
-		if (nullptr == libcef_dll_handle) {
-			libcef_dll_handle =
-				LoadLibraryW(L"libcef.dll");
-		}
-		if (!libcef_dll_handle) {
-			log_debug("hook_cef_url: Failed to load libcef.dll.");
-			return;
-		}
 		load_cef_url_config();
 		do_hook_cef_url(libcef_dll_handle);
 	}

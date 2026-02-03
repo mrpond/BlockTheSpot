@@ -110,16 +110,9 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 	log_debug("do_hook_developer: fail to patch.");
 }
 
-void hook_developer_mode() noexcept
+void hook_developer_mode(HMODULE spotify_dll_handle) noexcept
 {
 	if (true == is_developer_mode()) {
-		HMODULE spotify_dll_handle =
-			LoadLibraryW(L"spotify.dll");
-
-		if (!spotify_dll_handle) {
-			log_debug("Failed to load spotify.dll for developer mode hooking.");
-			return;
-		}
 		do_hook_developer(spotify_dll_handle);
 	}
 }
