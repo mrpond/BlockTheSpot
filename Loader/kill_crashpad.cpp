@@ -4,7 +4,7 @@
 static inline bool is_block_crashpad() noexcept
 {
 	const auto result = GetPrivateProfileIntW(
-		L"Config",
+		L"LIBCEF",
 		L"Block_crashpad",
 		0,
 		CONFIG_FILEW

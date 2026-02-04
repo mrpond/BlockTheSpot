@@ -7,8 +7,8 @@
 static inline bool is_developer_mode() noexcept
 {
 	auto result = GetPrivateProfileIntA(
-		"Config",
 		"Developer",
+		"Enable",
 		0,
 		CONFIG_FILEA
 	);

@@ -74,8 +74,8 @@ static inline void* cef_urlrequest_create_hook(void* request, void* client, void
 static inline bool is_cef_url_hook() noexcept
 {
 	cef_block_count = GetPrivateProfileIntA(
-		"Config",
 		"URL_block",
+		"Count",
 		0,
 		CONFIG_FILEA
 	);

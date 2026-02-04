@@ -136,8 +136,8 @@ static inline void load_cef_reader_config()
 static inline bool is_cef_reader_hook() noexcept
 {
 	cef_buffer_modify_count = GetPrivateProfileIntA(
-		"Config",
 		"Buffer_modify",
+		"Count",
 		0,
 		CONFIG_FILEA
 	);
