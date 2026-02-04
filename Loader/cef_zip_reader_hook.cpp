@@ -135,25 +135,14 @@ static inline void load_cef_reader_config()
 
 static inline bool is_cef_reader_hook() noexcept
 {
-	cef_buffer_modify_count = GetPrivateProfileIntA(
+	auto is_enable = GetPrivateProfileIntA(
 		"Buffer_modify",
-		"Count",
+		"Enable",
 		0,
 		CONFIG_FILEA
 	);
-	if (cef_buffer_modify_count > MAX_CEF_BUFFER_MODIFY_LIST) {
-		_snprintf_s(
-			shared_buffer,
-			SHARED_BUFFER_SIZE,
-			_TRUNCATE,
-			"is_cef_reader_hook: cef_buffer_modify_count %zu exceed limit, set to %zu.",
-			cef_buffer_modify_count,
-			MAX_CEF_BLOCK_LIST
-		);
-		cef_buffer_modify_count = MAX_CEF_BUFFER_MODIFY_LIST;
-		log_info(shared_buffer);
-	}
-	return 0 != cef_buffer_modify_count;
+	cef_buffer_modify_count = MAX_CEF_BUFFER_MODIFY_LIST;
+	return 0 != is_enable;
 }
 
 void hook_cef_reader(HMODULE libcef_dll_handle) noexcept

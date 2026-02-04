@@ -73,25 +73,14 @@ static inline void* cef_urlrequest_create_hook(void* request, void* client, void
 
 static inline bool is_cef_url_hook() noexcept
 {
-	cef_block_count = GetPrivateProfileIntA(
+	auto is_enable = GetPrivateProfileIntA(
 		"URL_block",
-		"Count",
+		"Enable",
 		0,
 		CONFIG_FILEA
 	);
-	if (cef_block_count > MAX_CEF_BLOCK_LIST) {
-		_snprintf_s(
-			shared_buffer,
-			SHARED_BUFFER_SIZE,
-			_TRUNCATE, 
-			"is_cef_url_hook: cef_block_count %zu exceed limit, set to %zu.",
-			cef_block_count,
-			MAX_CEF_BLOCK_LIST
-		);
-		cef_block_count = MAX_CEF_BLOCK_LIST;
-		log_info(shared_buffer);
-	}
-	return 0 != cef_block_count;
+	cef_block_count = MAX_CEF_BLOCK_LIST;
+	return 0 != is_enable;
 }
 
 static inline void do_hook_cef_url(HMODULE libcef_dll_handle) noexcept
@@ -129,7 +118,7 @@ static inline void load_cef_url_config()
 			CONFIG_FILEA
 		);
 		if (0 == len) {
-			_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load block url at %zu fail, stop processing", display_idx);
+			_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load block url %zu: fail, stop processing", display_idx);
 			log_debug(shared_buffer);
 			cef_block_count = i;
 			break;

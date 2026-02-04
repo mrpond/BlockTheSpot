@@ -17,6 +17,7 @@ struct Log_work
 	HANDLE log_thread = nullptr;
 	HANDLE timer = nullptr;
 	HANDLE stop_event = nullptr;
+	HANDLE log_file = INVALID_HANDLE_VALUE;
 	DWORD log_thread_id = 0;
 	bool log_enable = false;
 	Log_level log_level = Log_level::NONE;
@@ -57,9 +58,9 @@ DWORD WINAPI log_apc_worker(LPVOID)
 	return 0;
 }
 
-static inline void clear_log_file() noexcept
+static inline bool prepare_log() noexcept
 {
-	HANDLE h = CreateFileW(
+	logger.log_file = CreateFileW(
 		LOG_FILEW,
 		GENERIC_WRITE,             // need write access to truncate
 		FILE_SHARE_READ,           // allow other readers
@@ -69,52 +70,24 @@ static inline void clear_log_file() noexcept
 		nullptr
 	);
 
-	if (h != INVALID_HANDLE_VALUE)
+	if (logger.log_file != INVALID_HANDLE_VALUE)
 	{
 		// Truncate file to 0
-		SetFilePointer(h, 0, nullptr, FILE_BEGIN);
-		SetEndOfFile(h);
-		CloseHandle(h);
+		SetFilePointer(logger.log_file, 0, nullptr, FILE_BEGIN);
+		SetEndOfFile(logger.log_file);
+		//CloseHandle(file_handle);
+		return true;
 	}
-}
-
-static inline HANDLE reopen_log_file() noexcept
-{
-	HANDLE h = CreateFileW(
-		LOG_FILEW,
-		FILE_APPEND_DATA,
-		FILE_SHARE_READ,
-		nullptr,
-		OPEN_ALWAYS,   // create if missing
-		FILE_ATTRIBUTE_NORMAL,
-		nullptr
-	);
-
-	if (h != INVALID_HANDLE_VALUE)
-	{
-		SetFilePointer(h, 0, nullptr, FILE_END);
-	}
-
-	return h;
+	return false;
 }
 
 VOID CALLBACK log_work(ULONG_PTR param)
 {
-	static HANDLE log_file = INVALID_HANDLE_VALUE;
 	static char bulk_buffer[LOG_BULK_BUFFER_SIZE];
-	if (INVALID_HANDLE_VALUE == log_file ||
-		INVALID_FILE_ATTRIBUTES == GetFileAttributesW(LOG_FILEW)) {
-		if (INVALID_HANDLE_VALUE != log_file) {
-			CloseHandle(log_file);
-			log_file = INVALID_HANDLE_VALUE;
-		}
 
-		log_file = reopen_log_file();
-
-		if (INVALID_HANDLE_VALUE == log_file) {
-			OutputDebugStringW(L"log_work: reopen_log_file failed!\n");
-			return;
-		}
+	if (INVALID_HANDLE_VALUE == logger.log_file) {
+		OutputDebugStringW(L"log_work: INVALID_HANDLE_VALUE == logger.log_file!\n");
+		return;
 	}
 
 	size_t bulk_used = 0;
@@ -156,12 +129,9 @@ VOID CALLBACK log_work(ULONG_PTR param)
 		return;
 
 	DWORD written = 0;
-	if (FALSE == WriteFile(log_file, bulk_buffer, static_cast<DWORD>(bulk_used), &written, nullptr))
+	if (FALSE == WriteFile(logger.log_file, bulk_buffer, static_cast<DWORD>(bulk_used), &written, nullptr))
 	{
-		// File may have been deleted -> reopen
-		CloseHandle(log_file);
-		log_file = INVALID_HANDLE_VALUE;
-		//break;
+		OutputDebugStringW(L"log_work: FALSE == WriteFile!\n");
 	}	
 }
 
@@ -268,8 +238,10 @@ void init_log_thread() noexcept
 		return;
 	}
 
-	//DeleteFileW(LOG_FILEW);
-	clear_log_file();
+	if (false == prepare_log()) {
+		OutputDebugStringW(L"init_log_thread: prepare_log fail!\n");
+		return;
+	}
 
 	if (nullptr == logger.log_thread) {
 		logger.log_thread = CreateThread(
@@ -281,7 +253,14 @@ void init_log_thread() noexcept
 			&logger.log_thread_id
 		);
 	}
-	log_info("init_log_thread: initialized");
+	SYSTEMTIME systemTime;
+	GetLocalTime(&systemTime);
+
+	_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE,
+		"init_log_thread: initialized at %04d/%02d/%02d - %02d:%02d:%02d",
+		systemTime.wYear, systemTime.wMonth, systemTime.wDay,
+		systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
+	log_info(shared_buffer);
 }
 
 void stop_log() noexcept
@@ -303,5 +282,9 @@ void stop_log() noexcept
 		// Wait for thread to exit
 		WaitForSingleObject(logger.log_thread, INFINITE);
 		CloseHandle(logger.log_thread);
+	}
+
+	if (logger.log_file != INVALID_HANDLE_VALUE) {
+		CloseHandle(logger.log_file);
 	}
 }
