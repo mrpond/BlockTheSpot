@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Hook/Hook.vcxproj" Id="a9f14678-959a-45ff-a67e-76eb2042e67e" />
+  <Project Path="Loader/Loader.vcxproj" Id="4ac72607-ab6c-4446-87bc-15c2abd0154c" />
+</Solution>

@@ -2,9 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-
-/src/x64
-/x64
 *.exp
 *.iobj
 *.ipdb
@@ -13,4 +10,5 @@
 *.aps
 *.zip
 /.vs
-/src/.vs
+/out
+/temp
