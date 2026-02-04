@@ -20,10 +20,7 @@
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows only and **not the Microsoft Store version**.
 
-### Installation/Update:
-* N/A
-
-#### Manual installation/update
+#### Installation/update
 
 1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
 2. Rename `chrome_elf.dll` to `chrome_elf_bak.dll`
@@ -34,8 +31,8 @@
 ### Uninstall:
 1. Remove `chrome_elf.dll` and `config.ini` from Spotify directory.
 2. Rename `chrome_elf_bak.dll` to `chrome_elf.dll`
-or
-* Reinstall Spotify
+
+or just reinstall Spotify
 
 ### Additional Notes:
 
