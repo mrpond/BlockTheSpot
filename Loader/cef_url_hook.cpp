@@ -79,7 +79,6 @@ static inline bool is_cef_url_hook() noexcept
 		0,
 		CONFIG_FILEA
 	);
-	cef_block_count = MAX_CEF_BLOCK_LIST;
 	return 0 != is_enable;
 }
 
@@ -106,7 +105,7 @@ static inline void load_cef_url_config()
 			CONFIG_FILEA
 		);
 
-	for (size_t i = 0; i < cef_block_count; ++i) {
+	for (size_t i = 0; i < MAX_CEF_BLOCK_LIST; ++i) {
 		const size_t display_idx = i + 1;
 		_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "%zu", display_idx);
 		const auto len = GetPrivateProfileStringA(

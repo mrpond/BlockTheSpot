@@ -70,8 +70,7 @@ static inline bool prepare_log() noexcept
 		nullptr
 	);
 
-	if (logger.log_file != INVALID_HANDLE_VALUE)
-	{
+	if (logger.log_file != INVALID_HANDLE_VALUE) {
 		// Truncate file to 0
 		SetFilePointer(logger.log_file, 0, nullptr, FILE_BEGIN);
 		SetEndOfFile(logger.log_file);
@@ -192,16 +191,16 @@ void init_log_thread() noexcept
 		CONFIG_FILEA
 	));
 
-	log_debug = &log_any_noop;
-	log_info = &log_any_noop;
+	log_debug = log_any_noop;
+	log_info = log_any_noop;
 	if (Log_level::NONE == logger.log_level) {
 		OutputDebugStringW(L"init_log_thread: log disable!\n");
 		return;
 	}
 
-	log_info = &log_info_impl;
+	log_info = log_info_impl;
 	if (Log_level::DEBUG == logger.log_level) {
-		log_debug = &log_debug_impl;
+		log_debug = log_debug_impl;
 	}
 
 	if (logger.log_level > MAX_LOG_LEVEL) {

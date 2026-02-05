@@ -106,6 +106,7 @@
       <GuardEHContMetadata>false</GuardEHContMetadata>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

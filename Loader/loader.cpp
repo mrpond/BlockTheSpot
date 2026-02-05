@@ -17,18 +17,6 @@ static inline bool remove_unused_dll() noexcept
 	return false;
 }
 
-const wchar_t* filename_from_path(const wchar_t* path) noexcept
-{
-	if (!path) return nullptr;
-
-	const wchar_t* last = path;
-	for (const wchar_t* p = path; *p; ++p) {
-		if (*p == L'\\' || *p == L'/')
-			last = p + 1;
-	}
-	return last;
-}
-
 static inline void get_ImageDirectoryEntryToDataEx() noexcept
 {
 	auto dbghelp_dll_handle = GetModuleHandleW(L"dbghelp.dll");
@@ -53,6 +41,23 @@ static inline void get_ImageDirectoryEntryToDataEx() noexcept
 
 VOID CALLBACK bts_main(ULONG_PTR param)
 {
+	const auto required = CreateFileW(
+		ORIGINAL_CHROME_ELF_DLL,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		nullptr,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		nullptr
+	);
+	if (INVALID_HANDLE_VALUE == required) {
+		MessageBoxW(
+			nullptr,
+			L"chrome_elf_bak.dll file not found, Did you skip something?",
+			L"Read the fucking manual",
+			MB_ICONERROR);
+		return;
+	}
 	get_ImageDirectoryEntryToDataEx();
 	IAT_hook_GetProcAddress();
 	const wchar_t* cmd =
