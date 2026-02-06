@@ -125,12 +125,15 @@ static inline void load_cef_url_config()
 		_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load block url %zu:%s", display_idx, cef_block_list[i]);
 		log_debug(shared_buffer);
 	}
+	_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "%zu block url loaded", cef_block_count);
+	log_info(shared_buffer);
 }
 
 void hook_cef_url(HMODULE libcef_dll_handle) noexcept
 {
-	cef_urlrequest_create_orig = reinterpret_cast<cef_urlrequest_create_t>(
-		GetProcAddress_orig(libcef_dll_handle, "cef_urlrequest_create"));
+	cef_urlrequest_create_orig =
+		reinterpret_cast<cef_urlrequest_create_t>(
+			GetProcAddress_orig(libcef_dll_handle, "cef_urlrequest_create"));
 	cef_urlrequest_create_impl = cef_urlrequest_create_orig;
 
 	if (true == is_cef_url_hook()) {

@@ -12,24 +12,32 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	if (DLL_PROCESS_ATTACH == ul_reason_for_call) {
 		DisableThreadLibraryCalls(hModule);
 		LPWSTR cmd = GetCommandLineW();
-
-		HANDLE thread = OpenThread(
-			THREAD_SET_CONTEXT,
-			FALSE,
-			GetCurrentThreadId()
+#ifdef USE_THREAD
+		HANDLE thread = CreateThread(
+			nullptr,
+			0,
+			reinterpret_cast<LPTHREAD_START_ROUTINE>(bts_main),
+			reinterpret_cast<LPVOID>(cmd),
+			0,
+			nullptr
 		);
-		
 		if (thread) {
-			QueueUserAPC(
-				bts_main,
-				thread,
-				reinterpret_cast<ULONG_PTR>(cmd)
-			);
 			CloseHandle(thread);
 		}
+#elif defined(USE_APC)
+		QueueUserAPC(
+			bts_main,
+			GetCurrentThread(),
+			reinterpret_cast<ULONG_PTR>(cmd)
+		);
+#else
+		bts_main(reinterpret_cast<ULONG_PTR>(cmd));
+#endif
 		// Crashpad process
-		if (NULL != wcsstr(cmd, L"--url=")) {
-			kill_crashpad();
+		if (cmd != NULL) {
+			if (NULL != wcsstr(cmd, L"--url=")) {
+				kill_crashpad();
+			}
 		}
 	}
 	if (DLL_PROCESS_DETACH == ul_reason_for_call) {
@@ -37,6 +45,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		if (NULL == wcsstr(cmd, L"--type=") &&
 			NULL == wcsstr(cmd, L"--url=")) {
 			stop_log();
+			//remove_debug_log();
 		}
 	}
 	return TRUE;

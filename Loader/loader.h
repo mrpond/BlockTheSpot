@@ -7,7 +7,14 @@
 #include <cstdint>
 #include <cstdio>
 
-inline constexpr auto ORIGINAL_CHROME_ELF_DLL = L"chrome_elf_bak.dll";
+#define USE_APC
+//#define USE_THREAD
+
+#if defined(USE_THREAD) && defined(USE_APC)
+#error "Cannot define both USE_THREAD and USE_APC"
+#endif
+
+inline constexpr auto ORIGINAL_CHROME_ELF_DLL = L"chrome_elf_required.dll";
 inline constexpr auto CONFIG_FILEW = L".\\config.ini";
 inline constexpr auto CONFIG_FILEA = ".\\config.ini";
 inline constexpr auto LOG_FILEW = L".\\fucking.log";
@@ -20,7 +27,6 @@ using ImageDirectoryEntryToDataEx_t = PVOID(WINAPI*)(
 	PIMAGE_SECTION_HEADER* FoundHeader
 	);
 
-inline HMODULE libcef_dll_handle = nullptr;
 inline ImageDirectoryEntryToDataEx_t ImageDirectoryEntryToDataEx = nullptr;
 
 constexpr size_t SHARED_BUFFER_SIZE = 128; // increase if need.
@@ -35,3 +41,4 @@ inline size_t CEF_ZIP_READER_GET_FILE_NAME_OFFSET = 0x48;
 inline size_t CEF_ZIP_READER_GET_READ_FILE_OFFSET = 0x70;
 
 VOID CALLBACK bts_main(ULONG_PTR param);
+bool remove_debug_log() noexcept;

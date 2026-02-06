@@ -5,6 +5,19 @@
 #include "log_thread.h"
 #include "cef_url_hook.h"
 #include "cef_zip_reader_hook.h"
+#include "libcef_hook.h"
+#pragma	comment(lib, "version.lib")
+
+bool remove_debug_log() noexcept
+{
+	wchar_t old_dpapi[MAX_PATH];
+	DWORD len = GetCurrentDirectoryW(MAX_PATH, old_dpapi);
+	if (len > 0 && len < MAX_PATH) {
+		wcscat_s(old_dpapi, L"\\debug.log");
+		return DeleteFileW(old_dpapi);
+	}
+	return false;
+}
 
 static inline bool remove_unused_dll() noexcept
 {
@@ -39,7 +52,7 @@ static inline void get_ImageDirectoryEntryToDataEx() noexcept
 	}
 }
 
-VOID CALLBACK bts_main(ULONG_PTR param)
+static inline bool is_chrome_elf_bak_exist() noexcept
 {
 	const auto required = CreateFileW(
 		ORIGINAL_CHROME_ELF_DLL,
@@ -51,21 +64,26 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 		nullptr
 	);
 	if (INVALID_HANDLE_VALUE == required) {
-		MessageBoxW(
-			nullptr,
-			L"chrome_elf_bak.dll file not found, Did you skip something?",
-			L"Read the fucking manual",
-			MB_ICONERROR);
-		return;
+		return false;
 	}
+	CloseHandle(required);
+	return true;
+}
+
+VOID CALLBACK bts_main(ULONG_PTR param)
+{
 	get_ImageDirectoryEntryToDataEx();
-	IAT_hook_GetProcAddress();
+	process_IAT_hook_GetProcAddress(GetModuleHandleW(NULL));
 	const wchar_t* cmd =
 		reinterpret_cast<const wchar_t*>(param);
 	//  Spotify's main process
 	if (NULL == wcsstr(cmd, L"--type=") &&
 		NULL == wcsstr(cmd, L"--url=")) {
 		init_log_thread();
+		if (false == is_chrome_elf_bak_exist()) {
+			log_info("chrome_elf_bak.dll file not found, Did you skip something?");
+			return;
+		}
 		if (true == remove_unused_dll()) {
 			log_debug("Remove unused dpapi.dll.");
 		}
@@ -84,8 +102,9 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 			log_debug("Failed to load libcef.dll.");
 			return;
 		}
+
 		hook_developer_mode(spotify_dll_handle);
-		IAT_hook_GetProcAddress(spotify_dll_handle);
+		libcef_IAT_hook_GetProcAddress(spotify_dll_handle);
 		hook_cef_url(libcef_dll_handle);
 		hook_cef_reader(libcef_dll_handle);	// not finished yet.
 		// FlushInstructionCache(GetCurrentProcess(), nullptr, 0);

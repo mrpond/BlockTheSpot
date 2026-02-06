@@ -15,9 +15,12 @@ static inline bool is_block_crashpad() noexcept
 void kill_crashpad() noexcept
 {
 	if (is_block_crashpad()) {
+#ifdef TRUE
 		SleepEx(INFINITE, TRUE);
+#else
 		// This will write something into debug.log
-		//ExitProcess(0);
+		ExitProcess(0);
+#endif
 	}
 
 }

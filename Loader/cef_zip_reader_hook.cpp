@@ -54,8 +54,8 @@ int CALLBACK cef_zip_reader_read_file_hook(void* self, void* buffer, size_t buff
 		log_buf,
 		sizeof(log_buf),
 		_TRUNCATE,
-		"zip_reader: %s %s",
-		patch ? "patch" : "read",
+		"cef_zip_reader_read_file_hook: %s %s",
+		patch ? "patch" : "skip",
 		shared_buffer
 	);
 	log_debug(log_buf);
@@ -123,7 +123,7 @@ static inline void load_cef_reader_config()
 			CONFIG_FILEA
 		);
 		if (0 == len) {
-			_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load buffer modify at %zu fail, stop processing", display_idx);
+			_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load buffer modify %zu: fail, stop processing", display_idx);
 			log_debug(shared_buffer);
 			cef_buffer_modify_count = i;
 			break;
@@ -131,6 +131,8 @@ static inline void load_cef_reader_config()
 		_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "Load buffer modify %zu:%s", display_idx, cef_buffer_list[i]);
 		log_debug(shared_buffer);
 	}
+	_snprintf_s(shared_buffer, SHARED_BUFFER_SIZE, _TRUNCATE, "%zu modify list loaded", cef_buffer_modify_count);
+	log_info(shared_buffer);
 }
 
 static inline bool is_cef_reader_hook() noexcept
@@ -146,8 +148,9 @@ static inline bool is_cef_reader_hook() noexcept
 
 void hook_cef_reader(HMODULE libcef_dll_handle) noexcept
 {
-	cef_zip_reader_create_orig = reinterpret_cast<cef_zip_reader_create_t>(
-		GetProcAddress_orig(libcef_dll_handle, "cef_zip_reader_create"));
+	cef_zip_reader_create_orig =
+		reinterpret_cast<cef_zip_reader_create_t>(
+			GetProcAddress_orig(libcef_dll_handle, "cef_zip_reader_create"));
 	cef_zip_reader_create_impl = cef_zip_reader_create_orig;
 
 	if (true == is_cef_reader_hook()) {

@@ -106,7 +106,6 @@
       <GuardEHContMetadata>false</GuardEHContMetadata>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +127,7 @@
     <ClCompile Include="developer_mode.cpp" />
     <ClCompile Include="IAT_hook.cpp" />
     <ClCompile Include="kill_crashpad.cpp" />
+    <ClCompile Include="libcef_hook.cpp" />
     <ClCompile Include="loader.cpp" />
     <ClCompile Include="log_thread.cpp" />
     <ClCompile Include="main.cpp" />
@@ -142,6 +142,7 @@
     <ClInclude Include="funct_pointer.h" />
     <ClInclude Include="IAT_hook.h" />
     <ClInclude Include="kill_crashpad.h" />
+    <ClInclude Include="libcef_hook.h" />
     <ClInclude Include="loader.h" />
     <ClInclude Include="log_thread.h" />
     <ClInclude Include="memory.h" />

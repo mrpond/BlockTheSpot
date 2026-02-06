@@ -172,7 +172,7 @@ static inline void log_message(Log_level level, const char* message) noexcept
 	//QueueUserAPC(log_work, logger.log_thread, 0);
 }
 
-static inline void log_any_noop(const char* message) noexcept {}
+void log_any_noop(const char* message) noexcept {}
 static inline void log_debug_impl(const char* message) noexcept
 {
 	log_message(Log_level::DEBUG, message);
@@ -191,8 +191,6 @@ void init_log_thread() noexcept
 		CONFIG_FILEA
 	));
 
-	log_debug = log_any_noop;
-	log_info = log_any_noop;
 	if (Log_level::NONE == logger.log_level) {
 		OutputDebugStringW(L"init_log_thread: log disable!\n");
 		return;

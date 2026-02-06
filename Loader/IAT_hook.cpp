@@ -1,9 +1,7 @@
 #include "IAT_hook.h"
 #include "WinTrust_hook.h"
-#include "cef_url_hook.h"
-#include "cef_zip_reader_hook.h"
 
-FARPROC WINAPI GetProcAddress_hook(HMODULE hModule, LPCSTR lpProcName)
+static FARPROC WINAPI GetProcAddress_hook(HMODULE hModule, LPCSTR lpProcName)
 {
 	if (!lpProcName || 0 == HIWORD(lpProcName))
 		return GetProcAddress_orig(hModule, lpProcName);
@@ -14,30 +12,16 @@ FARPROC WINAPI GetProcAddress_hook(HMODULE hModule, LPCSTR lpProcName)
 		}
 	}
 
-	if (0 == lstrcmpiA(lpProcName, "cef_urlrequest_create")) {
-		HMODULE libcef_dll_handle =
-			LoadLibraryW(L"libcef.dll");
-		if (hModule == libcef_dll_handle/*GetModuleHandleW(L"libcef.dll")*/) {
-			return reinterpret_cast<FARPROC>(cef_urlrequest_create_stub);
-		}
-	}
-	if (0 == lstrcmpiA(lpProcName, "cef_zip_reader_create")) {
-		HMODULE libcef_dll_handle =
-			LoadLibraryW(L"libcef.dll");
-		if (hModule == libcef_dll_handle/*GetModuleHandleW(L"libcef.dll")*/) {
-			return reinterpret_cast<FARPROC>(cef_zip_reader_create_stub);
-		}
-	}
 	return GetProcAddress_orig(hModule, lpProcName);
 }
 
 // https://www.ired.team/offensive-security/code-injection-process-injection/import-adress-table-iat-hooking
-bool IAT_hook_GetProcAddress(HMODULE module) noexcept
+bool process_IAT_hook_GetProcAddress(HMODULE module) noexcept
 {
 	if (!module) return false;
 
 	if (nullptr == ImageDirectoryEntryToDataEx) {
-		OutputDebugStringW(L"IAT_hook_GetProcAddress: ImageDirectoryEntryToDataEx is null.");
+		OutputDebugStringW(L"process_IAT_hook_GetProcAddress: ImageDirectoryEntryToDataEx is null.");
 		return false;
 	}
 
