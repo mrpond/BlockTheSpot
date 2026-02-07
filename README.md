@@ -7,6 +7,7 @@
         <strong>Last tested version:</strong> Spotify for Windows (64 bit) 1.2.82.428.g0ac8be2b
     </p> 
 </center>
+
 ### Virus warning on windows defender issue:
 * The code is on Github, everyone can check it.
 * false positive can happen. but don't trust me on this, try verify by compile your own BTS and compare with the release.
@@ -23,7 +24,7 @@
 #### Installation/update
 
 1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
-2. Rename `chrome_elf.dll` to `chrome_elf_bak.dll`
+2. Rename `chrome_elf.dll` to `chrome_elf_required.dll`
 3. Download `BlockTheSpot.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 4. Unzip `chrome_elf.dll` and `config.ini` to Spotify directory. 
 5. Download latest [config.ini](https://github.com/mrpond/BlockTheSpot/blob/master/config.ini) from github to Spotify directory. 
