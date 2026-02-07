@@ -11,7 +11,9 @@ struct Modify
 {
 	uint8_t signature[SHARED_BUFFER_SIZE];
 	char mask[SHARED_BUFFER_SIZE];
+	UINT offset;
 	uint8_t value[SHARED_BUFFER_SIZE];
+	size_t patch_size;
 };
 
 // https://www.unknowncheats.me/forum/1064672-post23.html

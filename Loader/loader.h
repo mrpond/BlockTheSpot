@@ -29,7 +29,7 @@ using ImageDirectoryEntryToDataEx_t = PVOID(WINAPI*)(
 
 inline ImageDirectoryEntryToDataEx_t ImageDirectoryEntryToDataEx = nullptr;
 
-constexpr size_t SHARED_BUFFER_SIZE = 128; // increase if need.
+constexpr size_t SHARED_BUFFER_SIZE = 1024; // increase if need.
 inline char shared_buffer[SHARED_BUFFER_SIZE];
 
 constexpr size_t MAX_CEF_BLOCK_LIST = 5;

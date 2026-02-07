@@ -42,7 +42,7 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 
 	modify.mask[signature_hex_size] = '\0';
 
-	const auto offset = GetPrivateProfileIntA(
+	modify.offset = GetPrivateProfileIntA(
 		"Developer",
 		"Offset",
 		0,
@@ -58,19 +58,19 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 		CONFIG_FILEA
 	);
 
-	const auto patch_size = parse_hex(
+	modify.patch_size = parse_hex(
 		shared_buffer,
 		value_raw_length,
 		modify.value,
 		SHARED_BUFFER_SIZE
 	);
 
-	if (SIZE_MAX == patch_size) {
+	if (SIZE_MAX == modify.patch_size) {
 		log_debug("do_hook_developer: parse_hex limit exceed.");
 		return;
 	}
 
-	if (patch_size > signature_hex_size) {
+	if (modify.patch_size > signature_hex_size) {
 		log_debug("do_hook_developer: patch_size > signature_hex_size.");
 		return;
 	}
@@ -95,7 +95,7 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 		return;
 	}
 
-	const auto start = address + offset + patch_size;
+	const auto start = address + modify.offset + modify.patch_size;
 	const auto end = dll.address + dll.size;
 	if (start > end) {
 		log_debug("do_hook_developer: patch overflow.");
@@ -103,7 +103,7 @@ static inline void do_hook_developer(HMODULE spotify_dll_handle) noexcept
 	}
 
 	if (address) {
-		patch_instruction(reinterpret_cast<LPVOID*>(address + offset), modify.value, patch_size);
+		patch_instruction(reinterpret_cast<LPVOID*>(address + modify.offset), modify.value, modify.patch_size);
 		log_info("do_hook_developer: patch applied.");
 		return;
 	}
