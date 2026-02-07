@@ -52,7 +52,7 @@ static inline void get_ImageDirectoryEntryToDataEx() noexcept
 	}
 }
 
-static inline bool is_chrome_elf_bak_exist() noexcept
+static inline bool is_chrome_elf_required_exist() noexcept
 {
 	const auto required = CreateFileW(
 		ORIGINAL_CHROME_ELF_DLL,
@@ -80,8 +80,8 @@ VOID CALLBACK bts_main(ULONG_PTR param)
 	if (NULL == wcsstr(cmd, L"--type=") &&
 		NULL == wcsstr(cmd, L"--url=")) {
 		init_log_thread();
-		if (false == is_chrome_elf_bak_exist()) {
-			log_info("chrome_elf_bak.dll file not found, Did you skip something?");
+		if (false == is_chrome_elf_required_exist()) {
+			log_info("chrome_elf_required.dll file not found, Did you skip something?");
 			return;
 		}
 		if (true == remove_unused_dll()) {
