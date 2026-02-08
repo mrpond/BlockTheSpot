@@ -30,8 +30,7 @@
 
 #### Update from spotify
 1. Browse to your Spotify installation folder `%APPDATA%\Spotify`
-2. Delete `chrome_elf_required.dll`
-2. Rename `chrome_elf.dll` to `chrome_elf_required.dll`
+2. Delete `chrome_elf.dll`
 3. Download `BlockTheSpot.zip` from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 4. Unzip `chrome_elf.dll` and `config.ini` to Spotify directory. 
 5. Download latest [config.ini](https://github.com/mrpond/BlockTheSpot/blob/master/config.ini) from github to Spotify directory. 
